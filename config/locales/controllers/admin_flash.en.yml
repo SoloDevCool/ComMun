@@ -1,0 +1,323 @@
+en:
+  admin:
+    flash:
+      m003: KOL created
+      m004: KOL deleted
+      m005: KOL updated
+      m006: KOL plugin is not enabled, please enable it in plugin management
+      m007: License not verified, unable to change settings
+      m008: License not verified, unable to change settings. Please configure a valid
+        License Key on the settings page first.
+      m009: You cannot perform this action on yourself
+      m010: You cannot ban yourself
+      m011: Theme %{name} activated
+      m012: Theme %{name} deleted
+      m013: Theme %{name} installed successfully
+      m015: 'Theme installation failed: %{message}'
+      m016: Chat group %{name} created
+      m017: Chat group %{name} deleted
+      m018: Chat group %{name} updated
+      m019: Only .xlsx Excel files are supported
+      m020: "%{count} tasks scheduled today, limit reached"
+      m021: Task re-queued
+      m023: The built-in default theme cannot be deleted
+      m024: Category %{name} created
+      m025: Category %{name} updated
+      m026: Category %{name} deleted
+      m029: Failed to delete
+      m031: 'Failed to add: the user is already a member of this node'
+      m033: Friend link created
+      m034: Friend link deleted
+      m035: Friend link updated
+      m037: Item created
+      m038: Item deleted
+      m039: Item updated
+      m040: Appearance settings saved
+      m041: Review deleted
+      m042: Review updated
+      m043: Review added
+      m045: 'Import failed: the Excel template is missing the "Name" column, please
+        use the correct template'
+      m046: Tool %{name} created
+      m047: Tool %{name} updated
+      m048: Tool %{name} deleted
+      m049: Theme deactivated, default styles restored
+      m050: "%{count} topics deleted"
+      m051: Operational account %{email} deleted
+      m052: User %{email} banned
+      m053: "%{name} added to node %{node_name}"
+      m054: "%{name} removed from node %{node_name}"
+      m055: Role of %{email} changed to %{role}
+      m056: "%{count} waiting tasks re-queued"
+      m057: Replaced %{replaced}/%{total} operational account avatars with %{method}
+      m058: Default theme restored
+      m059: "%{count} questions rejected in batch"
+      m060: "%{count} items rejected in batch"
+      m061: "%{count} questions approved in batch"
+      m062: "%{count} items approved in batch"
+      m063: "%{name} is now allowed to watch %{title}"
+      m064: Revoked %{name}'s access to %{title}
+      m066: User %{email} unbanned
+      m067: Generated avatars for %{generated}/%{total} operational accounts
+      m069: "%{count} invitation codes generated"
+      m070: All operational accounts already have avatars
+      m071: 'Authorization failed: %{message}'
+      m072: Plugin %{name} installed successfully
+      m073: Plugin %{name} enabled
+      m074: Plugin %{name} disabled
+      m075: Plugin %{name} uninstalled
+      m076: Failed to revoke
+      m077: Operation failed
+      m078: Direction %{name} still has %{count} courses, please migrate or delete
+        them first
+      m079: Direction %{name} created
+      m080: Direction %{name} deleted
+      m081: Direction %{name} updated
+      m082: Invalid ban duration
+      m083: Invalid order data
+      m084: Invalid role
+      m085: No permission to access this page
+      m086: No permission to access the admin console
+      m087: Unable to read theme identifier from theme.json
+      m088: No operational accounts yet
+      m091: 'Detection error: %{message}'
+      m092: No waiting tasks
+      m093: No COS image links to replace
+      m094: 'Demo data import failed: %{message}'
+      m095: 'Demo data import completed: %{summary}'
+      m097: Node %{name} created
+      m098: Node %{name} deleted
+      m099: Node %{name} updated
+      m101: Failed to remove
+      m102: Chapter %{title} created
+      m103: Chapter %{title} deleted
+      m104: Chapter %{title} updated
+      m105: Subject %{name} created
+      m106: Subject %{name} deleted
+      m107: Subject %{name} updated
+      m108: Auto topic creation is not enabled, please configure it in settings first
+      m109: Auto comment is not enabled, please configure it in settings first
+      m110: Draft %{title} deleted
+      m111: Draft %{title} updated
+      m112: Draft saved
+      m113: Honors plugin is not enabled
+      m114: Honor record created
+      m115: Honor record deleted
+      m116: Honor record updated
+      m117: Instructor %{name} created
+      m118: Instructor %{name} deleted
+      m119: Instructor %{name} updated
+      m120: Settings saved
+      m121: Settings saved
+      m122: Comment deleted
+      m123: Topic %{title} deleted
+      m124: Topic %{topic_title} published via operational account %{user_name}
+      m125: The user already has access to this course
+      m126: Please configure and enable COS storage first
+      m127: Please configure Tencent Cloud TMS SecretId and SecretKey first
+      m128: Please select at least one topic
+      m129: Please select at least one KOL
+      m130: Please select at least one user
+      m131: Please select at least one item
+      m132: Please enter a License Key
+      m133: Please enter test text
+      m134: Please select a theme ZIP file to upload
+      m135: Please select an Excel file to import
+      m136: Please select questions first
+      m137: Lesson %{title} created
+      m138: Lesson %{title} deleted
+      m139: Lesson %{title} updated
+      m140: Course %{title} created
+      m141: Course %{title} deleted
+      m142: Course %{title} updated
+      m143: Course not found
+      m144: Invitation code deleted
+      m145: Email subject and content cannot be blank
+      m146: Failed to save configuration
+      m147: Configuration saved
+      m148: Question %{question} approved
+      m149: Question created
+      m150: Question deleted
+      m151: Question rejected
+      m152: Question updated
+      m153: Default theme not found, unable to restore
+    ui:
+      status: Status
+      actions: Actions
+      sort_order: Sort order
+      cancel: Cancel
+      enable: Enable
+      disable: Disable
+      close: Close
+      lower_is_first: Lower numbers come first
+      preview: Preview
+      edit: Edit
+      delete: Delete
+      save: Save
+      save_changes: Save changes
+      show_on_frontend: Show on frontend
+      hide: Hide
+      show: Show
+      category: Category
+      upload_failed_retry: Upload failed, please retry
+      max_500_chars: Up to 500 characters
+      generate: Generate
+      generate_failed: Generation failed
+      email: Email
+      description: Description
+      error: Error
+      theme_color: Theme color
+      image_max_5mb: Image must be under 5MB
+      confirm_delete: Confirm delete
+      comment_content: Comment content
+      failed: Failed
+      url: Link
+      name: Name
+      node: Node
+      unknown_error: Unknown error
+      uploading: Uploading
+      image: Image
+      icon: Icon
+      add: Add
+      address: Address
+      title: Title
+      user: User
+      view: View
+      ordered_list: Ordered list
+      unordered_list: Unordered list
+      quote: Quote
+      code_block: Code block
+      select_category: Select a category
+      italic: Italic
+      bold: Bold
+      save_draft: Save draft
+      upload_plugin: Upload plugin
+      icon_image: Icon image
+      expires_at: Expires at
+      direction: Direction
+      author: Author
+      difficulty: Difficulty
+      save_settings: Save settings
+      completed: Completed
+      question_content: Question content
+      topic: Topic
+      type: Type
+      subject_name: Subject name
+      rating: Rating
+      reject: Reject
+      review_content: Review content
+      loading: Loading
+      pending_review: Pending review
+      test: Test
+      manage: Manage
+      registered_at: Registered at
+      role: Role
+      node_name: Node name
+      identifier: Identifier
+      verify_license: Verify license
+      comment: Comment
+      category_name: Category name
+      regular_user: Regular user
+      parse: Parse
+      instructor: Instructor
+      tags: Tags
+      one_click_replace: One-click replace
+      instructor_name: Instructor name
+      forward: Forward
+      avatar: Avatar
+      text: Text
+      sort_order_hint: Sort order (lower comes first)
+      strikethrough: Strikethrough
+      inline_code: Inline code
+      divider: Divider
+      table: Table
+      available: Available
+      username: Username
+      upload_image: Upload image
+      never_expires: Never expires
+      disabled_badge: Disabled
+      expired: Expired
+      award_name: Award name
+      awarded_on: Awarded on
+      migrate_to_cos: Migrate to COS
+      clear_search: Clear search
+      waiting_generation: Waiting for generation
+      bio: Bio
+      migrate_to_local: Migrate back to local
+      remove: Remove
+      own_topic: Topic
+      displaying: Displaying
+      pricing: Pricing
+      on_shelf: Put on shelf
+      in_use: In use
+      os: OS
+      browser: Browser
+      location: Location
+      default_icon: Default icon
+      ad: Ad
+      password_registration: Password registration
+      own_category: Category
+      new_course: New course
+      course: Course
+      tool_name: Tool name
+      tool_description: Tool description
+      website_url: Website
+      remove_image: Remove image
+      icon_preview: Icon preview
+      version: Version
+      paid_member: Paid member
+      external_url: External link
+      uninstall: Uninstall
+      select_user: Select a user
+      award_user: Awarded user
+      add_honor: Add honor
+      no_content: No content
+      site_name: Site name
+      site_url: Site URL
+      site_description: Site description
+      footer_text: Footer text
+      add_friend_link: Add friend link
+      email_subject: Email subject
+      email_content_html: Email content (HTML)
+      new_tool: New tool
+      captcha_management: Captcha management
+      invalid_url: Please enter a valid URL
+      tags_input_hint: Type a tag and press Enter to add
+      categories_input_hint: Type a category and press Enter to add
+      upload_image_file: Please upload an image file
+      tool_desc_hint: Briefly describe the tool's features
+      icon_drop_hint: Click or drag to upload icon image
+      category_desc: Category description
+      category_desc_hint: Briefly describe the category's purpose
+      instructor_bio_hint: The instructor's bio
+      job_title: Job title
+      sort_weight: Sort weight
+      award_desc: Award description
+      award_image_url: Award image URL
+      award_desc_optional: Award description (optional)
+      start_import: Start import
+      kol_invitation: KOL invitation
+      records: records
+      achievement_condition: Achievement condition
+      storage_local: Local
+      storage_cos: Object storage
+      play_key: Play key
+      select_all_toggle: Select all / none
+      example: 'Example:'
+      waiting: Waiting
+      running: Running
+      retry: Retry
+      upload_failed: 'Upload failed:'
+      upload_failed_cn: 'Upload failed:'
+      characters: characters
+      days: days
+      months: months
+      hours: hours
+      minutes: minutes
+      seconds: seconds
+      star_unit: star
+      items_unit: items
+      people_unit: people
+      bits_unit: people
+      unit_ge: ''
+      ago_suffix: ago

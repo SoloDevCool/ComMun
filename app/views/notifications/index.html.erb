@@ -1,0 +1,144 @@
+<% content_for :title, "通知 - #{site_name}" %>
+<% content_for :head do %>
+  <meta name="robots" content="noindex, nofollow">
+<% end %>
+
+<% unread_count = current_user.notifications.unread.count %>
+
+<div class="container-lg py-3" style="max-width:680px">
+  <div class="bg-white rounded shadow-sm overflow-hidden">
+    <!-- 头部 -->
+    <div class="d-flex align-items-center justify-content-between border-bottom px-3 py-2 flex-wrap gap-2">
+      <div class="d-flex align-items-center">
+        <h6 class="mb-0 fw-bold notif-header-title"><i class="bi bi-bell me-2"></i>通知</h6>
+        <% if unread_count > 0 %>
+          <span class="notif-count-pill ms-2"><%= unread_count %> 未读</span>
+        <% end %>
+      </div>
+      <div class="d-flex gap-2 align-items-center">
+        <div class="notif-scope-tabs">
+          <a href="<%= notifications_path %>" class="<%= params[:scope] != 'unread' ? 'active' : '' %>">全部</a>
+          <a href="<%= notifications_path(scope: :unread) %>" class="<%= params[:scope] == 'unread' ? 'active' : '' %>">未读</a>
+        </div>
+        <% if current_user.notifications.unread.exists? %>
+          <%= button_to read_all_notifications_path, method: :patch, class: "notif-mark-all-btn" do %>
+            <i class="bi bi-check2-all"></i>全部已读
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- 通知列表 -->
+    <% @notifications.each do |n| %>
+      <div class="notification-item d-flex align-items-start gap-3 px-3 py-3 border-bottom <%= 'unread' unless n.read? %>" id="notification-<%= n.id %>">
+        <div class="notif-icon-tile flex-shrink-0">
+          <i class="bi <%= notify_icon(n.notify_type) %> <%= notify_icon_color(n.notify_type) %>"></i>
+        </div>
+        <div class="flex-grow-1" style="min-width:0">
+          <% if n.notification_path.present? %>
+            <%= link_to n.notification_path, class: "notif-text text-decoration-none d-block" do %>
+              <%= n.notification_text %>
+            <% end %>
+          <% else %>
+            <div class="notif-text"><%= n.notification_text %></div>
+          <% end %>
+          <div class="notif-time"><%= time_ago_in_words(n.created_at) %>前</div>
+        </div>
+        <% unless n.read? %>
+          <div class="d-flex align-items-center gap-1 flex-shrink-0 notif-item-actions">
+            <span class="notif-unread-dot" title="未读"></span>
+            <button type="button" class="notif-mark-btn mark-read-btn"
+              data-notification-id="<%= n.id %>" title="标记已读">
+              <i class="bi bi-check-circle"></i>
+            </button>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+
+    <% if @notifications.empty? %>
+      <div class="notif-empty">
+        <div class="notif-empty-icon"><i class="bi bi-bell-slash"></i></div>
+        <div class="notif-empty-text">暂无通知</div>
+        <div class="notif-empty-sub">新的评论、回复和互动都会显示在这里</div>
+      </div>
+    <% end %>
+  </div>
+
+  <% if @pagy && @pagy.pages > 1 %>
+    <div class="d-flex justify-content-center mt-3">
+      <%== @pagy.series_nav(:bootstrap) %>
+    </div>
+  <% end %>
+</div>
+
+<style>
+.notif-header-title i{color:var(--bs-primary)}
+.notif-count-pill{display:inline-flex;align-items:center;font-size:0.72rem;font-weight:600;color:#0ea5e9;background:rgba(14,165,233,.1);border-radius:999px;padding:2px 10px}
+[data-bs-theme="dark"] .notif-count-pill{color:#38bdf8;background:rgba(56,189,248,.12)}
+
+.notif-scope-tabs{display:inline-flex;background:var(--bs-tertiary-bg,#f1f3f5);border-radius:999px;padding:3px;gap:2px}
+.notif-scope-tabs a{padding:3px 16px;border-radius:999px;font-size:0.78rem;color:var(--text-muted);text-decoration:none;transition:all .15s}
+.notif-scope-tabs a:hover{color:var(--text-primary)}
+.notif-scope-tabs a.active{background:var(--bg-card,#fff);color:var(--bs-primary);font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+[data-bs-theme="dark"] .notif-scope-tabs a.active{background:#2a2e37}
+
+.notif-mark-all-btn{display:inline-flex;align-items:center;gap:5px;border:1px solid var(--border-color);background:transparent;border-radius:999px;padding:4px 13px;font-size:0.76rem;color:var(--text-secondary);transition:all .12s}
+.notif-mark-all-btn:hover{background:rgba(13,110,253,.06);border-color:rgba(13,110,253,.4);color:var(--bs-primary)}
+.notif-mark-all-btn:active{transform:scale(.96)}
+[data-bs-theme="dark"] .notif-mark-all-btn:hover{background:rgba(56,189,248,.08);border-color:rgba(56,189,248,.4);color:#38bdf8}
+
+.notification-item{transition:background .15s}
+.notification-item:hover{background-color:rgba(0,0,0,.02)}
+.notification-item.unread{border-left:3px solid #0ea5e9;background-color:rgba(14,165,233,.04)}
+.notification-item.unread:hover{background-color:rgba(14,165,233,.08)}
+[data-bs-theme="dark"] .notification-item:hover{background-color:rgba(255,255,255,.04)}
+[data-bs-theme="dark"] .notification-item.unread{background-color:rgba(56,189,248,.05);border-left-color:#38bdf8}
+[data-bs-theme="dark"] .notification-item.unread:hover{background-color:rgba(56,189,248,.1)}
+
+.notif-icon-tile{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--bs-tertiary-bg,#f1f3f5);flex-shrink:0}
+.notif-icon-tile i{font-size:1rem}
+.notif-text{font-size:0.86rem;line-height:1.5;color:var(--text-primary)}
+a.notif-text{transition:color .12s}
+a.notif-text:hover{color:var(--bs-primary)}
+.notif-time{font-size:0.72rem;color:var(--text-muted);margin-top:2px}
+
+.notif-unread-dot{width:8px;height:8px;border-radius:50%;background:#0ea5e9;flex-shrink:0;box-shadow:0 0 0 3px rgba(14,165,233,.15)}
+[data-bs-theme="dark"] .notif-unread-dot{background:#38bdf8;box-shadow:0 0 0 3px rgba(56,189,248,.15)}
+.notif-mark-btn{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border:none;background:transparent;border-radius:50%;color:var(--text-muted);cursor:pointer;opacity:0;transition:opacity .15s,background .12s,color .12s}
+.notification-item:hover .notif-mark-btn{opacity:1}
+.notif-mark-btn:hover{background:rgba(13,110,253,.1);color:var(--bs-primary)}
+.notif-mark-btn:active{transform:scale(.9)}
+@media (hover:none){.notif-mark-btn{opacity:1}}
+
+.notif-empty{padding:56px 20px;text-align:center}
+.notif-empty-icon{font-size:2rem;color:var(--text-muted);opacity:.6;margin-bottom:10px}
+.notif-empty-text{font-size:0.9rem;font-weight:500;color:var(--text-secondary);margin-bottom:4px}
+.notif-empty-sub{font-size:0.76rem;color:var(--text-muted)}
+@media (max-width:575.98px){.notification-item{padding-left:12px;padding-right:12px}.notification-item .notif-item-actions{flex-direction:column}}
+</style>
+
+<script>
+document.querySelectorAll('.mark-read-btn').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    var id = this.dataset.notificationId;
+    var item = document.getElementById('notification-' + id);
+    var token = document.querySelector('meta[name="csrf-token"]').content;
+
+    fetch('/notifications/' + id, {
+      method: 'PATCH',
+      headers: { 'X-CSRF-Token': token, 'Content-Type': 'application/json' },
+      credentials: 'same-origin'
+    }).then(function() {
+      item.classList.remove('unread');
+      var actions = item.querySelector('.notif-item-actions');
+      if (actions) actions.remove();
+      var pill = document.querySelector('.notif-count-pill');
+      if (pill) {
+        var remain = parseInt(pill.textContent) - 1;
+        if (remain <= 0) { pill.remove(); } else { pill.textContent = remain + ' 未读'; }
+      }
+    });
+  });
+});
+</script>

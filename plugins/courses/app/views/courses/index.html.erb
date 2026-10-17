@@ -1,0 +1,124 @@
+<% content_for :title, "课程 - #{site_name}" %>
+<% content_for :head do %>
+  <%= seo_meta_tags(title: "课程 - #{site_name}", description: "#{site_name}课程精选优质课程，涵盖产品设计、技术开发、运营增长等实用内容，帮助学习者系统提升技能。") %>
+<% end %>
+
+<div class="container-lg py-4">
+  <!-- 页头 -->
+  <div class="d-flex align-items-center justify-content-between mb-4">
+    <h4 class="fw-bold mb-0" style="font-size:1.15rem">
+      <i class="bi bi-mortarboard me-1" style="color:#6366f1"></i>课程
+    </h4>
+    <span class="text-muted" style="font-size:0.82rem">精选课程，助你独立开发之路</span>
+  </div>
+
+  <!-- 分类筛选栏 -->
+  <div class="course-filters mb-4">
+    <!-- 方向分类 -->
+    <div class="mb-2">
+      <span class="course-filter-label"><i class="bi bi-compass me-1"></i>方向</span>
+      <div class="d-flex flex-wrap gap-2 mt-1">
+        <% @directions.each do |d| %>
+          <% active = (params[:direction].blank? && d == "全部") || params[:direction] == d %>
+          <% next_params = params.to_unsafe_h.dup %>
+          <% if d == "全部" %>
+            <% next_params.delete(:direction) %>
+          <% else %>
+            <% next_params[:direction] = d %>
+          <% end %>
+          <a href="<%= courses_path(next_params) %>" class="course-filter-btn <%= active ? 'active' : '' %>">
+            <%= d %>
+          </a>
+        <% end %>
+      </div>
+    </div>
+    <!-- 难度分类 -->
+    <div>
+      <span class="course-filter-label"><i class="bi bi-bar-chart-steps me-1"></i>难度</span>
+      <div class="d-flex flex-wrap gap-2 mt-1">
+        <% @difficulties.each do |d| %>
+          <% active = (params[:difficulty].blank? && d == "全部") || params[:difficulty] == d %>
+          <% next_params = params.to_unsafe_h.dup %>
+          <% if d == "全部" %>
+            <% next_params.delete(:difficulty) %>
+          <% else %>
+            <% next_params[:difficulty] = d %>
+          <% end %>
+          <a href="<%= courses_path(next_params) %>" class="course-filter-btn <%= active ? 'active' : '' %>">
+            <%= d %>
+          </a>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <!-- 课程统计 -->
+  <div class="d-flex align-items-center justify-content-between mb-3">
+    <span class="text-muted" style="font-size:0.85rem">
+      共 <strong class="text-body"><%= @courses.count %></strong> 门课程
+    </span>
+  </div>
+
+  <!-- 课程卡片列表 -->
+  <% if @courses.any? %>
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
+      <% @courses.each do |course| %>
+        <div class="col">
+          <a href="<%= course_path(course) %>" class="text-decoration-none">
+            <div class="course-card h-100 d-flex flex-column">
+              <!-- 封面区域 -->
+              <div class="course-card-cover d-flex align-items-center justify-content-center" style="background-color: <%= course.color %>20; border-bottom: 3px solid <%= course.color %>">
+                <% if course.cover.attached? %>
+                  <img src="<%= url_for(course.cover.variant(resize_to_fill: [400, 200])) %>" class="w-100 h-100" style="object-fit:cover" alt="<%= course.title %>">
+                <% else %>
+                  <i class="bi <%= course.icon %>" style="font-size: 2.5rem; color: <%= course.color %>"></i>
+                <% end %>
+              </div>
+              <!-- 内容区域 -->
+              <div class="course-card-body flex-grow-1">
+                <h6 class="course-card-title mb-2"><%= course.title %></h6>
+                <% if course.description.present? %>
+                  <p class="course-card-desc mb-3"><%= course.description %></p>
+                <% end %>
+                <!-- 标签 -->
+                <div class="d-flex flex-wrap gap-1 mb-3">
+                  <span class="course-tag course-tag-direction"><%= course.direction_label %></span>
+                  <span class="course-tag course-tag-difficulty course-tag-<%= course.difficulty_css_class %>"><%= course.difficulty_label %></span>
+                </div>
+              </div>
+              <!-- 底部信息 -->
+              <div class="course-card-footer">
+                <div class="d-flex align-items-center gap-3 course-card-meta">
+                  <% if course.lessons_count > 0 %>
+                    <span><i class="bi bi-play-circle me-1"></i><%= course.lessons_count %> 课时</span>
+                  <% end %>
+                  <% if course.duration.present? %>
+                    <span><i class="bi bi-clock me-1"></i><%= course.duration %></span>
+                  <% end %>
+                  <% if course.students_count > 0 %>
+                    <span><i class="bi bi-people me-1"></i><%= course.students_count %> 人</span>
+                  <% end %>
+                </div>
+                <% if course.author.present? %>
+                  <div class="d-flex align-items-center justify-content-between mt-2">
+                    <span class="course-card-author">
+                      <i class="bi bi-person-circle me-1"></i><%= course.author %>
+                    </span>
+                    <span class="course-card-action">
+                      开始学习 <i class="bi bi-arrow-right"></i>
+                    </span>
+                  </div>
+                <% end %>
+              </div>
+            </div>
+          </a>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="text-center text-muted py-5">
+      <i class="bi bi-mortarboard d-block" style="font-size:2.5rem;margin-bottom:0.5rem"></i>
+      <p>该分类下暂无课程</p>
+    </div>
+  <% end %>
+</div>

@@ -1,0 +1,107 @@
+<% content_for :title, "KOL达人 - #{site_name}" %>
+<% content_for :head do %>
+  <%= seo_meta_tags(title: "KOL达人 - #{site_name}", description: "发现独立开发领域值得关注的内容创作者与KOL达人，关注他们的动态，获取产品灵感与技术前沿资讯。") %>
+  <style>
+    .kol-card:hover{border-color:var(--border-node-card-hover);background:var(--bg-card-hover);box-shadow:0 4px 12px var(--shadow-card);transform:translateY(-1px)}
+    .kol-card{background:var(--bg-card);border-radius:.75rem;border:1px solid var(--border-color);transition:all .2s ease;overflow:hidden}
+    .kol-card-body{padding:1.25rem}
+    .kol-avatar{width:56px;height:56px;border-radius:.4rem;object-fit:cover;flex-shrink:0;border:2px solid var(--border-color)}
+    .kol-name{font-size:.95rem;font-weight:700;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .kol-platform{display:inline-flex;align-items:center;font-size:.75rem;color:var(--text-muted);background:var(--bg-badge-node);padding:.15rem .5rem;border-radius:.3rem;white-space:nowrap}
+    .kol-platform i{font-size:.8rem}
+    .kol-platform-link{text-decoration:none;cursor:pointer;transition:all .15s}
+    .kol-platform-link:hover{color:#f59e0b;background:rgba(245,158,11,.1)}
+    .kol-bio{font-size:.84rem;color:var(--text-secondary);line-height:1.6;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+    .kol-card-footer{padding:.75rem 1.25rem;border-top:1px solid var(--border-color)}
+    .kol-price{font-size:.92rem;font-weight:700;color:#e11d48}
+    [data-bs-theme="dark"] .kol-price{color:#fb7185}
+    .kol-price-negotiable{color:var(--text-muted);font-weight:500}
+    [data-bs-theme="dark"] .kol-price-negotiable{color:var(--text-muted)}
+    .kol-email{font-size:.78rem;color:var(--text-muted);text-decoration:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px;transition:color .15s}
+    .kol-email:hover{color:var(--text-link)}
+    .kol-btn-view{font-size:.78rem;color:#f59e0b;border-color:rgba(245,158,11,.4);background:rgba(245,158,11,.08);padding:.15rem .55rem;border-radius:.35rem;white-space:nowrap;transition:all .15s}
+    .kol-btn-view:hover{color:#fff;background:#f59e0b;border-color:#f59e0b}
+  </style>
+<% end %>
+
+<div class="container-lg py-4">
+  <div class="d-flex align-items-center justify-content-between mb-4">
+    <h4 class="fw-bold mb-0" style="font-size:1.15rem">
+      <i class="bi bi-stars me-1" style="color:#f59e0b"></i>KOL达人
+    </h4>
+    <span class="text-muted" style="font-size:0.82rem">独立开发领域值得关注的内容创作者</span>
+  </div>
+
+  <% if @kols.any? %>
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
+      <% @kols.each do |kol| %>
+        <div class="col">
+          <div class="kol-card h-100 d-flex flex-column">
+            <div class="kol-card-body flex-grow-1">
+              <div class="d-flex align-items-start gap-3">
+                <% if kol.avatar.present? %>
+                  <img src="<%= kol.avatar %>" alt="<%= kol.name %>" class="kol-avatar" loading="lazy">
+                <% else %>
+                  <div class="kol-avatar bg-avatar-3 d-flex align-items-center justify-content-center text-white fw-bold" style="font-size:1.2rem"><%= kol.name[0] %></div>
+                <% end %>
+                <div class="flex-grow-1 min-w-0">
+                  <h6 class="kol-name mb-0"><%= kol.name %></h6>
+                  <% if kol.email.present? %>
+                    <% if user_signed_in? %>
+                      <a href="mailto:<%= kol.email %>" class="kol-email" title="发送邮件">
+                        <i class="bi bi-envelope me-1"></i><%= kol.email %>
+                      </a>
+                    <% else %>
+                      <span class="kol-email text-muted" style="font-size:0.82rem">
+                        <i class="bi bi-lock me-1"></i>登录后查看
+                      </span>
+                    <% end %>
+                  <% end %>
+                </div>
+              </div>
+              <% if kol.bio.present? %>
+                <p class="kol-bio mt-3 mb-0"><%= kol.bio %></p>
+              <% end %>
+            </div>
+            <div class="kol-card-footer">
+              <% if kol.platforms_list.any? %>
+                <div class="d-flex flex-wrap gap-1 mb-2">
+                  <% kol.platforms_list.each do |p| %>
+                    <% if p["url"].present? %>
+                      <a href="<%= p["url"] %>" target="_blank" rel="nofollow noopener noreferrer" class="kol-platform kol-platform-link">
+                        <i class="bi <%= kol.platform_icon(p["name"]) %> me-1"></i><%= p["name"] %>
+                      </a>
+                    <% else %>
+                      <span class="kol-platform">
+                        <i class="bi <%= kol.platform_icon(p["name"]) %> me-1"></i><%= p["name"] %>
+                      </span>
+                    <% end %>
+                  <% end %>
+                </div>
+              <% end %>
+              <div class="d-flex align-items-center justify-content-between">
+                <% if kol.price.present? %>
+                  <span class="kol-price <%= kol.price == '面议' ? 'kol-price-negotiable' : '' %>">
+                    <i class="bi bi-tag me-1"></i><%= kol.price %>
+                  </span>
+                <% else %>
+                  <span></span>
+                <% end %>
+                <% if kol.url.present? %>
+                  <a href="<%= kol.url %>" target="_blank" rel="nofollow noopener noreferrer" class="btn btn-sm kol-btn-view">
+                    <i class="bi bi-arrow-up-right-square me-1"></i>达人介绍
+                  </a>
+                <% end %>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="text-center text-muted py-5">
+      <i class="bi bi-stars d-block" style="font-size:2.5rem;margin-bottom:0.5rem"></i>
+      <p>暂无 KOL 达人</p>
+    </div>
+  <% end %>
+</div>

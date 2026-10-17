@@ -1,0 +1,8 @@
+{
+  "identifier": "tools",
+  "name": "工具集",
+  "version": "1.0.0",
+  "description": "工具集功能插件，展示和管理各类工具。支持工具分类、自定义图标、标签、定价、排序等功能。",
+  "author": "AiBBS",
+  "homepage": "https://github.com/aibbs"
+}

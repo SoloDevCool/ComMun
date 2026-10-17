@@ -1,0 +1,99 @@
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h4 class="text-dark fw-bold mb-0"><%= t('admin.ui.m605') %></h4>
+    <div class="d-flex gap-2 align-items-center">
+    <%= link_to new_admin_course_path, class: "btn btn-primary rounded-pill px-3" do %>
+      <i class="bi bi-plus-lg me-1"></i><%= t('admin.ui.m606') %>
+    <% end %>
+  </div>
+</div>
+
+<div class="card card-admin">
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-hover mb-0">
+        <thead>
+          <tr>
+            <th class="ps-3"><%= t('admin.course') %></th>
+            <th class="text-center"><%= t('admin.direction') %></th>
+            <th class="text-center"><%= t('admin.difficulty') %></th>
+            <th class="text-center d-none d-sm-table-cell"><%= t('admin.ui.m607') %></th>
+            <th class="text-center d-none d-md-table-cell"><%= t('admin.status') %></th>
+            <th class="text-center d-none d-md-table-cell"><%= t('admin.sort_order') %></th>
+            <th class="pe-3 text-end"><%= t('admin.actions') %></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @courses.each do |course| %>
+            <tr>
+              <td class="ps-3">
+                <div class="d-flex align-items-center">
+                  <% if course.cover.attached? %>
+                    <div class="rounded-2 me-2 flex-shrink-0 overflow-hidden" style="width:48px;height:32px">
+                      <img src="<%= url_for(course.cover.variant(resize_to_fill: [96, 64])) %>" class="w-100 h-100" style="object-fit:cover" alt="">
+                    </div>
+                  <% else %>
+                    <div class="rounded-2 me-2 flex-shrink-0 d-flex align-items-center justify-content-center" style="width:48px;height:32px;background-color: <%= course.color %>15">
+                      <i class="bi <%= course.icon %>" style="font-size:0.9rem;color:<%= course.color %>"></i>
+                    </div>
+                  <% end %>
+                  <div>
+                    <div class="fw-semibold" style="max-width:240px"><%= truncate(course.title, length: 30) %></div>
+                    <% if course.instructor.present? %>
+                      <small class="text-muted"><%= course.instructor.name %></small>
+                    <% end %>
+                  </div>
+                </div>
+              </td>
+              <td class="text-center">
+                <span class="badge bg-light text-dark rounded-pill" style="font-size:0.75rem">
+                  <%= course.direction_label %>
+                </span>
+              </td>
+              <td class="text-center">
+                <span class="badge rounded-pill course-tag-<%= course.difficulty_css_class %>" style="font-size:0.75rem">
+                  <%= course.difficulty_label %>
+                </span>
+              </td>
+              <td class="text-center d-none d-sm-table-cell">
+                <span class="badge bg-light text-dark rounded-pill"><%= course.lessons_count %></span>
+              </td>
+              <td class="text-center d-none d-md-table-cell">
+                <span class="badge <%= course.is_active? ? 'bg-success' : 'bg-secondary' %> rounded-pill" style="font-size:0.75rem">
+                  <%= course.is_active? ? t("admin.show") : t("admin.hide") %>
+                </span>
+              </td>
+              <td class="text-center d-none d-md-table-cell">
+                <span class="text-muted"><%= course.sort_order %></span>
+              </td>
+              <td class="pe-3 text-end">
+                <div class="d-flex justify-content-end gap-1">
+                  <%= link_to admin_course_course_reviews_path(course), class: "btn-action btn btn-sm btn-outline-info border-0", title: t('admin.ui.m608') do %>
+                    <i class="bi bi-chat-square-text"></i>
+                  <% end %>
+                  <%= link_to edit_admin_course_path(course), class: "btn-action btn btn-sm btn-outline-primary border-0" do %>
+                    <i class="bi bi-pencil"></i>
+                  <% end %>
+                  <%= button_to admin_course_path(course), method: :delete,
+                      class: "btn-action btn btn-sm btn-outline-danger border-0",
+                      data: { confirm: "确定删除课程「#{course.title}」吗？" } do %>
+                    <i class="bi bi-trash"></i>
+                  <% end %>
+                </div>
+              </td>
+            </tr>
+          <% end %>
+          <% if @courses.empty? %>
+            <tr>
+              <td colspan="7" class="text-center text-muted py-5">
+                <i class="bi bi-mortarboard d-block mb-2" style="font-size:2rem"></i>
+                <%= t('admin.ui.m610') %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+

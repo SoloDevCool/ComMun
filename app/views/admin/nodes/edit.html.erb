@@ -1,0 +1,210 @@
+<h4 class="text-dark fw-bold mb-4"><%= t('admin.ui.m803') %></h4>
+
+<div class="card card-admin" style="max-width:640px">
+  <div class="card-body p-4">
+    <%= form_with model: [:admin, @node], local: true do |f| %>
+      <% if @node.errors.any? %>
+        <div class="alert alert-danger rounded-3 py-2">
+          <i class="bi bi-exclamation-circle me-1"></i>
+          <ul class="mb-0 ms-3">
+            <% @node.errors.full_messages.each do |msg| %>
+              <li><%= msg %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <div class="mb-3">
+        <%= f.label :name, t("admin.node_name"), class: "form-label fw-semibold small text-muted" %>
+        <%= f.text_field :name, class: "form-control form-control-lg rounded-3", placeholder: t('admin.ui.m213') %>
+        <div class="form-text"><%= t('admin.ui.m220') %></div>
+      </div>
+
+      <div class="mb-3">
+        <%= f.label :slug, "Slug 标识", class: "form-label fw-semibold small text-muted" %>
+        <%= f.text_field :slug, class: "form-control form-control-lg rounded-3", placeholder: t('admin.ui.m222') %>
+        <div class="form-text">URL <%= t('admin.ui.m223') %></div>
+      </div>
+
+      <div class="mb-3">
+        <%= f.label :kind, t('admin.ui.m227'), class: "form-label fw-semibold small text-muted" %>
+        <div class="d-flex gap-3 mt-1">
+          <% Node.kinds_i18n.each do |value, label| %>
+            <div class="form-check">
+              <%= f.radio_button :kind, value, class: "form-check-input", id: "node_kind_#{value}", data: { kind: value } %>
+              <label class="form-check-label" for="node_kind_<%= value %>">
+                <span class="badge <%= value == 'system' ? 'bg-primary bg-opacity-10 text-primary' : 'bg-success bg-opacity-10 text-success' %> rounded-pill">
+                  <%= label %>
+                </span>
+              </label>
+            </div>
+          <% end %>
+        </div>
+        <div class="form-text mt-1"><%= t('admin.ui.m229') %></div>
+      </div>
+
+      <div class="mb-3" id="position-field" style="<%= @node.system? ? '' : 'display:none' %>">
+        <%= f.label :position, t('admin.ui.m190'), class: "form-label fw-semibold small text-muted" %>
+        <%= f.number_field :position, class: "form-control form-control-lg rounded-3", min: 0 %>
+        <div class="form-text"><%= t('admin.ui.m193') %></div>
+      </div>
+
+      <script>
+        document.addEventListener('DOMContentLoaded', function() {
+          const kindInputs = document.querySelectorAll('input[name="node[kind]"]');
+          const positionField = document.getElementById('position-field');
+
+          kindInputs.forEach(input => {
+            input.addEventListener('change', function() {
+              if (this.dataset.kind === 'system') {
+                positionField.style.display = 'block';
+              } else {
+                positionField.style.display = 'none';
+              }
+            });
+          });
+
+          // 初始化显示状态
+          const checkedInput = document.querySelector('input[name="node[kind]"]:checked');
+          if (checkedInput && checkedInput.dataset.kind === 'system') {
+            positionField.style.display = 'block';
+          }
+        });
+      </script>
+
+      <div class="mb-4">
+        <label class="form-label fw-semibold small text-muted">
+          <i class="bi bi-image me-1"></i><%= t('admin.ui.m207') %>
+          <span class="badge bg-warning bg-opacity-10 text-warning rounded-pill ms-1" style="font-size:0.65rem;vertical-align:middle"><%= t('admin.ui.m208') %></span>
+        </label>
+        <div class="alert alert-light border rounded-3 py-2 px-3 mb-3 small" style="font-size:0.8rem">
+          <i class="bi bi-info-circle text-primary me-1"></i>
+          <strong><%= t('admin.ui.m209') %></strong><%= t('admin.ui.m165') %> &gt; Emoji <%= t('admin.ui.m164') %>；<%= t('admin.ui.m163') %>
+        </div>
+
+        <!-- 图标内容：Emoji / SVG 代码 -->
+        <div class="mb-3">
+          <label class="form-label fw-semibold" style="font-size:0.82rem"><%= t('admin.ui.m162') %></label>
+          <ul class="nav nav-tabs icon-mode-tabs" role="tablist">
+            <li class="nav-item" role="presentation">
+              <button type="button" class="nav-link <%= 'active' unless @node.icon_svg_code? %>" id="icon-tab-emoji" data-bs-toggle="tab" data-bs-target="#icon-pane-emoji" data-icon-mode="emoji" role="tab" aria-selected="<%= !@node.icon_svg_code? %>">
+                <i class="bi bi-emoji-smile me-1"></i>Emoji
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button type="button" class="nav-link <%= 'active' if @node.icon_svg_code? %>" id="icon-tab-svg" data-bs-toggle="tab" data-bs-target="#icon-pane-svg" data-icon-mode="svg" role="tab" aria-selected="<%= @node.icon_svg_code? %>">
+                <i class="bi bi-filetype-svg me-1"></i>SVG 代码
+              </button>
+            </li>
+          </ul>
+          <div class="tab-content icon-mode-content">
+            <div class="tab-pane fade <%= 'show active' unless @node.icon_svg_code? %>" id="icon-pane-emoji" role="tabpanel" aria-labelledby="icon-tab-emoji">
+              <%= f.text_field :icon, id: "node_icon_emoji", class: "form-control rounded-3", placeholder: "点击右侧 😊 按钮选择", maxlength: 10, data: { emoji_picker: true }, disabled: @node.icon_svg_code? %>
+              <div class="form-text"><%= t('admin.ui.m159') %></div>
+            </div>
+            <div class="tab-pane fade <%= 'show active' if @node.icon_svg_code? %>" id="icon-pane-svg" role="tabpanel" aria-labelledby="icon-tab-svg">
+              <%= text_area_tag "node[icon]", @node.icon_svg_code? ? @node.icon : "", id: "node_icon_svg", class: "form-control rounded-3 font-monospace", rows: 5, style: "font-size:.78rem", placeholder: '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">...</svg>', disabled: !@node.icon_svg_code? %>
+              <div class="form-text">粘贴完整的 <code>&lt;svg&gt;...&lt;/svg&gt;</code> 代码作为版块图标（无需上传文件），保存后全站生效</div>
+            </div>
+          </div>
+
+          <div class="d-flex align-items-center gap-2 mt-2">
+            <span class="text-muted small">预览：</span>
+            <span id="iconLivePreview" style="width:40px;height:40px;border:1px solid #e0e0e0;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;font-size:1.3rem;background:#fff;overflow:hidden"></span>
+          </div>
+        </div>
+
+        <script>
+        (function() {
+          var emojiField = document.getElementById('node_icon_emoji');
+          var svgField = document.getElementById('node_icon_svg');
+          var preview = document.getElementById('iconLivePreview');
+          if (!emojiField || !svgField) return;
+
+          function currentMode() {
+            return (svgField && !svgField.disabled) ? 'svg' : 'emoji';
+          }
+
+          function renderPreview() {
+            if (!preview) return;
+            if (currentMode() === 'svg') {
+              var code = svgField.value.trim();
+              if (/^<svg/i.test(code) && !/<script|on\w+\s*=/i.test(code)) {
+                preview.innerHTML = code;
+                var svg = preview.querySelector('svg');
+                if (svg) {
+                  svg.removeAttribute('width');
+                  svg.removeAttribute('height');
+                  svg.style.width = '100%';
+                  svg.style.height = '100%';
+                }
+              } else {
+                preview.innerHTML = code ? '<i class="bi bi-exclamation-triangle text-warning"></i>' : '';
+              }
+            } else {
+              preview.textContent = emojiField.value || '';
+            }
+          }
+
+          // ===== Bootstrap 标签页：同步 disabled 状态避免重复提交 =====
+          function setIconFieldsDisabled(mode) {
+            emojiField.disabled = mode !== 'emoji';
+            svgField.disabled = mode !== 'svg';
+            renderPreview();
+          }
+          var emojiTab = document.getElementById('icon-tab-emoji');
+          var svgTab = document.getElementById('icon-tab-svg');
+          if (emojiTab) emojiTab.addEventListener('shown.bs.tab', function() { setIconFieldsDisabled('emoji'); });
+          if (svgTab) svgTab.addEventListener('shown.bs.tab', function() { setIconFieldsDisabled('svg'); });
+          setIconFieldsDisabled(currentMode());
+
+          emojiField.addEventListener('input', renderPreview);
+          svgField.addEventListener('input', renderPreview);
+          renderPreview();
+        })();
+        </script>
+
+        <!-- <%= t('admin.ui.m165') %> -->
+        <div>
+          <label class="form-label fw-semibold" style="font-size:0.82rem"><%= t('admin.ui.m158') %></label>
+          <% if @node.icon_file.attached? %>
+            <div class="d-flex align-items-center gap-3 mb-2" id="icon-file-preview">
+              <%= image_tag (@node.icon_file_svg? ? @node.icon_file : @node.icon_file.variant(resize_to_fill: [128, 128])), style: "width:64px;height:64px;object-fit:contain;border-radius:8px;border:1px solid #e0e0e0;", alt: @node.name %>
+              <div>
+                <div class="fw-semibold small"><%= @node.icon_file.filename.to_s %></div>
+                <div class="text-muted small"><%= number_to_human_size(@node.icon_file.byte_size) %></div>
+                <label class="form-check mt-1 mb-0">
+                  <%= f.check_box :remove_icon_file, class: "form-check-input" %>
+                  <span class="form-check-label small text-danger"><%= t('admin.ui.m341') %></span>
+                </label>
+              </div>
+            </div>
+          <% end %>
+          <div class="input-group">
+            <%= f.file_field :icon_file, class: "form-control rounded-start-3", accept: "image/png,image/jpeg,image/gif,image/webp,image/svg+xml" %>
+          </div>
+          <div class="form-text"><%= t('admin.ui.m149') %></div>
+        </div>
+      </div>
+
+      <div class="mb-4">
+        <%= f.label :description, t("admin.description"), class: "form-label fw-semibold small text-muted" %>
+        <%= f.text_area :description, class: "form-control rounded-3", rows: 3, placeholder: t('admin.ui.m148') %>
+      </div>
+
+      <div class="mb-3">
+        <%= f.label :tip, t('admin.ui.m186'), class: "form-label fw-semibold small text-muted" %>
+        <%= f.text_area :tip, class: "form-control rounded-3", rows: 3, placeholder: t('admin.ui.m179') %>
+        <div class="form-text"><%= t('admin.ui.m178') %></div>
+      </div>
+
+      <div class="d-flex gap-2">
+        <%= f.submit t("admin.save_changes"), class: "btn btn-primary rounded-pill px-4" %>
+        <%= link_to t("admin.cancel"), admin_nodes_path, class: "btn btn-outline-secondary rounded-pill px-4" %>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<%= javascript_include_tag "/emoji-data.js" %>
+<%= javascript_include_tag "/emoji-picker.js" %>

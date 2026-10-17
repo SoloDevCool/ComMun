@@ -1,0 +1,298 @@
+<% content_for :head do %>
+  <%= seo_meta_tags(description: t('.seo_description', site_name: site_name)) %>
+<% end %>
+
+<div class="container-lg py-3">
+  <!-- Mobile node scroll bar -->
+  <div class="mobile-node-bar">
+    <div class="mobile-node-bar-inner">
+      <a href="<%= topics_path %>" class="<%= true ? 'active' : '' %>">
+        <i class="bi bi-grid"></i> <%= t('.all') %>
+      </a>
+      <% @nodes.each do |node| %>
+        <a href="<%= node_topics_path(node) %>">
+          <%= node_icon(node, size: "1rem") %> <%= node.name %>
+        </a>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="row g-3">
+
+    <!-- Left Sidebar: Node List -->
+    <div class="col-lg-2 left-sidebar">
+      <div class="node-list">
+        <a href="<%= topics_path %>" class="node-item active">
+          <span class="node-icon"><i class="bi bi-grid"></i></span>
+          <span><%= t('.all') %></span>
+          <span class="node-count"><%= @topic_count %></span>
+        </a>
+        <% {"system" => "system", "interest" => "interest"}.each do |order_key, kind| %>
+          <% nodes = @nodes.select { |n| n.kind == kind } %>
+          <% next if nodes.empty? %>
+          <h6 class="text-muted mb-1 mt-3 ps-2" style="font-size:0.72rem; text-transform:uppercase; letter-spacing:0.5px;">
+            <i class="bi <%= kind == 'system' ? 'bi-gear' : 'bi-star' %> me-1"></i><%= Node.kinds_i18n[kind.to_sym] %>
+          </h6>
+          <% if kind == "interest" %>
+            <% if user_signed_in? %>
+              <% if @followed_nodes.present? %>
+                <% @followed_nodes.each do |node| %>
+                  <a href="<%= node_topics_path(node) %>" class="node-item">
+                    <span class="node-icon"><%= node_icon(node) %></span>
+                    <span><%= node.name %></span>
+                    <span class="node-count"><%= node.topics_count %></span>
+                  </a>
+                <% end %>
+              <% else %>
+                <div class="text-muted text-center py-2" style="font-size:0.78rem">
+                  <a href="<%= topics_path(kind: 'interest') %>" class="text-decoration-none"><%= t('.discover_nodes') %></a>
+                </div>
+              <% end %>
+            <% else %>
+              <div class="text-muted text-center py-2" style="font-size:0.78rem">
+                <a href="<%= new_user_session_path %>" class="text-decoration-none"><%= t('.sign_in_to_view') %></a>
+              </div>
+            <% end %>
+          <% else %>
+            <% nodes.each do |node| %>
+              <a href="<%= node_topics_path(node) %>" class="node-item">
+                <span class="node-icon"><%= node_icon(node) %></span>
+                <span><%= node.name %></span>
+                <span class="node-count"><%= node.topics_count %></span>
+              </a>
+            <% end %>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Center: Topic List -->
+    <div class="col-lg-7">
+      <!-- Home banner: slogan + community stats -->
+      <div class="home-banner mb-3">
+        <div class="home-banner-slogan"><%= t('.banner_slogan') %></div>
+        <div class="home-banner-subtitle"><%= t('.banner_subtitle') %></div>
+        <div class="home-banner-stats">
+          <span><strong><%= number_with_delimiter(@community_stats[:users_count]) %></strong><%= t('.stat_users') %></span>
+          <span class="home-banner-dot"></span>
+          <span><strong><%= number_with_delimiter(@community_stats[:topics_count]) %></strong><%= t('.stat_topics') %></span>
+          <span class="home-banner-dot"></span>
+          <span><strong><%= number_with_delimiter(@community_stats[:comments_count]) %></strong><%= t('.stat_replies') %></span>
+        </div>
+      </div>
+
+      <!-- Interest nodes chip cloud -->
+      <% if @interest_nodes.any? %>
+        <div class="node-chip-cloud mb-3">
+          <% @interest_nodes.each do |node| %>
+            <a href="<%= node_topics_path(node) %>" class="node-chip">
+              <span class="node-icon"><%= node_icon(node, size: "1.05rem") %></span>
+              <span><%= node.name %></span>
+              <span class="chip-count"><%= node.topics_count %></span>
+            </a>
+          <% end %>
+          <a href="<%= topics_path(kind: 'interest') %>" class="node-chip node-chip-more">
+            <i class="bi bi-arrow-right-short" style="font-size:1rem"></i>
+            <%= t('.all') %>
+          </a>
+        </div>
+      <% end %>
+
+      <div class="bg-white rounded shadow-sm overflow-hidden">
+        <!-- Scope tabs -->
+        <div class="d-flex align-items-center border-bottom px-3 py-2">
+          <div class="scope-tabs">
+            <a href="<%= topics_path(scope: 'recent') %>" class="scope-tab active"><%= t('.latest') %></a>
+            <a href="<%= topics_path(scope: 'trending') %>" class="scope-tab"><%= t('.trending') %></a>
+            <a href="<%= topics_path(scope: 'hot') %>" class="scope-tab"><%= t('.hot') %></a>
+          </div>
+          <div class="ms-auto">
+            <% if user_signed_in? %>
+              <%= link_to new_topic_path, class: "btn btn-sm btn-primary" do %><i class="bi bi-plus-lg me-1"></i><%= t('.create_topic') %><% end %>
+            <% else %>
+              <%= link_to new_user_session_path, class: "btn btn-sm btn-outline-primary" do %><i class="bi bi-box-arrow-in-right me-1"></i><%= t('.sign_in_to_publish') %><% end %>
+            <% end %>
+          </div>
+        </div>
+
+        <!-- Topic list -->
+        <div class="topic-list">
+          <% @recent_topics.each do |topic| %>
+            <div class="topic-item">
+              <% if topic.user.has_avatar? %>
+                <div class="topic-avatar" style="padding:2px">
+                  <img src="<%= topic.user.avatar_data_url %>" class="rounded-3 w-100 h-100" style="object-fit:cover" alt="">
+                </div>
+              <% else %>
+                <div class="topic-avatar bg-avatar-<%= topic.user.id % 5 + 1 %>">
+                  <%= user_initial(topic.user) %>
+                </div>
+              <% end %>
+              <div class="topic-body">
+                <div class="d-flex align-items-start gap-2">
+                  <a href="<%= topic_path(topic) %>" class="topic-title text-truncate"><%= topic.title %></a>
+                </div>
+                <div class="topic-meta">
+                  <span class="badge badge-node"><%= node_icon(topic.node, size: "0.85em") %> <%= topic.node.name %></span>
+                  <span class="ms-1">
+                    <strong><%= topic.user.display_name %></strong>
+                    &middot; <%= t('.time_ago', time: time_ago_in_words(topic.created_at)) %>
+                    &middot; <span class="text-muted"><i class="bi bi-eye me-1"></i><%= topic.views_count %></span>
+                  </span>
+                </div>
+              </div>
+              <div class="topic-stats" style="align-self:center">
+                <span class="badge bg-secondary text-white" style="font-size:0.7rem;padding:0.3em 0.55em;border-radius:0.2rem"><%= topic.comments.count %></span>
+              </div>
+            </div>
+          <% end %>
+          <% if @recent_topics.empty? %>
+            <div class="text-center text-muted py-5">
+              <i class="bi bi-chat-square-text d-block mb-2" style="font-size:2rem"></i>
+              <p><%= t('.no_topics') %></p>
+            </div>
+          <% end %>
+        </div>
+
+        <!-- View all -->
+        <div class="d-flex justify-content-center py-3 border-top">
+          <%= link_to t('.view_all_topics'), topics_path, class: "btn btn-sm btn-outline-secondary rounded-pill px-3" %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Sidebar -->
+    <div class="col-lg-3 right-sidebar">
+      <!-- User Card -->
+      <div class="sidebar-card user-card mb-3">
+        <div class="card-header-bg"></div>
+        <div class="card-body text-center pb-0">
+          <div class="avatar-wrapper">
+            <% if user_signed_in? %>
+              <%= link_to profile_path, class: "d-block" do %>
+                <div class="user-avatar bg-avatar-1">
+                  <% if current_user.has_avatar? %>
+                    <img src="<%= current_user.avatar_data_url %>" class="rounded-3 w-100 h-100" style="object-fit:cover" alt="头像">
+                  <% else %>
+                    <%= user_initial(current_user) %>
+                  <% end %>
+                </div>
+              <% end %>
+            <% else %>
+              <div class="user-avatar bg-avatar-1">
+                <i class="bi bi-person" style="font-size:1.5rem"></i>
+              </div>
+            <% end %>
+          </div>
+          <div class="user-name">
+            <% if user_signed_in? %>
+              <%= link_to profile_path, class: "text-decoration-none text-dark" do %>
+                <%= current_user.display_name %>
+              <% end %>
+              <span class="badge <%= current_user.role_badge_class %> user-role-badge" style="font-size:0.6rem">
+                <%= current_user.role_label %>
+              </span>
+            <% else %>
+              <%= t('.guest') %>
+            <% end %>
+          </div>
+          <div class="user-stats-row">
+            <div class="user-stat">
+              <% if user_signed_in? %>
+                <%= link_to topics_path, class: "text-decoration-none" do %>
+                  <div class="user-stat-value"><%= current_user.topics.count %></div>
+                  <div class="user-stat-label"><%= t('.stat_topics') %></div>
+                <% end %>
+              <% else %>
+                <div class="user-stat-value">0</div>
+                <div class="user-stat-label"><%= t('.stat_topics') %></div>
+              <% end %>
+            </div>
+            <div class="user-stat">
+              <% if user_signed_in? %>
+                <%= link_to profile_path(tab: "following"), class: "text-decoration-none" do %>
+                  <div class="user-stat-value"><%= current_user.following.count %></div>
+                  <div class="user-stat-label"><%= t('.stat_following') %></div>
+                <% end %>
+              <% else %>
+                <div class="user-stat-value">0</div>
+                <div class="user-stat-label"><%= t('.stat_following') %></div>
+              <% end %>
+            </div>
+            <div class="user-stat">
+              <% if user_signed_in? %>
+                <%= link_to profile_path(tab: "followers"), class: "text-decoration-none" do %>
+                  <div class="user-stat-value"><%= current_user.followers.count %></div>
+                  <div class="user-stat-label"><%= t('.stat_followers') %></div>
+                <% end %>
+              <% else %>
+                <div class="user-stat-value">0</div>
+                <div class="user-stat-label"><%= t('.stat_followers') %></div>
+              <% end %>
+            </div>
+            <div class="user-stat">
+              <% if user_signed_in? %>
+                <div class="user-stat-value"><%= current_user.points %></div>
+                <div class="user-stat-label"><%= t('.stat_points') %></div>
+              <% else %>
+                <div class="user-stat-value">0</div>
+                <div class="user-stat-label"><%= t('.stat_points') %></div>
+              <% end %>
+            </div>
+          </div>
+          <% if user_signed_in? %>
+          <div class="text-center px-3">
+            <%= link_to new_topic_path, class: "btn btn-primary rounded-3 w-100 mt-3 mb-#{current_user.admin? ? 2 : 3}" do %>
+              <i class="bi bi-plus-lg me-1"></i><%= t('.create_topic') %>
+            <% end %>
+            <% if current_user.admin? %>
+              <%= link_to admin_root_path, class: "btn btn-outline-secondary rounded-3 w-100 mb-3" do %>
+                <i class="bi bi-speedometer2 me-1"></i><%= t('.admin_console') %>
+              <% end %>
+            <% end %>
+          </div>
+          <% end %>
+        </div>
+      </div>
+
+      <!-- Hot Topics -->
+      <% unless @hot_topics.empty? %>
+        <div class="sidebar-card mb-3">
+          <div class="card-header d-flex align-items-center">
+            <i class="bi bi-fire text-danger me-2"></i><%= t('.hot_topics') %>
+          </div>
+          <div class="card-body p-0">
+            <% @hot_topics.each_with_index do |topic, idx| %>
+              <a href="<%= topic_path(topic) %>" class="hot-item d-flex align-items-start">
+                <span class="hot-rank <%= idx < 3 ? "top-#{idx + 1}" : '' %>"><%= idx + 1 %></span>
+                <span class="text-truncate"><%= topic.title %></span>
+              </a>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+
+      <!-- Community Stats -->
+      <div class="sidebar-card">
+        <div class="card-header d-flex align-items-center">
+          <i class="bi bi-bar-chart me-2"></i><%= t('.community_stats') %>
+        </div>
+        <div class="card-body px-3 py-2">
+          <div class="d-flex justify-content-between align-items-center mb-2 px-1" style="font-size:0.85rem">
+            <span class="text-muted"><%= t('.stat_users') %></span>
+            <strong><%= @user_count %></strong>
+          </div>
+          <div class="d-flex justify-content-between align-items-center mb-2 px-1" style="font-size:0.85rem">
+            <span class="text-muted"><%= t('.stat_topics_count') %></span>
+            <strong><%= @topic_count %></strong>
+          </div>
+          <div class="d-flex justify-content-between align-items-center px-1" style="font-size:0.85rem">
+            <span class="text-muted"><%= t('.stat_nodes_count') %></span>
+            <strong><%= @node_count %></strong>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

@@ -1,0 +1,452 @@
+<% content_for :title, t('admin.ui.m672') %>
+
+<h4 class="text-dark fw-bold mb-4">
+  <a href="<%= admin_comment_operations_path %>" class="text-decoration-none text-muted"><i class="bi bi-arrow-left me-2"></i></a>
+  <%= t('admin.ui.m621') %>
+</h4>
+
+<div class="alert alert-info rounded-3 py-2 mb-4">
+  <i class="bi bi-info-circle me-1"></i>
+  <%= t('admin.ui.m622') %><strong><%= User.operational.count %></strong> <%= t('admin.ui.m185') %>
+  <% if User.operational.count == 0 %>
+    <span class="text-danger"><%= t('admin.ui.m184') %></span>
+    <%= link_to t('admin.ui.m183'), admin_operational_accounts_path, class: "text-danger fw-bold" %>。
+  <% end %>
+</div>
+
+<div class="row g-4">
+  <!-- 左侧：话<%= t('admin.ui.m488') %><%= t('admin.ui.m732') %> -->
+  <div class="col-lg-5">
+    <div class="card card-admin h-100">
+      <div class="card-header d-flex align-items-center justify-content-between">
+        <span class="fw-semibold"><%= t('admin.ui.m623') %></span>
+        <span class="text-muted small" id="topic-count"><%= @topics.count %> <%= t('admin.ui.m181') %></span>
+      </div>
+      <div class="card-body p-0">
+        <!-- 搜索框 -->
+        <div class="p-3 border-bottom">
+          <div class="input-group">
+            <span class="input-group-text bg-transparent border-end-0">
+              <i class="bi bi-search text-muted"></i>
+            </span>
+            <input type="text" class="form-control border-start-0" id="topic-search" placeholder="<%= t('admin.ui.m624') %>">
+          </div>
+        </div>
+        <!-- 话<%= t('admin.ui.m488') %><%= t('admin.ui.m732') %> -->
+        <div class="topic-list" style="max-height: 500px; overflow-y: auto;">
+          <% @topics.each do |topic| %>
+            <div class="topic-item p-3 border-bottom cursor-pointer" data-topic-id="<%= topic.id %>" data-title="<%= topic.title.downcase %>" data-author="<%= topic.user.display_name.downcase %>">
+              <div class="d-flex align-items-start">
+                <div class="form-check mt-1 me-2">
+                  <input class="form-check-input" type="radio" name="topic_id" id="topic-<%= topic.id %>" value="<%= topic.id %>">
+                </div>
+                <div class="flex-grow-1" style="min-width: 0;">
+                  <div class="fw-medium text-dark text-truncate" style="font-size: 0.9rem;">
+                    <%= topic.title %>
+                  </div>
+                  <div class="d-flex align-items-center mt-1">
+                    <span class="text-muted small">
+                      <i class="bi bi-person me-1"></i><%= topic.user.display_name %>
+                    </span>
+                    <span class="text-muted small ms-2">
+                      <i class="bi bi-chat me-1"></i><%= topic.comments.size %>
+                    </span>
+                    <span class="text-muted small ms-auto">
+                      <%= time_ago_in_words(topic.created_at) %><%= t('admin.ui.m625') %>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <% end %>
+          <% if @topics.empty? %>
+            <div class="text-center text-muted py-5">
+              <i class="bi bi-chat-square-text" style="font-size: 2rem;"></i>
+              <div class="mt-2"><%= t('admin.ui.m626') %></div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 右侧：评论表单 -->
+  <div class="col-lg-7">
+    <div class="card card-admin">
+      <div class="card-header">
+        <span class="fw-semibold"><%= t('admin.comment_content') %></span>
+      </div>
+      <div class="card-body p-4">
+        <%= form_with model: [:admin, @comment], url: admin_comment_operations_path, method: :post, local: true, id: "comment-form" do |f| %>
+          <% if alert %>
+            <div class="alert alert-danger rounded-3 py-2 mb-3">
+              <i class="bi bi-exclamation-circle me-1"></i><%= alert %>
+            </div>
+          <% end %>
+
+          <%= f.hidden_field :topic_id, id: "selected-topic-id" %>
+
+          <!-- <%= t('admin.ui.m030') %>话<%= t('admin.ui.m488') %>信息 -->
+          <div class="mb-3" id="selected-topic-info" style="display: none;">
+            <div class="card card-admin bg-light">
+              <div class="card-body py-2">
+                <div class="d-flex align-items-center justify-content-between">
+                  <div>
+                    <span class="text-muted small"><%= t('admin.ui.m627') %></span>
+                    <span id="selected-topic-title" class="fw-medium"></span>
+                  </div>
+                  <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill" id="clear-topic">
+                    <i class="bi bi-x"></i> <%= t('admin.ui.m628') %>
+                  </button>
+                </div>
+                <div class="mt-1">
+                  <span class="text-muted small"><%= t('admin.ui.m629') %></span>
+                  <span id="selected-topic-author" class="small"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 未选择提示 -->
+          <div class="mb-3 text-center py-4 text-muted" id="no-topic-selected">
+            <i class="bi bi-arrow-left-circle" style="font-size: 1.5rem;"></i>
+            <div class="mt-2"><%= t('admin.ui.m630') %></div>
+          </div>
+
+          <!-- <%= t('admin.ui.m154') %>评论 -->
+          <div class="mb-3" id="reply-section" style="display: none;">
+            <%= f.label :parent_id, t('admin.ui.m631'), class: "form-label fw-semibold small text-muted" %>
+            <%= f.select :parent_id, [], { prompt: t('admin.ui.m029') }, class: "form-select rounded-3", id: "parent-comment-select" %>
+            <div class="form-text"><%= t('admin.ui.m632') %></div>
+          </div>
+
+          <!-- 评论内容 -->
+          <div class="mb-3" id="content-section" style="display: none;">
+            <div class="d-flex align-items-center justify-content-between mb-1">
+              <%= f.label :content, t("admin.comment_content"), class: "form-label fw-semibold small text-muted mb-0" %>
+              <button type="button" class="btn btn-outline-primary btn-sm rounded-pill" id="ai-generate-btn">
+                <i class="bi bi-stars me-1"></i>AI <%= t('admin.ui.m004') %>
+              </button>
+            </div>
+            <textarea class="form-control form-control-sm mb-2" rows="3" id="ai-system-prompt" placeholder="<%= t('admin.ui.m173') %>"><%= SiteSetting.get("ai_comment_prompt", default: "") %></textarea>
+            <div class="form-check mb-2">
+              <input class="form-check-input" type="checkbox" id="ai-web-search">
+              <label class="form-check-label small text-muted" for="ai-web-search">
+                <i class="bi bi-globe me-1"></i><%= t('admin.ui.m172') %>
+              </label>
+              <div class="form-text"><%= t('admin.ui.m171') %></div>
+            </div>
+            <%= f.text_area :content, class: "form-control rounded-3", rows: 8, placeholder: t('admin.ui.m633'), id: "comment-content" %>
+            <div class="form-text"><span id="content-count">0</span> <%= t('admin.ui.m006') %></div>
+          </div>
+
+          <!-- AI <%= t('admin.ui.m004') %>加载状态 -->
+          <div class="d-none mb-3" id="ai-loading">
+            <div class="d-flex align-items-center text-muted">
+              <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+              <small>AI <%= t('admin.ui.m634') %></small>
+            </div>
+          </div>
+
+          <!-- 提交按钮 -->
+          <div class="d-flex gap-2" id="submit-section" style="display: none;">
+            <%= f.submit t('admin.ui.m156'), class: "btn btn-primary rounded-pill px-4" %>
+            <%= link_to t("admin.cancel"), admin_comment_operations_path, class: "btn btn-outline-secondary rounded-pill px-4" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .topic-item {
+    cursor: pointer;
+    transition: background-color 0.15s;
+  }
+  .topic-item:hover {
+    background-color: #f8f9fa;
+  }
+  .topic-item.selected {
+    background-color: #e7f1ff;
+    border-left: 3px solid #0d6efd;
+  }
+  .topic-item.hidden {
+    display: none;
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const topicItems = document.querySelectorAll('.topic-item');
+    const topicSearch = document.getElementById('topic-search');
+    const selectedTopicId = document.getElementById('selected-topic-id');
+    const selectedTopicInfo = document.getElementById('selected-topic-info');
+    const selectedTopicTitle = document.getElementById('selected-topic-title');
+    const selectedTopicAuthor = document.getElementById('selected-topic-author');
+    const noTopicSelected = document.getElementById('no-topic-selected');
+    const replySection = document.getElementById('reply-section');
+    const contentSection = document.getElementById('content-section');
+    const submitSection = document.getElementById('submit-section');
+    const parentCommentSelect = document.getElementById('parent-comment-select');
+    const contentInput = document.getElementById('comment-content');
+    const contentCount = document.getElementById('content-count');
+    const clearTopicBtn = document.getElementById('clear-topic');
+    const topicCount = document.getElementById('topic-count');
+    const aiGenerateBtn = document.getElementById('ai-generate-btn');
+    const aiLoading = document.getElementById('ai-loading');
+
+    // Topic data from server
+    const topicsData = <%= raw @topics.map { |t| { id: t.id, title: t.title, author: t.user.display_name, author_id: t.user.id } }.to_json %>;
+
+    // CSRF token
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
+    // Search functionality
+    if (topicSearch) {
+      topicSearch.addEventListener('input', function() {
+        const query = this.value.toLowerCase().trim();
+        let visibleCount = 0;
+
+        topicItems.forEach(item => {
+          const title = item.dataset.title;
+          const author = item.dataset.author;
+          const matches = query === '' || title.includes(query) || author.includes(query);
+          item.classList.toggle('hidden', !matches);
+          if (matches) visibleCount++;
+        });
+
+        topicCount.textContent = `${visibleCount} <%= t('admin.ui.m181') %>`;
+      });
+    }
+
+    // Topic selection
+    topicItems.forEach(item => {
+      item.addEventListener('click', function() {
+        const topicId = parseInt(this.dataset.topicId);
+        const topic = topicsData.find(t => t.id === topicId);
+
+        // Update selection UI
+        topicItems.forEach(i => i.classList.remove('selected'));
+        this.classList.add('selected');
+        this.querySelector('input[type="radio"]').checked = true;
+
+        // Update form
+        selectedTopicId.value = topicId;
+        selectedTopicTitle.textContent = topic.title.truncate(50);
+        selectedTopicAuthor.textContent = topic.author;
+
+        // Show/hide sections
+        noTopicSelected.style.display = 'none';
+        selectedTopicInfo.style.display = 'block';
+        replySection.style.display = 'block';
+        contentSection.style.display = 'block';
+        submitSection.style.display = 'flex';
+
+        // Load comments for this topic
+        loadTopicComments(topicId, topic.author_id);
+      });
+    });
+
+    // Clear selection
+    if (clearTopicBtn) {
+      clearTopicBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        clearSelection();
+      });
+    }
+
+    function clearSelection() {
+      topicItems.forEach(i => i.classList.remove('selected'));
+      topicItems.forEach(i => i.querySelector('input[type="radio"]').checked = false);
+      selectedTopicId.value = '';
+      selectedTopicInfo.style.display = 'none';
+      noTopicSelected.style.display = 'block';
+      replySection.style.display = 'none';
+      contentSection.style.display = 'none';
+      submitSection.style.display = 'none';
+      parentCommentSelect.innerHTML = '<option value=""><%= t('admin.ui.m029') %></option>';
+    }
+
+    function loadTopicComments(topicId, excludeAuthorId) {
+      parentCommentSelect.innerHTML = '<option value=""><%= t('admin.ui.m169') %></option>';
+
+      fetch(`/api/v1/topics/${topicId}/comments`, {
+        headers: { 'Accept': 'application/json' }
+      })
+      .then(response => response.json())
+      .then(data => {
+        parentCommentSelect.innerHTML = '<option value=""><%= t('admin.ui.m029') %></option>';
+
+        const comments = data.data || [];
+        if (comments.length > 0) {
+          const optgroup = document.createElement('optgroup');
+          optgroup.label = '<%= t('admin.ui.m635') %>';
+
+          const flatComments = [];
+          function flattenComments(commentList, depth = 0) {
+            commentList.forEach(comment => {
+              flatComments.push({
+                id: comment.id,
+                author: comment.author.username,
+                content: comment.content,
+                depth: depth
+              });
+              if (comment.replies && comment.replies.length > 0) {
+                flattenComments(comment.replies, depth + 1);
+              }
+            });
+          }
+          flattenComments(comments);
+
+          flatComments.forEach(comment => {
+            const option = document.createElement('option');
+            option.value = comment.id;
+            const indent = '\u3000'.repeat(comment.depth);
+            option.textContent = `${indent}${comment.author}: ${comment.content.substring(0, 40)}...`;
+            optgroup.appendChild(option);
+          });
+
+          parentCommentSelect.appendChild(optgroup);
+        }
+      })
+      .catch(error => {
+        console.error('Error loading comments:', error);
+        parentCommentSelect.innerHTML = '<option value=""><%= t('admin.ui.m636') %></option>';
+      });
+    }
+
+    // AI generate
+    if (aiGenerateBtn) {
+      aiGenerateBtn.addEventListener('click', function() {
+        const topicId = selectedTopicId.value;
+        if (!topicId) {
+          alert('<%= t('admin.ui.m637') %>');
+          return;
+        }
+
+        const parentId = parentCommentSelect ? parentCommentSelect.value : '';
+        const systemPrompt = document.getElementById('ai-system-prompt').value.trim() || null;
+        const webSearch = document.getElementById('ai-web-search').checked;
+
+        // Show loading, disable button
+        aiGenerateBtn.disabled = true;
+        aiGenerateBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span><%= t('admin.ui.m253') %>';
+        aiLoading.classList.remove('d-none');
+        contentInput.value = '';
+        contentCount.textContent = '0';
+
+        fetch(`<%= ai_generate_admin_comment_operations_path %>`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': csrfToken,
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({
+            topic_id: topicId,
+            parent_id: parentId || null,
+            system_prompt: systemPrompt,
+            web_search: webSearch
+          })
+        })
+        .then(response => {
+          if (!response.ok) {
+            return response.text().then(text => {
+              try {
+                const data = JSON.parse(text);
+                throw new Error(data.error || `AI <%= t('admin.ui.m011') %>${response.status})`);
+              } catch (e) {
+                if (e instanceof SyntaxError) {
+                  throw new Error(`AI <%= t('admin.ui.m011') %>${response.status})，<%= t('admin.ui.m251') %>`);
+                }
+                throw e;
+              }
+            });
+          }
+          return response.json();
+        })
+        .then(data => {
+          if (data.task_id) {
+            // Poll for result
+            pollAiStatus(data.task_id);
+          } else if (data.success) {
+            // Fallback: sync response (should not happen)
+            contentInput.value = data.content || '';
+            contentCount.textContent = (data.content || '').length;
+            resetAiButton();
+          } else {
+            alert(data.error || 'AI <%= t('admin.ui.m016') %>');
+            resetAiButton();
+          }
+        })
+        .catch(error => {
+          console.error('AI generate error:', error);
+          alert(error.message || 'AI <%= t('admin.ui.m250') %>');
+          resetAiButton();
+        });
+      });
+    }
+
+    function resetAiButton() {
+      aiGenerateBtn.disabled = false;
+      aiGenerateBtn.innerHTML = '<i class="bi bi-stars me-1"></i>AI <%= t('admin.ui.m004') %>';
+      aiLoading.classList.add('d-none');
+    }
+
+    function pollAiStatus(taskId) {
+      const maxAttempts = 60; // 60 * 3s = 3 minutes max
+      let attempts = 0;
+
+      function poll() {
+        if (attempts >= maxAttempts) {
+          alert('AI <%= t('admin.ui.m249') %>');
+          resetAiButton();
+          return;
+        }
+        attempts++;
+
+        fetch(`<%= ai_status_admin_comment_operations_path %>?task_id=${taskId}`, {
+          headers: { 'Accept': 'application/json' }
+        })
+        .then(response => {
+          if (!response.ok) throw new Error(`Status check failed (${response.status})`);
+          return response.json();
+        })
+        .then(data => {
+          if (data.status === 'completed') {
+            if (data.success) {
+              contentInput.value = data.content || '';
+              contentCount.textContent = (data.content || '').length;
+            } else {
+              alert(data.error || 'AI <%= t('admin.ui.m016') %>');
+            }
+            resetAiButton();
+          } else {
+            // Still pending or running, poll again
+            setTimeout(poll, 3000);
+          }
+        })
+        .catch(error => {
+          console.error('AI status poll error:', error);
+          // Retry on network error
+          setTimeout(poll, 3000);
+        });
+      }
+
+      poll();
+    }
+
+    // Character count
+    if (contentInput) {
+      contentInput.addEventListener('input', function() {
+        contentCount.textContent = this.value.length;
+      });
+    }
+
+    // String truncate helper
+    String.prototype.truncate = function(length) {
+      return this.length > length ? this.substring(0, length) + '...' : this;
+    };
+  });
+</script>

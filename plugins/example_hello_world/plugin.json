@@ -1,0 +1,9 @@
+
+{
+  "identifier": "example_hello_world",
+  "name": "Hello World 示例插件",
+  "version": "1.0.0",
+  "description": "这是一个示例插件，展示插件系统的基本功能：前台导航项注入、后台导航项注入、视图注入。",
+  "author": "AiBBS",
+  "homepage": "https://github.com/aibbs"
+}

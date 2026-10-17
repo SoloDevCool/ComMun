@@ -1,0 +1,141 @@
+<% content_for :title, t('admin.ui.m664') %>
+
+<h4 class="text-dark fw-bold mb-4"><%= t('admin.ui.m665') %></h4>
+
+<!-- 统计卡片 -->
+<div class="row g-3 mb-4">
+  <div class="col-md-4">
+    <div class="card card-admin">
+      <div class="card-body d-flex align-items-center">
+        <div class="stat-icon bg-primary bg-opacity-10 text-primary me-3">
+          <i class="bi bi-chat-dots"></i>
+        </div>
+        <div>
+          <div class="text-muted small"><%= t('admin.ui.m666') %></div>
+          <div class="fs-5 fw-bold"><%= Comment.where(published_by_operational: true).count %></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card card-admin">
+      <div class="card-body d-flex align-items-center">
+        <div class="stat-icon bg-success bg-opacity-10 text-success me-3">
+          <i class="bi bi-person-badge"></i>
+        </div>
+        <div>
+          <div class="text-muted small"><%= t('admin.ui.m157') %></div>
+          <div class="fs-5 fw-bold"><%= @operational_count %></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card card-admin">
+      <div class="card-body d-flex align-items-center justify-content-between">
+        <div>
+          <div class="text-muted small"><%= t('admin.ui.m667') %></div>
+        </div>
+        <%= link_to new_admin_comment_operation_path, class: "btn btn-primary rounded-pill px-3" do %>
+          <i class="bi bi-plus-lg me-1"></i><%= t('admin.ui.m156') %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 筛选<%= t('admin.ui.m838') %> -->
+<div class="card card-admin mb-4">
+  <div class="card-body py-2">
+    <div class="d-flex gap-2 flex-wrap">
+      <% [ ["all", t('admin.ui.m010')], ["root", t('admin.ui.m155')], ["reply", t('admin.ui.m154')] ].each do |value, label| %>
+        <%= link_to admin_comment_operations_path(scope: value), class: "btn btn-sm rounded-pill #{'btn-primary' if @scope == value}" do %>
+          <%= label %>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<!-- 评论<%= t('admin.ui.m732') %> -->
+<div class="card card-admin">
+  <div class="card-header d-flex align-items-center">
+    <span class="fw-semibold"><%= t('admin.ui.m668') %></span>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-hover mb-0">
+      <thead>
+        <tr>
+          <th style="width:40%"><%= t('admin.comment_content') %></th>
+          <th><%= t('admin.topic') %></th>
+          <th><%= t('admin.ui.m152') %></th>
+          <th><%= t('admin.type') %></th>
+          <th><%= t('admin.ui.m151') %></th>
+          <th style="width:100px"><%= t('admin.actions') %></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if @comments.any? %>
+          <% @comments.each do |comment| %>
+            <tr>
+              <td>
+                <div class="text-dark" style="font-size:0.9rem">
+                  <%= comment.content.truncate(60) %>
+                </div>
+              </td>
+              <td>
+                <% if comment.topic.present? %>
+                  <%= link_to topic_path(comment.topic), target: "_blank", class: "text-decoration-none" do %>
+                    <span class="fw-medium text-primary"><%= comment.topic.title.truncate(20) %></span>
+                  <% end %>
+                <% else %>
+                  <span class="text-muted"><%= t('admin.ui.m150') %></span>
+                <% end %>
+              </td>
+              <td>
+                <div class="d-flex align-items-center">
+                  <span class="text-muted" style="font-size:0.85rem"><%= comment.user&.display_name %></span>
+                </div>
+              </td>
+              <td>
+                <% if comment.parent_id.present? %>
+                  <span class="badge bg-info bg-opacity-10 text-info"><%= t('admin.ui.m154') %></span>
+                <% else %>
+                  <span class="badge bg-secondary bg-opacity-10 text-secondary"><%= t('admin.ui.m155') %></span>
+                <% end %>
+              </td>
+              <td class="text-muted small"><%= time_ago_in_words(comment.created_at) %><%= t('admin.ago_suffix') %></td>
+              <td>
+                <div class="d-flex gap-1">
+                  <% if comment.topic.present? %>
+                    <%= link_to topic_path(comment.topic, anchor: "comment-#{comment.id}"), target: "_blank", class: "btn btn-sm btn-outline-secondary btn-action", title: t("admin.view") do %>
+                      <i class="bi bi-box-arrow-up-right"></i>
+                    <% end %>
+                  <% end %>
+                  <%= button_to admin_comment_operation_path(comment), method: :delete, class: "btn btn-sm btn-outline-danger btn-action", title: t("admin.delete"), data: { confirm: t('admin.ui.m669') } do %>
+                    <i class="bi bi-trash3"></i>
+                  <% end %>
+                </div>
+              </td>
+            </tr>
+          <% end %>
+        <% else %>
+          <tr>
+            <td colspan="6" class="text-center text-muted py-5">
+              <i class="bi bi-chat-dots" style="font-size:2rem"></i>
+              <div class="mt-2"><%= t('admin.ui.m670') %></div>
+              <%= link_to t('admin.ui.m671'), new_admin_comment_operation_path, class: "btn btn-primary rounded-pill px-3 mt-2" %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- 分页 -->
+<% if @pagy.pages > 1 %>
+  <div class="mt-3 d-flex justify-content-center">
+    <%== @pagy.series_nav(:bootstrap) %>
+  </div>
+<% end %>

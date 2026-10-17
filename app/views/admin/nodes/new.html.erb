@@ -1,0 +1,366 @@
+<h4 class="mb-1 admin-page-title"><%= t('admin.ui.m177') %></h4>
+<div class="admin-page-subtitle mb-4"><i class="bi bi-plus-square me-1"></i>创建新的版块并配置其展示方式</div>
+
+<style>
+  .node-form .form-control,
+  .node-form .form-select {
+    border-radius: 9px;
+    transition: border-color .15s, box-shadow .15s;
+  }
+  .node-form .form-control:focus,
+  .node-form .form-select:focus {
+    border-color: #155eef;
+    box-shadow: 0 0 0 3px rgba(21,94,239,.1);
+  }
+  .node-form .form-label { color: #344054; font-size: .82rem; }
+  /* 版块类型选择卡 */
+  .node-kind-card {
+    cursor: pointer;
+    border: 1.5px solid #e4e7ec !important;
+    border-radius: 12px;
+    transition: border-color .15s, background .15s, transform .12s, box-shadow .15s;
+    position: relative;
+  }
+  .node-kind-card:hover {
+    border-color: rgba(21,94,239,.45) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 14px rgba(0,0,0,.06);
+  }
+  .node-kind-card.selected {
+    border-color: #155eef !important;
+    background: rgba(21,94,239,.03);
+    box-shadow: 0 4px 14px rgba(21,94,239,.12);
+  }
+  .node-kind-card.selected::after {
+    content: '\F26E';
+    font-family: 'bootstrap-icons';
+    position: absolute;
+    top: 10px; right: 10px;
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: #155eef;
+    color: #fff;
+    font-size: .65rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  /* 上传区 */
+  .node-form .upload-dropzone {
+    border: 1.5px dashed #cbd5e1;
+    border-radius: 12px;
+    background: #f8fafc;
+    transition: border-color .15s, background .15s;
+  }
+  .node-form .upload-dropzone:hover { border-color: #155eef; background: rgba(21,94,239,.02); }
+  /* 预览 */
+  .node-preview-card {
+    border: 1.5px dashed #e4e7ec;
+    border-radius: 12px;
+    background: #f8fafc;
+    padding: 20px;
+    text-align: center;
+  }
+  .node-preview-icon {
+    width: 56px; height: 56px;
+    border-radius: 14px;
+    background: #fff;
+    border: 1px solid #e4e7ec;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 1.8rem;
+    overflow: hidden;
+  }
+  .node-preview-icon svg { width: 100%; height: 100%; }
+  .node-preview-name { font-weight: 600; color: #1f2937; margin-top: 8px; }
+  .node-preview-desc { font-size: .76rem; color: #98a2b3; line-height: 1.5; margin-top: 2px; }
+  .node-preview-nav {
+    display: inline-flex; align-items: center; gap: 4px;
+    background: #fff; border: 1px solid #e4e7ec;
+    border-radius: 999px; padding: 4px 14px;
+    font-size: .78rem; color: #344054;
+  }
+  .node-preview-nav svg { width: 14px; height: 14px; }
+  .node-form .btn[type="submit"] { transition: transform .12s, box-shadow .12s; }
+  .node-form .btn[type="submit"]:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(21,94,239,.25); }
+</style>
+
+<div class="row g-4">
+  <div class="col-lg-7">
+    <div class="card card-admin">
+      <div class="card-body p-4">
+        <%= form_with model: [:admin, @node], local: true, html: { class: "node-form" } do |f| %>
+          <% if @node.errors.any? %>
+            <div class="alert alert-danger rounded-3 py-2">
+              <i class="bi bi-exclamation-circle me-1"></i>
+              <ul class="mb-0 ms-3">
+                <% @node.errors.full_messages.each do |msg| %>
+                  <li><%= msg %></li>
+                <% end %>
+              </ul>
+            </div>
+          <% end %>
+
+          <!-- 基本信息 -->
+          <div class="fw-semibold small text-muted mb-3"><i class="bi bi-info-circle me-1"></i>基本信息</div>
+
+          <div class="mb-3">
+            <%= f.label :name, t("admin.node_name"), class: "form-label fw-semibold small" %>
+            <%= f.text_field :name, class: "form-control", placeholder: t('admin.ui.m213'), data: { node_preview: "name" } %>
+            <div class="form-text"><%= t('admin.ui.m220') %></div>
+          </div>
+
+          <div class="mb-3">
+            <%= f.label :slug, "Slug 标识", class: "form-label fw-semibold small" %>
+            <div class="input-group">
+              <span class="input-group-text bg-light text-muted" style="border-radius:9px 0 0 9px">/</span>
+              <%= f.text_field :slug, id: "node_slug_input", class: "form-control", placeholder: t('admin.ui.m222') %>
+            </div>
+            <div class="form-text">URL <%= t('admin.ui.m223') %><span class="ms-1" id="slugAutoHint" style="display:none"><i class="bi bi-magic text-primary"></i> 已根据名称自动生成，可手动修改</span></div>
+          </div>
+
+          <div class="mb-3">
+            <%= f.label :kind, t('admin.ui.m227'), class: "form-label fw-semibold small d-block" %>
+            <div class="row g-2">
+              <% Node.kinds_i18n.each do |value, label| %>
+                <div class="col-6">
+                  <div class="node-kind-card <%= 'selected' if (@node.kind || 'interest') == value %>" data-kind-card="<%= value %>">
+                    <div class="card-body text-center py-3">
+                      <div class="mb-1"><i class="bi <%= value == 'system' ? 'bi-gear' : 'bi-star' %>" style="font-size:1.3rem;color:<%= value == 'system' ? '#155eef' : '#059669' %>"></i></div>
+                      <div class="fw-semibold" style="font-size:.88rem"><%= label %></div>
+                      <div class="text-muted" style="font-size:.74rem"><%= value == 'system' ? '顶部固定展示，可设排序' : '出现在兴趣版块列表' %></div>
+                    </div>
+                    <input type="radio" name="node[kind]" value="<%= value %>" id="node_kind_<%= value %>"
+                           class="d-none" data-kind="<%= value %>"
+                           <%= "checked" if (@node.kind || 'interest') == value %>>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+            <div class="form-text mt-2"><%= t('admin.ui.m229') %></div>
+          </div>
+
+          <div class="mb-3" id="position-field" style="display:none">
+            <%= f.label :position, t('admin.ui.m190'), class: "form-label fw-semibold small" %>
+            <%= f.number_field :position, class: "form-control", min: 0, value: 0, style: "max-width:160px" %>
+            <div class="form-text"><%= t('admin.ui.m193') %></div>
+          </div>
+
+          <hr class="my-4">
+
+          <!-- 图标设置 -->
+          <div class="fw-semibold small text-muted mb-3">
+            <i class="bi bi-image me-1"></i><%= t('admin.ui.m207') %>
+            <span class="badge bg-warning bg-opacity-10 text-warning rounded-pill ms-1" style="font-size:0.65rem;vertical-align:middle"><%= t('admin.ui.m208') %></span>
+          </div>
+          <div class="alert alert-light border rounded-3 py-2 px-3 mb-3 small" style="font-size:0.8rem">
+            <i class="bi bi-info-circle text-primary me-1"></i>
+            <strong><%= t('admin.ui.m209') %></strong><%= t('admin.ui.m165') %> &gt; Emoji <%= t('admin.ui.m164') %>；支持粘贴 SVG 代码或上传图片
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold" style="font-size:0.82rem"><%= t('admin.ui.m162') %></label>
+            <ul class="nav nav-tabs icon-mode-tabs" role="tablist">
+              <li class="nav-item" role="presentation">
+                <button type="button" class="nav-link <%= 'active' unless @node.icon_svg_code? %>" id="icon-tab-emoji" data-bs-toggle="tab" data-bs-target="#icon-pane-emoji" data-icon-mode="emoji" role="tab" aria-selected="<%= !@node.icon_svg_code? %>">
+                  <i class="bi bi-emoji-smile me-1"></i>Emoji
+                </button>
+              </li>
+              <li class="nav-item" role="presentation">
+                <button type="button" class="nav-link <%= 'active' if @node.icon_svg_code? %>" id="icon-tab-svg" data-bs-toggle="tab" data-bs-target="#icon-pane-svg" data-icon-mode="svg" role="tab" aria-selected="<%= @node.icon_svg_code? %>">
+                  <i class="bi bi-filetype-svg me-1"></i>SVG 代码
+                </button>
+              </li>
+            </ul>
+            <div class="tab-content icon-mode-content">
+              <div class="tab-pane fade <%= 'show active' unless @node.icon_svg_code? %>" id="icon-pane-emoji" role="tabpanel" aria-labelledby="icon-tab-emoji">
+                <%= f.text_field :icon, id: "node_icon_emoji", class: "form-control", placeholder: "点击右侧 😊 按钮选择", maxlength: 10, data: { emoji_picker: true, node_preview: "icon" }, disabled: @node.icon_svg_code? %>
+                <div class="form-text"><%= t('admin.ui.m159') %></div>
+              </div>
+              <div class="tab-pane fade <%= 'show active' if @node.icon_svg_code? %>" id="icon-pane-svg" role="tabpanel" aria-labelledby="icon-tab-svg">
+                <%= text_area_tag "node[icon]", @node.icon_svg_code? ? @node.icon : "", id: "node_icon_svg", class: "form-control font-monospace", rows: 5, style: "font-size:.78rem", placeholder: '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">...</svg>', data: { node_preview: "icon" }, disabled: !@node.icon_svg_code? %>
+                <div class="form-text">粘贴完整的 <code>&lt;svg&gt;...&lt;/svg&gt;</code> 代码作为版块图标（无需上传文件），保存后全站生效</div>
+              </div>
+            </div>
+
+            <!-- <%= t('admin.ui.m165') %>上传 -->
+            <div class="mt-3">
+              <label class="form-label fw-semibold" style="font-size:0.82rem"><%= t('admin.ui.m158') %></label>
+              <div class="upload-dropzone p-3">
+                <%= f.file_field :icon_file, class: "form-control", accept: "image/png,image/jpeg,image/gif,image/webp,image/svg+xml" %>
+                <div class="form-text mt-2"><%= t('admin.ui.m149') %></div>
+              </div>
+            </div>
+          </div>
+
+          <hr class="my-4">
+
+          <!-- 展示内容 -->
+          <div class="fw-semibold small text-muted mb-3"><i class="bi bi-text-paragraph me-1"></i>展示内容</div>
+
+          <div class="mb-4">
+            <%= f.label :description, t("admin.description"), class: "form-label fw-semibold small" %>
+            <%= f.text_area :description, class: "form-control", rows: 3, placeholder: t('admin.ui.m148'), data: { node_preview: "desc" } %>
+          </div>
+
+          <div class="mb-3">
+            <%= f.label :tip, t('admin.ui.m186'), class: "form-label fw-semibold small" %>
+            <%= f.text_area :tip, class: "form-control", rows: 3, placeholder: t('admin.ui.m179') %>
+            <div class="form-text"><%= t('admin.ui.m178') %></div>
+          </div>
+
+          <div class="d-flex gap-2 pt-2">
+            <%= f.submit t('admin.ui.m302'), class: "btn btn-primary rounded-pill px-4" %>
+            <%= link_to t("admin.cancel"), admin_nodes_path, class: "btn btn-outline-secondary rounded-pill px-4" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <!-- 实时预览 -->
+  <div class="col-lg-5">
+    <div class="card card-admin sticky-top" style="top:1rem">
+      <div class="card-header py-3">
+        <h6 class="mb-0 fw-bold"><i class="bi bi-eye me-2 text-primary"></i>实时预览</h6>
+      </div>
+      <div class="card-body">
+        <p class="text-muted small mb-3"><i class="bi bi-info-circle me-1"></i>输入内容时预览版块在社区中的展示效果</p>
+
+        <div class="node-preview-card">
+          <div class="node-preview-icon" id="previewIcon">📄</div>
+          <div class="node-preview-name" id="previewName">版块名称</div>
+          <div class="node-preview-desc" id="previewDesc">版块描述将显示在这里</div>
+        </div>
+
+        <div class="text-center mt-4">
+          <div class="text-muted small mb-2"><i class="bi bi-shield-check me-1"></i>兴趣版块列表样式</div>
+          <div class="node-preview-nav">
+            <span id="previewNavIcon">📄</span>
+            <span id="previewNavName">版块名称</span>
+            <span class="text-muted" style="font-size:.72rem">· 0 主题</span>
+          </div>
+        </div>
+
+        <div class="mt-4 border-top pt-3">
+          <div class="text-muted small mb-2"><i class="bi bi-lightbulb me-1"></i>小贴士</div>
+          <div class="text-muted" style="font-size:.76rem;line-height:1.6">
+            上传图片优先级最高；粘贴 SVG 代码可精确控制矢量图标，无需图片文件；Emoji 适合快速创建。
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // ===== 版块类型选择卡 =====
+  var kindCards = document.querySelectorAll('.node-kind-card');
+  var positionField = document.getElementById('position-field');
+
+  function selectKind(card) {
+    kindCards.forEach(function(c) { c.classList.remove('selected'); });
+    card.classList.add('selected');
+    var radio = card.querySelector('input[type="radio"]');
+    if (radio) radio.checked = true;
+    if (positionField) positionField.style.display = (radio && radio.dataset.kind === 'system') ? '' : 'none';
+  }
+  kindCards.forEach(function(card) {
+    card.addEventListener('click', function() { selectKind(card); });
+  });
+  // 初始化
+  var checkedKind = document.querySelector('input[name="node[kind]"]:checked');
+  if (checkedKind && positionField) {
+    positionField.style.display = checkedKind.dataset.kind === 'system' ? '' : 'none';
+  }
+
+  // ===== Slug 自动生成 =====
+  var nameInput = document.querySelector('[data-node-preview="name"]');
+  var slugInput = document.getElementById('node_slug_input');
+  var slugHint = document.getElementById('slugAutoHint');
+  var slugTouched = slugInput && slugInput.value.length > 0;
+
+  function autoSlug() {
+    if (!nameInput || !slugInput || slugTouched) return;
+    var s = nameInput.value.trim().toLowerCase()
+      .replace(/\s+/g, '-')
+      .replace(/[^a-z0-9_-]/g, '');
+    if (s && slugInput.value !== s) {
+      slugInput.value = s;
+      if (slugHint) slugHint.style.display = '';
+    }
+  }
+  if (nameInput && slugInput) {
+    nameInput.addEventListener('input', autoSlug);
+    slugInput.addEventListener('input', function() { slugTouched = this.value.length > 0; });
+  }
+
+  // ===== 实时预览 =====
+  var iconPreview = document.getElementById('previewIcon');
+  var navIconPreview = document.getElementById('previewNavIcon');
+  var namePreview = document.getElementById('previewName');
+  var navNamePreview = document.getElementById('previewNavName');
+  var descPreview = document.getElementById('previewDesc');
+  var emojiField = document.getElementById('node_icon_emoji');
+  var svgField = document.getElementById('node_icon_svg');
+
+  function currentIconHtml() {
+    if (svgField && !svgField.disabled) {
+      var code = svgField.value.trim();
+      if (/^<svg/i.test(code) && !/<script|on\w+\s*=/i.test(code)) {
+        return { svg: true, code: code };
+      }
+      return { svg: false, text: svgField.value.trim() ? '⚠️' : '📄' };
+    }
+    return { svg: false, text: (emojiField && emojiField.value) || '📄' };
+  }
+
+  function renderPreview() {
+    var icon = currentIconHtml();
+    [iconPreview, navIconPreview].forEach(function(el) {
+      if (!el) return;
+      if (icon.svg) {
+        el.innerHTML = icon.code;
+        var svg = el.querySelector('svg');
+        if (svg) {
+          svg.removeAttribute('width');
+          svg.removeAttribute('height');
+          svg.style.width = '100%';
+          svg.style.height = '100%';
+        }
+      } else {
+        el.textContent = icon.text || '📄';
+      }
+    });
+    var name = nameInput ? nameInput.value.trim() : '';
+    if (namePreview) namePreview.textContent = name || '版块名称';
+    if (navNamePreview) navNamePreview.textContent = name || '版块名称';
+    var desc = document.querySelector('[data-node-preview="desc"]');
+    if (descPreview) descPreview.textContent = (desc && desc.value.trim()) || '版块描述将显示在这里';
+  }
+
+  ['name', 'desc'].forEach(function(key) {
+    var el = document.querySelector('[data-node-preview="' + key + '"]');
+    if (el) el.addEventListener('input', renderPreview);
+  });
+  if (emojiField) emojiField.addEventListener('input', renderPreview);
+  if (svgField) svgField.addEventListener('input', renderPreview);
+  renderPreview();
+
+  // ===== 图标模式标签页（Bootstrap Tabs）：同步 disabled 状态避免重复提交 =====
+  var emojiTab = document.getElementById('icon-tab-emoji');
+  var svgTab = document.getElementById('icon-tab-svg');
+
+  function setIconFieldsDisabled(mode) {
+    if (emojiField) emojiField.disabled = mode !== 'emoji';
+    if (svgField) svgField.disabled = mode !== 'svg';
+    renderPreview();
+  }
+  if (emojiTab) emojiTab.addEventListener('shown.bs.tab', function() { setIconFieldsDisabled('emoji'); });
+  if (svgTab) svgTab.addEventListener('shown.bs.tab', function() { setIconFieldsDisabled('svg'); });
+  setIconFieldsDisabled((svgField && !svgField.disabled) ? 'svg' : 'emoji');
+});
+</script>
+
+<%= javascript_include_tag "/emoji-data.js" %>
+<%= javascript_include_tag "/emoji-picker.js" %>

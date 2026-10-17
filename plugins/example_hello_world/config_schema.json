@@ -1,0 +1,14 @@
+{
+  "greeting_message": {
+    "label": "问候语",
+    "type": "string",
+    "default": "Hello from AiBBS!",
+    "description": "前台注入的问候消息"
+  },
+  "show_greeting": {
+    "label": "显示问候语",
+    "type": "boolean",
+    "default": true,
+    "description": "是否在页面顶部显示问候横幅"
+  }
+}

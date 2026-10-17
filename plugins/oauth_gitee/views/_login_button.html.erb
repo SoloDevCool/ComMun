@@ -1,0 +1,8 @@
+<% if SiteSetting.get("gitee_client_id").present? %>
+  <%= button_to user_gitee_omniauth_authorize_path, data: { turbo: false }, class: "btn btn-outline-danger d-flex align-items-center justify-content-center gap-2 mb-2" do %>
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
+      <path fill="#C71D23" d="M11.984 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.016 0zm6.09 5.333c.328 0 .593.266.592.593v1.482a.594.594 0 0 1-.593.592H9.777c-.982 0-1.778.796-1.778 1.778v5.926c0 .982.796 1.778 1.778 1.778h4.444c.982 0 1.778-.796 1.778-1.778v-.296a.593.593 0 0 0-.592-.593h-2.963a.593.593 0 0 1-.593-.592v-1.482a.593.593 0 0 1 .593-.592h4.63a.594.594 0 0 1 .592.592v3.556a4 4 0 0 1-4 4H9.186a4 4 0 0 1-4-4V9.333a4 4 0 0 1 4-4h8.888z"/>
+    </svg>
+    <%= t('devise.sessions.new.sign_in_with_provider', provider: 'Gitee') %>
+  <% end %>
+<% end %>

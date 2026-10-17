@@ -1,0 +1,200 @@
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div class="d-flex align-items-center gap-2">
+    <%= link_to admin_qb_exams_path, class: "btn btn-outline-secondary btn-sm rounded-pill px-2" do %>
+      <i class="bi bi-arrow-left"></i>
+    <% end %>
+    <div>
+      <h4 class="text-dark fw-bold mb-0"><%= t('admin.ui.m264') %></h4>
+      <small class="text-muted">
+        <span class="me-2"><%= @qb_exam.name %></span>
+        <span class="badge rounded-pill" style="background:<%= @qb_exam.color %>15;color:<%= @qb_exam.color %>"><%= @qb_questions.count %> <%= t('admin.ui.m488') %></span>
+      </small>
+    </div>
+  </div>
+  <button class="btn btn-primary rounded-pill px-3" data-bs-toggle="modal" data-bs-target="#newQuestionModal">
+    <i class="bi bi-plus-lg me-1"></i><%= t('admin.ui.m096') %>
+  </button>
+</div>
+
+<div class="card card-admin">
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-hover mb-0">
+        <thead>
+          <tr>
+            <th class="ps-3" style="width:40px">#</th>
+            <th><%= t('admin.question_content') %></th>
+            <th class="d-none d-md-table-cell"><%= t('admin.category') %></th>
+            <th class="text-center"><%= t('admin.type') %></th>
+            <th class="text-center"><%= t('admin.ui.m097') %></th>
+            <th class="pe-3 text-end"><%= t('admin.actions') %></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @qb_questions.each_with_index do |q, idx| %>
+            <tr>
+              <td class="ps-3 text-muted"><small><%= idx + 1 %></small></td>
+              <td>
+                <div style="max-width:400px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+                  <%= truncate(q.content, length: 60) %>
+                </div>
+              </td>
+              <td class="d-none d-md-table-cell">
+                <span class="badge bg-light text-muted rounded-pill" style="font-size:0.75rem"><%= q.category %></span>
+              </td>
+              <td class="text-center">
+                <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill" style="font-size:0.75rem"><%= q.question_type_label %></span>
+              </td>
+              <td class="text-center">
+                <span class="badge bg-success bg-opacity-10 text-success rounded-pill" style="font-size:0.75rem">
+                  <%= q.question_type == 2 ? (q.answer == 1 ? t('admin.ui.m005') : t("admin.error")) : "#{('A'.ord + q.answer).chr}" %>
+                </span>
+              </td>
+              <td class="pe-3 text-end">
+                <div class="d-flex justify-content-end gap-1">
+                  <%= link_to edit_admin_qb_exam_qb_question_path(@qb_exam, q), class: "btn-action btn btn-sm btn-outline-primary border-0" do %>
+                    <i class="bi bi-pencil"></i>
+                  <% end %>
+                  <%= button_to admin_qb_exam_qb_question_path(@qb_exam, q), method: :delete,
+                      class: "btn-action btn btn-sm btn-outline-danger border-0",
+                      data: { confirm: t('admin.ui.m489') } do %>
+                    <i class="bi bi-trash"></i>
+                  <% end %>
+                </div>
+              </td>
+            </tr>
+          <% end %>
+          <% if @qb_questions.empty? %>
+            <tr>
+              <td colspan="6" class="text-center text-muted py-4">
+                <small><%= t('admin.ui.m490') %></small>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- New Question Modal -->
+<div class="modal fade" id="newQuestionModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content" style="border-radius:16px">
+      <div class="modal-header border-0 pb-0">
+        <h5 class="modal-title fw-bold"><%= t('admin.ui.m096') %></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body pt-2">
+        <%= form_with model: [:admin, @qb_exam, @qb_question], local: true, id: "new-question-form" do |f| %>
+          <div class="row g-3 mb-3">
+            <div class="col-md-4">
+              <%= f.label :question_type, t('admin.ui.m109'), class: "form-label fw-semibold small text-muted" %>
+              <%= f.select :question_type, QbQuestion::QUESTION_TYPE_LABELS.invert.to_a, {}, class: "form-select rounded-3", onchange: "toggleOptions()" %>
+            </div>
+            <div class="col-md-4">
+              <%= f.label :category, t("admin.category"), class: "form-label fw-semibold small text-muted" %>
+              <%= f.text_field :category, class: "form-control rounded-3", placeholder: t('admin.ui.m108') %>
+            </div>
+            <div class="col-md-4">
+              <%= f.label :sort_order, t("admin.sort_order"), class: "form-label fw-semibold small text-muted" %>
+              <%= f.number_field :sort_order, class: "form-control rounded-3", min: 0, value: @qb_exam.qb_questions.count %>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <%= f.label :content, t("admin.question_content"), class: "form-label fw-semibold small text-muted" %>
+            <%= f.text_area :content, class: "form-control rounded-3", rows: 3, placeholder: t('admin.ui.m106') %>
+          </div>
+
+          <div class="mb-3" id="options-section">
+            <%= f.label :options, t('admin.ui.m105'), class: "form-label fw-semibold small text-muted" %>
+            <div class="row g-2 mb-2" id="options-inputs">
+              <div class="col-md-6"><div class="input-group"><span class="input-group-text rounded-start-3 fw-bold">A</span><input type="text" name="options_a" class="form-control rounded-end-3" placeholder="<%= t('admin.ui.m104') %>"></div></div>
+              <div class="col-md-6"><div class="input-group"><span class="input-group-text rounded-start-3 fw-bold">B</span><input type="text" name="options_b" class="form-control rounded-end-3" placeholder="<%= t('admin.ui.m103') %>"></div></div>
+              <div class="col-md-6"><div class="input-group"><span class="input-group-text rounded-start-3 fw-bold">C</span><input type="text" name="options_c" class="form-control rounded-end-3" placeholder="<%= t('admin.ui.m102') %>"></div></div>
+              <div class="col-md-6"><div class="input-group"><span class="input-group-text rounded-start-3 fw-bold">D</span><input type="text" name="options_d" class="form-control rounded-end-3" placeholder="<%= t('admin.ui.m101') %>"></div></div>
+            </div>
+            <%= f.hidden_field :options, id: "question_options_value", value: [].to_json %>
+          </div>
+
+          <div class="row g-3 mb-3">
+            <div class="col-md-6">
+              <%= f.label :answer, t('admin.ui.m099'), class: "form-label fw-semibold small text-muted" %>
+              <div id="answer-choice-section">
+                <%= f.select :answer, [["A", 0], ["B", 1], ["C", 2], ["D", 3]], {}, class: "form-select rounded-3" %>
+              </div>
+              <div id="answer-judge-section" class="d-none">
+                <%= f.select :answer, [[t('admin.ui.m005'), 1], [t("admin.error"), 0]], {}, class: "form-select rounded-3" %>
+              </div>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <%= f.label :explanation, t("admin.parse"), class: "form-label fw-semibold small text-muted" %>
+            <%= f.text_area :explanation, class: "form-control rounded-3", rows: 2, placeholder: t('admin.ui.m098') %>
+          </div>
+        <% end %>
+      </div>
+      <div class="modal-footer border-0 pt-0">
+        <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal"><%= t('admin.cancel') %></button>
+        <button type="submit" form="new-question-form" class="btn btn-primary rounded-pill px-4">
+          <i class="bi bi-check-lg me-1"></i><%= t('admin.ui.m025') %>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function toggleOptions() {
+  var type = document.querySelector('#qb_question_question_type').value;
+  var optSection = document.getElementById('options-section');
+  var choiceAnswer = document.getElementById('answer-choice-section');
+  var judgeAnswer = document.getElementById('answer-judge-section');
+  if (type === '2') {
+    optSection.classList.add('d-none');
+    choiceAnswer.classList.add('d-none');
+    choiceAnswer.querySelector('select').disabled = true;
+    judgeAnswer.classList.remove('d-none');
+    judgeAnswer.querySelector('select').disabled = false;
+  } else {
+    optSection.classList.remove('d-none');
+    choiceAnswer.classList.remove('d-none');
+    choiceAnswer.querySelector('select').disabled = false;
+    judgeAnswer.classList.add('d-none');
+    judgeAnswer.querySelector('select').disabled = true;
+  }
+}
+toggleOptions();
+
+document.getElementById('new-question-form').addEventListener('submit', function(e) {
+  var type = document.querySelector('#qb_question_question_type').value;
+  var optValue = document.getElementById('question_options_value');
+  if (type !== '2') {
+    var inputs = document.querySelectorAll('#options-inputs input[type="text"]');
+    var options = [];
+    inputs.forEach(function(input) {
+      if (input.value.trim()) options.push(input.value.trim());
+    });
+    optValue.value = JSON.stringify(options);
+    if (options.length < 2) {
+      e.preventDefault();
+      alert('<%= t('admin.ui.m050') %>');
+    }
+  } else {
+    optValue.value = JSON.stringify([]);
+  }
+});
+
+// Reset form on modal show
+document.getElementById('newQuestionModal').addEventListener('show.bs.modal', function() {
+  document.getElementById('new-question-form').reset();
+  document.getElementById('question_options_value').value = '[]';
+  document.getElementById('answer-choice-section').classList.remove('d-none');
+  document.getElementById('answer-judge-section').classList.add('d-none');
+  document.getElementById('options-section').classList.remove('d-none');
+  var sortOrder = document.querySelector('#qb_question_sort_order');
+  if (sortOrder) sortOrder.value = <%= @qb_exam.qb_questions.count %>;
+});
+</script>

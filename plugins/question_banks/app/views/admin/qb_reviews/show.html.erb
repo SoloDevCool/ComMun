@@ -1,0 +1,136 @@
+<div class="d-flex align-items-center gap-2 mb-4">
+  <%= link_to admin_qb_reviews_path(status: params[:status].presence || "pending"), class: "btn btn-outline-secondary btn-sm rounded-pill px-2" do %>
+    <i class="bi bi-arrow-left"></i>
+  <% end %>
+  <h4 class="text-dark fw-bold mb-0"><%= t('admin.ui.m505') %></h4>
+  <span class="badge rounded-pill <%= @qb_question.approved? ? 'bg-success' : @qb_question.rejected? ? 'bg-danger' : 'bg-warning text-dark' %>" style="font-size:0.75rem">
+    <%= @qb_question.status_label %>
+  </span>
+</div>
+
+<div class="row g-4">
+  <div class="col-lg-8">
+    <!-- <%= t('admin.ui.m488') %>目内容 -->
+    <div class="card card-admin mb-4">
+      <div class="card-header bg-white">
+        <div class="d-flex align-items-center gap-2">
+          <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill" style="font-size:0.75rem"><%= @qb_question.question_type_label %></span>
+          <span class="badge bg-light text-muted rounded-pill" style="font-size:0.75rem"><%= @qb_question.qb_exam.name %></span>
+          <% if @qb_question.category.present? %>
+            <span class="badge bg-light text-muted rounded-pill" style="font-size:0.75rem"><%= @qb_question.category %></span>
+          <% end %>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="mb-3">
+          <h5 class="fw-bold"><%= @qb_question.content %></h5>
+        </div>
+        <% if @qb_question.question_type != 2 && @qb_question.options.present? %>
+          <div class="row g-2 mb-3">
+            <% @qb_question.options.each_with_index do |opt, idx| %>
+              <div class="col-md-6">
+                <div class="input-group">
+                  <span class="input-group-text <%= @qb_question.answer == idx ? 'bg-success text-white' : '' %> fw-bold"><%= ('A'.ord + idx).chr %></span>
+                  <input type="text" class="form-control" value="<%= opt %>" readonly>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        <% end %>
+        <div class="mb-2">
+          <strong><%= t('admin.ui.m506') %></strong>
+          <span class="badge bg-success bg-opacity-10 text-success rounded-pill">
+            <%= @qb_question.question_type == 2 ? (@qb_question.answer == 1 ? t('admin.ui.m005') : t("admin.error")) : "#{('A'.ord + @qb_question.answer).chr}" %>
+          </span>
+        </div>
+        <% if @qb_question.explanation.present? %>
+          <div class="mt-2 p-3 bg-light rounded-3">
+            <small class="text-muted fw-semibold"><%= t('admin.parse') %></small>
+            <p class="mb-0 mt-1"><%= @qb_question.explanation %></p>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- <%= t('admin.ui.m100') %>（如果被<%= t('admin.ui.m463') %>） -->
+    <% if @qb_question.rejected? && @qb_question.rejection_reason.present? %>
+      <div class="card card-admin mb-4 border-danger">
+        <div class="card-body">
+          <h6 class="text-danger fw-bold mb-2"><i class="bi bi-x-circle me-1"></i><%= t('admin.ui.m100') %></h6>
+          <p class="mb-0"><%= @qb_question.rejection_reason %></p>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="col-lg-4">
+    <!-- <%= t('admin.ui.m507') %> -->
+    <div class="card card-admin mb-4">
+      <div class="card-header bg-white">
+        <h6 class="mb-0 fw-bold"><%= t('admin.ui.m507') %></h6>
+      </div>
+      <div class="card-body">
+        <div class="mb-2">
+          <small class="text-muted"><%= t('admin.ui.m107') %></small>
+          <div class="d-flex align-items-center mt-1">
+            <% if @qb_question.user %>
+              <% if @qb_question.user.has_avatar? %>
+                <img src="<%= @qb_question.user.avatar_data_url %>" class="rounded-3 me-2" style="width:32px;height:32px;object-fit:cover">
+              <% else %>
+                <div class="rounded-3 bg-primary bg-opacity-10 text-primary d-flex align-items-center justify-content-center me-2" style="width:32px;height:32px;font-size:0.85rem"><i class="bi bi-person"></i></div>
+              <% end %>
+              <div>
+                <div class="fw-semibold"><%= @qb_question.user.display_name %></div>
+                <small class="text-muted"><%= @qb_question.user.email %></small>
+              </div>
+            <% else %>
+              <span class="text-muted"><%= t('admin.ui.m508') %></span>
+            <% end %>
+          </div>
+        </div>
+        <div class="mb-2">
+          <small class="text-muted"><%= t('admin.ui.m509') %></small>
+          <div><%= @qb_question.created_at.strftime('%Y-%m-%d %H:%M:%S') %></div>
+        </div>
+        <% if @qb_question.reviewed_at %>
+          <div class="mb-2">
+            <small class="text-muted"><%= t('admin.ui.m510') %></small>
+            <div><%= @qb_question.reviewed_at.strftime('%Y-%m-%d %H:%M:%S') %></div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- <%= t('admin.ui.m511') %> -->
+    <% if @qb_question.pending? %>
+      <div class="card card-admin">
+        <div class="card-header bg-white">
+          <h6 class="mb-0 fw-bold"><%= t('admin.ui.m511') %></h6>
+        </div>
+        <div class="card-body">
+          <%= button_to approve_admin_qb_review_path(@qb_question), method: :patch, form: { data: { turbo: false } },
+              class: "btn btn-success w-100 rounded-pill mb-2" do %>
+            <i class="bi bi-check-circle me-1"></i><%= t('admin.ui.m512') %>
+          <% end %>
+          <form id="detailRejectForm" method="post" action="<%= reject_admin_qb_review_path(@qb_question) %>">
+            <input type="hidden" name="_method" value="patch">
+            <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
+            <textarea name="rejection_reason" class="form-control rounded-3 mb-2" rows="3" placeholder="<%= t('admin.ui.m513') %>"></textarea>
+            <button type="submit" class="btn btn-outline-danger w-100 rounded-pill" onclick="return confirm('<%= t('admin.ui.m462') %>')">
+              <i class="bi bi-x-circle me-1"></i><%= t('admin.ui.m463') %>
+            </button>
+          </form>
+        </div>
+      </div>
+    <% elsif @qb_question.rejected? %>
+      <div class="card card-admin">
+        <div class="card-body">
+          <%= button_to approve_admin_qb_review_path(@qb_question), method: :patch, form: { data: { turbo: false } },
+              class: "btn btn-success w-100 rounded-pill" do %>
+            <i class="bi bi-arrow-counterclockwise me-1"></i><%= t('admin.ui.m110') %>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

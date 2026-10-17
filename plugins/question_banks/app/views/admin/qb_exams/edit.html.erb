@@ -1,0 +1,128 @@
+<h4 class="text-dark fw-bold mb-4"><i class="bi bi-pencil me-2 text-primary"></i><%= t('admin.ui.m330') %></h4>
+
+<div class="card card-admin" style="max-width:760px">
+  <div class="card-body p-4">
+    <%= form_with model: [:admin, @qb_exam], local: true do |f| %>
+      <% if @qb_exam.errors.any? %>
+        <div class="alert alert-danger rounded-3 py-2">
+          <i class="bi bi-exclamation-circle me-1"></i>
+          <ul class="mb-0 ms-3">
+            <% @qb_exam.errors.full_messages.each do |msg| %>
+              <li><%= msg %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <div class="row g-3 mb-3">
+        <div class="col-md-6">
+          <%= f.label :name, t("admin.subject_name"), class: "form-label fw-semibold small text-muted" %>
+          <%= f.text_field :name, class: "form-control form-control-lg rounded-3", placeholder: t('admin.ui.m141') %>
+        </div>
+        <div class="col-md-6">
+          <%= f.label :code, t('admin.ui.m140'), class: "form-label fw-semibold small text-muted" %>
+          <%= f.text_field :code, class: "form-control form-control-lg rounded-3", placeholder: t('admin.ui.m138') %>
+          <div class="form-text"><%= t('admin.ui.m137') %></div>
+        </div>
+      </div>
+
+      <div class="row g-3 mb-3">
+        <div class="col-md-4">
+          <%= f.label :type_name, t('admin.ui.m136'), class: "form-label fw-semibold small text-muted" %>
+          <%= f.text_field :type_name, class: "form-control form-control-lg rounded-3", placeholder: t('admin.ui.m135') %>
+        </div>
+        <div class="col-md-4">
+          <%= f.label :level, t('admin.ui.m134'), class: "form-label fw-semibold small text-muted" %>
+          <%= f.text_field :level, class: "form-control form-control-lg rounded-3", placeholder: t('admin.ui.m133') %>
+          <div class="form-text"><%= t('admin.ui.m132') %></div>
+        </div>
+        <div class="col-md-4">
+          <%= f.label :sort_order, t("admin.sort_order"), class: "form-label fw-semibold small text-muted" %>
+          <%= f.number_field :sort_order, class: "form-control form-control-lg rounded-3", min: 0 %>
+          <div class="form-text"><%= t('admin.lower_is_first') %></div>
+        </div>
+      </div>
+
+      <div class="row g-3 mb-3">
+        <div class="col-md-6">
+          <%= f.label :duration, t('admin.ui.m131'), class: "form-label fw-semibold small text-muted" %>
+          <%= f.number_field :duration, class: "form-control form-control-lg rounded-3", min: 10, step: 5 %>
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <%= f.label :description, t('admin.ui.m113'), class: "form-label fw-semibold small text-muted" %>
+        <%= f.text_area :description, class: "form-control rounded-3", rows: 2, placeholder: t('admin.ui.m093') %>
+      </div>
+
+      <div class="mb-4">
+        <%= f.label :categories, t('admin.ui.m081'), class: "form-label fw-semibold small text-muted" %>
+        <div class="d-flex flex-wrap gap-2 mb-2" id="categories-preview"></div>
+        <div class="input-group">
+          <span class="input-group-text rounded-start-3"><i class="bi bi-tags"></i></span>
+          <input type="text" id="category-input" class="form-control form-control-lg rounded-end-3" placeholder="<%= t('admin.categories_input_hint') %>">
+        </div>
+        <%= f.hidden_field :categories, id: "qb_exam_categories_value", value: (@qb_exam.categories || []).to_json %>
+        <div class="form-text"><%= t('admin.ui.m080') %></div>
+      </div>
+
+      <div class="d-flex gap-2">
+        <%= f.submit t("admin.save_changes"), class: "btn btn-primary rounded-pill px-4" %>
+        <%= link_to t("admin.cancel"), admin_qb_exams_path, class: "btn btn-outline-secondary rounded-pill px-4" %>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<script>
+(function() {
+  var catInput = document.getElementById('category-input');
+  var catValue = document.getElementById('qb_exam_categories_value');
+  var catPreview = document.getElementById('categories-preview');
+  var currentCats = JSON.parse(catValue.value || '[]');
+
+  function renderCats() {
+    catPreview.innerHTML = '';
+    currentCats.forEach(function(cat, index) {
+      var badge = document.createElement('span');
+      badge.className = 'badge bg-light text-dark rounded-pill d-flex align-items-center gap-1';
+      badge.style.fontSize = '0.82rem';
+      badge.style.padding = '5px 10px';
+      badge.innerHTML = cat + ' <button type="button" class="btn-close btn-close-sm" style="font-size:0.55rem" data-index="' + index + '"></button>';
+      catPreview.appendChild(badge);
+    });
+    catValue.value = JSON.stringify(currentCats);
+  }
+
+  catInput.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      var val = this.value.trim();
+      if (val && currentCats.indexOf(val) === -1) {
+        currentCats.push(val);
+        renderCats();
+      }
+      this.value = '';
+    }
+  });
+
+  catPreview.addEventListener('click', function(e) {
+    if (e.target.classList.contains('btn-close')) {
+      var idx = parseInt(e.target.dataset.index);
+      currentCats.splice(idx, 1);
+      renderCats();
+    }
+  });
+
+  var colorPicker = document.getElementById('qb_exam_color_preview');
+  var colorInput = document.querySelector('#qb_exam_color');
+  if (colorPicker && colorInput) {
+    colorPicker.addEventListener('input', function() { colorInput.value = this.value; });
+    colorInput.addEventListener('input', function() {
+      if (/^#[0-9a-fA-F]{6}$/.test(this.value)) colorPicker.value = this.value;
+    });
+  }
+
+  renderCats();
+})();
+</script>

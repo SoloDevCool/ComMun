@@ -1,0 +1,124 @@
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h4 class="text-dark fw-bold mb-0"><%= t('admin.ui.m409') %></h4>
+    <small class="text-muted"><%= t('admin.ui.m024') %> <%= @user.display_name %> <%= t('admin.ui.m410') %></small>
+  </div>
+  <%= link_to admin_users_path, class: "btn btn-outline-secondary rounded-pill" do %>
+    <i class="bi bi-arrow-left me-1"></i><%= t('admin.ui.m063') %>
+  <% end %>
+</div>
+
+<div class="row">
+  <div class="col-lg-8">
+    <!-- <%= t('admin.ui.m360') %> -->
+    <div class="card card-admin mb-4">
+      <div class="card-header bg-white border-bottom">
+        <h6 class="mb-0 fw-bold"><i class="bi bi-check-circle-fill text-success me-2"></i><%= t('admin.ui.m360') %></h6>
+      </div>
+      <div class="card-body p-0">
+        <% if @permissions.any? %>
+          <div class="table-responsive">
+            <table class="table table-hover mb-0">
+              <thead>
+                <tr>
+                  <th class="ps-3"><%= t('admin.ui.m361') %></th>
+                  <th><%= t('admin.direction') %></th>
+                  <th><%= t('admin.difficulty') %></th>
+                  <th><%= t('admin.ui.m362') %></th>
+                  <th class="pe-3 text-end"><%= t('admin.actions') %></th>
+                </tr>
+              </thead>
+              <tbody>
+                <% @permissions.each do |permission| %>
+                  <tr>
+                    <td class="ps-3">
+                      <span class="fw-semibold"><%= permission.course.title %></span>
+                      <div class="text-muted small"><%= permission.course.lessons_count %> <%= t('admin.ui.m363') %> <%= permission.course.duration %></div>
+                    </td>
+                    <td>
+                      <span class="badge bg-light text-dark rounded-pill"><%= permission.course.direction %></span>
+                    </td>
+                    <td>
+                      <%= case permission.course.difficulty
+                          when t('admin.ui.m364') then tag.span(permission.course.difficulty, class: "badge bg-success bg-opacity-10 text-success rounded-pill")
+                          when t('admin.ui.m365') then tag.span(permission.course.difficulty, class: "badge bg-warning bg-opacity-10 text-warning rounded-pill")
+                          when t('admin.ui.m366') then tag.span(permission.course.difficulty, class: "badge bg-danger bg-opacity-10 text-danger rounded-pill")
+                          else tag.span(permission.course.difficulty, class: "badge bg-light text-dark rounded-pill")
+                          end %>
+                    </td>
+                    <td class="text-muted small"><%= permission.created_at.strftime("%Y-%m-%d %H:%M") %></td>
+                    <td class="pe-3 text-end">
+                      <%= button_to admin_user_course_permission_path(@user, permission.course),
+                        method: :delete,
+                        class: "btn btn-sm btn-outline-danger rounded-pill",
+                        data: { confirm: t('admin.ui.m367') } do %>
+                        <i class="bi bi-x-circle me-1"></i><%= t('admin.ui.m368') %>
+                      <% end %>
+                    </td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+        <% else %>
+          <div class="text-center py-5">
+            <i class="bi bi-lock text-muted" style="font-size:3rem"></i>
+            <p class="text-muted mt-3"><%= t('admin.ui.m369') %></p>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-4">
+    <!-- <%= t('admin.ui.m370') %> -->
+    <div class="card card-admin">
+      <div class="card-header bg-white border-bottom">
+        <h6 class="mb-0 fw-bold"><i class="bi bi-plus-circle-fill text-primary me-2"></i><%= t('admin.ui.m370') %></h6>
+      </div>
+      <div class="card-body">
+        <%= form_with url: admin_user_course_permissions_path(@user), method: :post do |f| %>
+          <div class="mb-3">
+            <label class="form-label fw-semibold small text-muted"><%= t('admin.ui.m371') %></label>
+            <select name="course_id" id="course_id" class="form-select form-select-sm rounded-3" required>
+              <option value="">-- 请<%= t('admin.ui.m371') %> --</option>
+              <% @all_courses.each do |course| %>
+                <option value="<%= course.id %>"><%= course.title %>（<%= course.direction %> · <%= course.difficulty %>）</option>
+              <% end %>
+            </select>
+          </div>
+
+          <%= f.submit t('admin.ui.m372'), class: "btn btn-primary w-100 rounded-pill" %>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- 用户信息 -->
+    <div class="card card-admin mt-4">
+      <div class="card-body">
+        <div class="d-flex align-items-center mb-3">
+          <div class="rounded-3 bg-primary bg-opacity-10 text-primary d-flex align-items-center justify-content-center me-3 flex-shrink-0" style="width:50px;height:50px;font-size:1.2rem">
+            <i class="bi bi-person-fill"></i>
+          </div>
+          <div>
+            <div class="fw-bold text-dark"><%= @user.display_name %></div>
+            <div class="text-muted small"><%= @user.email %></div>
+          </div>
+        </div>
+        <div class="d-flex gap-2">
+          <span class="badge <%= @user.role_badge_class %> rounded-pill">
+            <%= @user.role_label %>
+          </span>
+          <span class="badge bg-light text-dark rounded-pill">
+            <%= t('admin.ui.m373') %> <%= @permissions.count %> <%= t('admin.ui.m374') %>
+          </span>
+        </div>
+        <% if @user.admin? || @user.operator? %>
+          <div class="alert alert-info mt-3 mb-0 small">
+            <i class="bi bi-info-circle me-1"></i><%= t('admin.ui.m375') %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

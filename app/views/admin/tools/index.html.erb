@@ -1,0 +1,113 @@
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h4 class="text-dark fw-bold mb-0"><%= t('admin.ui.m563') %></h4>
+  <%= link_to new_admin_tool_path, class: "btn btn-primary rounded-pill px-3" do %>
+    <i class="bi bi-plus-lg me-1"></i><%= t('admin.ui.m564') %>
+  <% end %>
+</div>
+
+<!-- 分类筛选 -->
+<% if @tool_categories.any? %>
+<div class="card card-admin mb-3">
+  <div class="card-body py-2 px-3">
+    <div class="d-flex flex-wrap gap-2 align-items-center">
+      <span class="text-muted small fw-semibold me-1"><i class="bi bi-funnel me-1"></i><%= t('admin.ui.m565') %></span>
+      <a href="<%= admin_tools_path %>" class="btn btn-sm <%= params[:tool_category_id].blank? ? 'btn-primary' : 'btn-outline-secondary' %> rounded-pill px-3">
+        <%= t('admin.ui.m010') %>
+      </a>
+      <% @tool_categories.each do |cat| %>
+        <a href="<%= admin_tools_path(tool_category_id: cat.id) %>" class="btn btn-sm <%= params[:tool_category_id] == cat.id.to_s ? 'btn-primary' : 'btn-outline-secondary' %> rounded-pill px-3">
+          <i class="bi <%= cat.icon.presence || 'bi-folder' %> me-1"></i><%= cat.name %>
+          <span class="badge bg-light text-dark ms-1" style="font-size:0.65rem"><%= cat.tools_count %></span>
+        </a>
+      <% end %>
+    </div>
+  </div>
+</div>
+<% end %>
+
+<div class="card card-admin">
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-hover mb-0">
+        <thead>
+          <tr>
+            <th class="ps-3"><%= t('admin.ui.m514') %></th>
+            <th class="text-center d-none d-lg-table-cell"><%= t('admin.category') %></th>
+            <th class="text-center d-none d-md-table-cell"><%= t('admin.pricing') %></th>
+            <th class="text-center d-none d-sm-table-cell"><%= t('admin.status') %></th>
+            <th class="text-center d-none d-md-table-cell"><%= t('admin.sort_order') %></th>
+            <th class="pe-3 text-end"><%= t('admin.actions') %></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @tools.each do |tool| %>
+            <tr>
+              <td class="ps-3">
+                <div class="d-flex align-items-center">
+                  <% if tool.has_custom_icon? %>
+                    <div class="rounded-2 me-2 flex-shrink-0 overflow-hidden" style="width:36px;height:36px;background:#f3f4f6">
+                      <img src="<%= tool.display_icon_url %>" alt="<%= tool.name %>" style="width:100%;height:100%;object-fit:contain;padding:4px">
+                    </div>
+                  <% else %>
+                    <span class="rounded-2 me-2 flex-shrink-0 d-flex align-items-center justify-content-center" style="width:36px;height:36px;background:<%= tool.color %>15;color:<%= tool.color %>">
+                      <i class="bi <%= tool.icon.presence || 'bi-box' %>" style="font-size:0.9rem"></i>
+                    </span>
+                  <% end %>
+                  <div>
+                    <div class="fw-semibold">
+                      <%= tool.name %>
+                      <% if tool.url.present? %>
+                        <a href="<%= tool.url %>" target="_blank" rel="noopener noreferrer" class="ms-1 text-muted" style="font-size:0.75rem">
+                          <i class="bi bi-box-arrow-up-right"></i>
+                        </a>
+                      <% end %>
+                    </div>
+                    <% if tool.description.present? %>
+                      <small class="text-muted"><%= truncate(tool.description, length: 40) %></small>
+                    <% end %>
+                  </div>
+                </div>
+              </td>
+              <td class="text-center d-none d-lg-table-cell">
+                <span class="badge bg-light text-dark rounded-pill" style="font-size:0.75rem">
+                  <%= tool.tool_category.name %>
+                </span>
+              </td>
+              <td class="text-center d-none d-md-table-cell">
+                <span class="text-muted" style="font-size:0.85rem"><%= tool.pricing.presence || '-' %></span>
+              </td>
+              <td class="text-center d-none d-sm-table-cell">
+                <span class="badge <%= tool.is_active? ? 'bg-success' : 'bg-secondary' %> rounded-pill" style="font-size:0.75rem">
+                  <%= tool.is_active? ? t("admin.show") : t("admin.hide") %>
+                </span>
+              </td>
+              <td class="text-center d-none d-md-table-cell">
+                <span class="text-muted"><%= tool.sort_order %></span>
+              </td>
+              <td class="pe-3 text-end">
+                <div class="d-flex justify-content-end gap-1">
+                  <%= link_to edit_admin_tool_path(tool), class: "btn-action btn btn-sm btn-outline-primary border-0" do %>
+                    <i class="bi bi-pencil"></i>
+                  <% end %>
+                  <%= button_to admin_tool_path(tool), method: :delete,
+                      class: "btn-action btn btn-sm btn-outline-danger border-0",
+                      data: { confirm: "确定删除工具「#{tool.name}」吗？" } do %>
+                    <i class="bi bi-trash"></i>
+                  <% end %>
+                </div>
+              </td>
+            </tr>
+          <% end %>
+          <% if @tools.empty? %>
+            <tr>
+              <td colspan="6" class="text-center text-muted py-5">
+                <i class="bi bi-inbox d-block mb-2" style="font-size:2rem"></i>
+                <%= t('admin.ui.m516') %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

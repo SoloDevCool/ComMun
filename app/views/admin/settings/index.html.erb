@@ -1,0 +1,1597 @@
+<h4 class="mb-4 text-dark fw-bold"><%= t('admin.settings.s221') %></h4>
+
+<div class="row g-4">
+  <div class="col-lg-2 col-12">
+    <div class="nav nav-pills flex-sm-column flex-row flex-wrap gap-1 sticky-top" id="settingsTabs" style="top: 1rem;" role="tablist">
+      <button type="button" class="nav-link text-start active" data-settings-tab="license"><i class="bi bi-shield-lock me-1"></i>授权</button>
+      <button type="button" class="nav-link text-start" data-settings-tab="basic"><i class="bi bi-gear me-1"></i>基础</button>
+      <button type="button" class="nav-link text-start" data-settings-tab="user"><i class="bi bi-people me-1"></i>用户与注册</button>
+      <button type="button" class="nav-link text-start" data-settings-tab="oauth"><i class="bi bi-box-arrow-in-right me-1"></i>第三方登录</button>
+      <button type="button" class="nav-link text-start" data-settings-tab="thirdparty"><i class="bi bi-plug me-1"></i>第三方服务</button>
+      <button type="button" class="nav-link text-start" data-settings-tab="ai"><i class="bi bi-robot me-1"></i>AI 功能</button>
+      <button type="button" class="nav-link text-start" data-settings-tab="ops"><i class="bi bi-megaphone me-1"></i>运营推广</button>
+      <button type="button" class="nav-link text-start" data-settings-tab="media"><i class="bi bi-cloud-arrow-up me-1"></i>媒体与存储</button>
+    </div>
+  </div>
+  <div class="col-lg-10 col-12">
+    <style>
+      /* 左侧分类导航 */
+      #settingsTabs {
+        background: #fff;
+        border-radius: 14px;
+        padding: .6rem;
+        box-shadow: 0 1px 3px rgba(16,24,40,.07), 0 1px 2px rgba(16,24,40,.04);
+      }
+      #settingsTabs .nav-link {
+        width: 100%;
+        color: #5c6770;
+        border-radius: 9px;
+        padding: .6rem .9rem;
+        font-size: .9rem;
+        font-weight: 500;
+        text-align: start;
+        border: none;
+        background: transparent;
+        transition: background .15s, color .15s, box-shadow .15s;
+      }
+      #settingsTabs .nav-link i { font-size: 1.05rem; width: 1.3rem; text-align: center; }
+      #settingsTabs .nav-link:hover { background: #f2f4f7; color: #1d2939; }
+      #settingsTabs .nav-link.active {
+        background: linear-gradient(135deg, #155eef, #3b82f6);
+        color: #fff;
+        font-weight: 600;
+        box-shadow: 0 3px 10px rgba(21,94,239,.28);
+      }
+      @media (min-width: 992px) {
+        #settingsTabs { position: sticky; top: 1rem; }
+        #settingsTabs .nav-link { width: 100%; }
+      }
+
+      /* 右侧内容卡片 */
+      [data-settings-group] {
+        border-radius: 14px;
+        box-shadow: 0 1px 3px rgba(16,24,40,.07), 0 1px 2px rgba(16,24,40,.04);
+        animation: settingsGroupIn .22s ease;
+      }
+      @keyframes settingsGroupIn {
+        from { opacity: 0; transform: translateY(5px); }
+        to { opacity: 1; transform: none; }
+      }
+      [data-settings-group] > .card-header {
+        background: #fff;
+        border-bottom: 1px solid #f2f4f7;
+        padding: 1rem 1.25rem;
+      }
+      [data-settings-group] > .card-header h6 { font-size: .95rem; }
+      [data-settings-group] > .card-body { padding: 1.25rem; }
+      [data-settings-group] .form-label { color: #344054; font-size: .82rem; }
+      /* 输入控件统一加大、圆角现代化 */
+      [data-settings-group] .form-control-sm,
+      [data-settings-group] .form-select-sm {
+        border-radius: 9px;
+        font-size: .875rem;
+        padding: .45rem .75rem;
+        min-height: 36px;
+        transition: border-color .15s, box-shadow .15s;
+      }
+      [data-settings-group] .form-control-sm:focus,
+      [data-settings-group] .form-select-sm:focus {
+        border-color: #155eef;
+        box-shadow: 0 0 0 3px rgba(21,94,239,.1);
+      }
+      /* 空分组占位 */
+      .settings-empty {
+        border-radius: 14px;
+        box-shadow: 0 1px 3px rgba(16,24,40,.07), 0 1px 2px rgba(16,24,40,.04);
+        padding: 56px 20px;
+        text-align: center;
+        background: #fff;
+      }
+      .settings-empty i { font-size: 2rem; color: #98a2b3; }
+      /* 基础页快捷入口卡片 */
+      .basic-link-card {
+        transition: border-color .15s, background .15s, transform .12s;
+        color: inherit;
+      }
+      .basic-link-card:hover {
+        border-color: rgba(21,94,239,.45);
+        background: rgba(21,94,239,.03);
+        transform: translateY(-1px);
+      }
+    </style>
+
+    <!-- 分组无内容时的占位（如未授权时的非授权标签页） -->
+    <div id="settingsEmptyPlaceholder" class="settings-empty mb-4" style="display:none">
+      <i class="bi bi-shield-lock d-block mb-2"></i>
+      <div class="fw-semibold" style="color:#344054">该分类暂无可显示的设置项</div>
+      <div class="text-muted small mt-1">请先在「授权」标签页完成系统授权激活</div>
+    </div>
+
+    <%= form_with url: admin_settings_path, method: :patch, scope: :settings, class: "needs-validation", local: true do |f| %>
+
+      <!-- <%= t('admin.settings.s220') %> -->
+      <div class="card card-admin mb-4" data-settings-group="license">
+        <div class="card-header py-3">
+          <h6 class="mb-0 fw-bold"><i class="bi bi-shield-lock me-2 text-primary"></i><%= t('admin.settings.s220') %></h6>
+        </div>
+        <div class="card-body">
+          <p class="text-muted small mb-3"><%= t('admin.settings.license_hint') %></p>
+          <div class="row g-3 mb-3">
+            <div class="col-md-8">
+              <%= f.label :license_key, t('admin.settings.s218'), class: "form-label fw-semibold small" %>
+              <%= f.text_field :license_key, value: @settings[:license_key], class: "form-control form-control-sm", placeholder: t('admin.settings.s217') %>
+            </div>
+          </div>
+          <div class="row g-3 mb-3">
+            <div class="col-12">
+              <%= f.label :license_file, t('admin.settings.s330'), class: "form-label fw-semibold small" %>
+              <%= f.text_area :license_file, rows: 4, value: @settings[:license_file], class: "form-control form-control-sm font-monospace", placeholder: t('admin.settings.s331') %>
+              <div class="form-text small"><%= t('admin.settings.s332') %></div>
+            </div>
+            <div class="col-12">
+              <button type="button" class="btn btn-outline-primary btn-sm" id="btnVerifyLicense" onclick="verifyLicense()">
+                <i class="bi bi-lightning me-1"></i><%= t('admin.settings.s013') %>
+              </button>
+            </div>
+          </div>
+          <div class="row g-3 mb-3">
+            <div class="col-md-8">
+              <label class="form-label fw-semibold small"><%= t('admin.settings.s333') %></label>
+              <input type="text" class="form-control form-control-sm font-monospace bg-light" value="<%= @hardware_fingerprint %>" readonly>
+            </div>
+          </div>
+          <div id="licenseVerifyResult"></div>
+          <div id="licenseStatus" class="mt-2"></div>
+          <% unless @license_verified %>
+            <div class="alert alert-warning mt-3 mb-0 small">
+              <i class="bi bi-exclamation-triangle me-1"></i>License <%= t('admin.settings.s216') %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+
+      <% if @license_verified %>
+
+      <!-- <%= t('admin.settings.s215') %> -->
+      <div class="card card-admin mb-4" data-settings-group="basic">
+        <div class="card-header py-3">
+          <h6 class="mb-0 fw-bold"><i class="bi bi-globe2 me-2 text-primary"></i><%= t('admin.settings.s215') %></h6>
+        </div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <%= f.label :site_locale, t('admin.settings.s214'), class: "form-label fw-semibold small" %>
+              <select name="settings[site_locale]" id="settings_site_locale" class="form-select form-select-sm">
+                <option value="zh-CN" <%= "selected" if @settings[:site_locale] == "zh-CN" %>><%= t('admin.settings.s231') %></option>
+                <option value="en" <%= "selected" if @settings[:site_locale] == "en" %>>English</option>
+                <option value="ja" <%= "selected" if @settings[:site_locale] == "ja" %>><%= t('admin.settings.s230') %></option>
+                <option value="ko" <%= "selected" if @settings[:site_locale] == "ko" %>>한국어</option>
+              </select>
+              <div class="form-text small"><%= t('admin.settings.s213') %></div>
+            </div>
+          </div>
+          <hr class="my-3">
+          <div class="fw-semibold small mb-2"><i class="bi bi-link-45deg me-1 text-muted"></i>相关设置入口</div>
+          <div class="row g-2">
+            <div class="col-md-4">
+              <%= link_to admin_appearance_settings_path, class: "text-decoration-none" do %>
+                <div class="border rounded-3 p-3 h-100 basic-link-card">
+                  <div class="fw-semibold small"><i class="bi bi-palette me-2 text-primary"></i>外观设置</div>
+                  <div class="text-muted" style="font-size:0.75rem">站点名称、Logo、导航模块</div>
+                </div>
+              <% end %>
+            </div>
+            <div class="col-md-4">
+              <%= link_to admin_seo_settings_path, class: "text-decoration-none" do %>
+                <div class="border rounded-3 p-3 h-100 basic-link-card">
+                  <div class="fw-semibold small"><i class="bi bi-search me-2 text-success"></i>SEO 设置</div>
+                  <div class="text-muted" style="font-size:0.75rem">站点描述、关键词、验证码</div>
+                </div>
+              <% end %>
+            </div>
+            <div class="col-md-4">
+              <%= link_to admin_plugins_path, class: "text-decoration-none" do %>
+                <div class="border rounded-3 p-3 h-100 basic-link-card">
+                  <div class="fw-semibold small"><i class="bi bi-box-seam me-2 text-warning"></i>插件管理</div>
+                  <div class="text-muted" style="font-size:0.75rem">启用或停用功能插件</div>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- GitHub OAuth（由 oauth_github 插件提供） -->
+      <% if Plugin.enabled?("oauth_github") %>
+      <div class="card card-admin mb-4" data-settings-group="oauth">
+        <div class="card-header py-3">
+          <h6 class="mb-0 fw-bold"><i class="bi bi-github me-2 text-dark"></i>GitHub OAuth <%= t('admin.settings.s010') %></h6>
+        </div>
+        <div class="card-body">
+          <p class="text-muted small mb-3"><%= t('admin.settings.github_hint_html', docs: link_to('GitHub Developer Settings', 'https://github.com/settings/developers', target: '_blank', rel: 'noopener'), callback: tag.code("#{request.base_url}/users/auth/github/callback", class: 'bg-light px-2 py-1 rounded')).html_safe %></p>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <%= f.label :github_client_id, "Client ID", class: "form-label fw-semibold small" %>
+              <%= f.text_field :github_client_id, value: @settings[:github_client_id], class: "form-control form-control-sm", placeholder: t('admin.settings.s004') %>
+            </div>
+            <div class="col-md-6">
+              <%= f.label :github_client_secret, "Client Secret", class: "form-label fw-semibold small" %>
+              <%= f.text_field :github_client_secret, value: @settings[:github_client_secret], class: "form-control form-control-sm", placeholder: t('admin.settings.s005') %>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <% end %>
+
+      <!-- Google OAuth（由 oauth_google 插件提供） -->
+      <% if Plugin.enabled?("oauth_google") %>
+      <div class="card card-admin mb-4" data-settings-group="oauth">
+        <div class="card-header py-3">
+          <h6 class="mb-0 fw-bold"><i class="bi bi-google me-2 text-danger"></i>Google OAuth <%= t('admin.settings.s010') %></h6>
+        </div>
+        <div class="card-body">
+          <p class="text-muted small mb-3"><%= t('admin.settings.google_hint_html', docs: link_to('Google Cloud Console', 'https://console.cloud.google.com/apis/credentials', target: '_blank', rel: 'noopener'), callback: tag.code("#{request.base_url}/users/auth/google_oauth2/callback", class: 'bg-light px-2 py-1 rounded')).html_safe %></p>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <%= f.label :google_client_id, "Client ID", class: "form-label fw-semibold small" %>
+              <%= f.text_field :google_client_id, value: @settings[:google_client_id], class: "form-control form-control-sm", placeholder: t('admin.settings.s004') %>
+            </div>
+            <div class="col-md-6">
+              <%= f.label :google_client_secret, "Client Secret", class: "form-label fw-semibold small" %>
+              <%= f.text_field :google_client_secret, value: @settings[:google_client_secret], class: "form-control form-control-sm", placeholder: t('admin.settings.s005') %>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <% end %>
+
+      <!-- Gitee OAuth（由 oauth_gitee 插件提供） -->
+      <% if Plugin.enabled?("oauth_gitee") %>
+      <div class="card card-admin mb-4" data-settings-group="oauth">
+        <div class="card-header py-3">
+          <h6 class="mb-0 fw-bold"><i class="bi bi-git me-2 text-danger"></i>Gitee OAuth <%= t('admin.settings.s010') %></h6>
+        </div>
+        <div class="card-body">
+          <p class="text-muted small mb-3"><%= t('admin.settings.gitee_hint_html', docs: link_to(t('admin.settings.gitee_apps'), 'https://gitee.com/oauth/applications', target: '_blank', rel: 'noopener'), callback: tag.code("#{request.base_url}/users/auth/gitee/callback", class: 'bg-light px-2 py-1 rounded')).html_safe %></p>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <%= f.label :gitee_client_id, "Client ID", class: "form-label fw-semibold small" %>
+              <%= f.text_field :gitee_client_id, value: @settings[:gitee_client_id], class: "form-control form-control-sm", placeholder: t('admin.settings.s004') %>
+            </div>
+            <div class="col-md-6">
+              <%= f.label :gitee_client_secret, "Client Secret", class: "form-label fw-semibold small" %>
+              <%= f.text_field :gitee_client_secret, value: @settings[:gitee_client_secret], class: "form-control form-control-sm", placeholder: t('admin.settings.s005') %>
+            </div>
+          </div>
+        </div>
+      </div>
+      <% end %>
+
+      <!-- 百度翻译 -->
+      <div class="card card-admin mb-4" data-settings-group="thirdparty">
+        <div class="card-header py-3">
+          <h6 class="mb-0 fw-bold"><i class="bi bi-translate me-2 text-primary"></i><%= t('admin.settings.s238') %></h6>
+        </div>
+        <div class="card-body">
+          <p class="text-muted small mb-3"><%= t('admin.settings.baidu_hint_html', docs: link_to(t('admin.settings.baidu_platform'), 'https://fanyi-api.baidu.com/', target: '_blank', rel: 'noopener')).html_safe %></p>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <%= f.label :baidu_translate_appid, "APP ID", class: "form-label fw-semibold small" %>
+              <%= f.text_field :baidu_translate_appid, value: @settings[:baidu_translate_appid], class: "form-control form-control-sm", placeholder: t('admin.settings.s239') %>
+            </div>
+            <div class="col-md-6">
+              <%= f.label :baidu_translate_key, t('admin.settings.s007'), class: "form-label fw-semibold small" %>
+              <%= f.text_field :baidu_translate_key, value: @settings[:baidu_translate_key], class: "form-control form-control-sm", placeholder: t('admin.settings.s240') %>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 邮件验证码 -->
+      <div class="card card-admin mb-4" data-settings-group="user">
+        <div class="card-header py-3">
+          <h6 class="mb-0 fw-bold"><i class="bi bi-envelope-check me-2 text-success"></i><%= t('admin.settings.s237') %></h6>
+        </div>
+        <div class="card-body">
+          <p class="text-muted small mb-3"><%= t('admin.settings.email_verify_hint') %></p>
+          <div class="row g-3 mb-3">
+            <div class="col-md-4">
+              <label class="form-label fw-semibold small"><%= t('admin.settings.s222') %><%= t('admin.settings.s237') %></label>
+              <select name="settings[email_verification_enabled]" class="form-select form-select-sm">
+                <option value="false" <%= "selected" if @settings[:email_verification_enabled] != "true" %>><%= t('admin.settings.s223') %></option>
+                <option value="true" <%= "selected" if @settings[:email_verification_enabled] == "true" %>><%= t('admin.settings.s222') %></option>
+              </select>
+            </div>
+            <div class="col-md-8">
+              <label class="form-label fw-semibold small"><%= t('admin.settings.s241') %></label>
+              <select name="settings[email_provider]" class="form-select form-select-sm" id="emailProviderSelect" onchange="toggleEmailProvider()">
+                <option value="sendflare" <%= "selected" if @settings[:email_provider] != "tencent_ses" %>>Sendflare</option>
+                <option value="tencent_ses" <%= "selected" if @settings[:email_provider] == "tencent_ses" %>><%= t('admin.settings.s242') %></option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Sendflare 配置 -->
+          <div id="sendflareConfig">
+            <p class="text-muted small mb-3"><%= t('admin.settings.sendflare_hint_html', docs: link_to('Sendflare', 'https://sendflare.com', target: '_blank', rel: 'noopener')).html_safe %></p>
+            <div class="row g-3 mb-3">
+              <div class="col-md-6">
+                <%= f.label :sendflare_from_email, t('admin.settings.s262'), class: "form-label fw-semibold small" %>
+                <%= f.email_field :sendflare_from_email, value: @settings[:sendflare_from_email], class: "form-control form-control-sm", placeholder: "noreply@example.com" %>
+              </div>
+            </div>
+            <div class="row g-3">
+              <div class="col-md-12">
+                <%= f.label :sendflare_api_token, "API Token", class: "form-label fw-semibold small" %>
+                <%= f.text_field :sendflare_api_token, value: @settings[:sendflare_api_token], class: "form-control form-control-sm", placeholder: t('admin.settings.s263') %>
+                <div class="form-text"><%= t('admin.settings.sendflare_token_hint_html', console: link_to(t('admin.settings.console'), 'https://sendflare.com', target: '_blank', rel: 'noopener')).html_safe %></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- <%= t('admin.settings.s322') %> SES 配置 -->
+          <div id="tencentSesConfig" style="display:none">
+            <p class="text-muted small mb-3"><%= t('admin.settings.ses_hint_html', keys: link_to(t('admin.settings.api_key_management'), 'https://console.cloud.tencent.com/cam/capi', target: '_blank', rel: 'noopener'), ses: link_to(t('admin.settings.ses_console'), 'https://console.cloud.tencent.com/ses', target: '_blank', rel: 'noopener')).html_safe %></p>
+            <div class="row g-3 mb-3">
+              <div class="col-md-6">
+                <label class="form-label fw-semibold small">SecretId</label>
+                <input type="text" name="settings[tencent_ses_secret_id]" class="form-control form-control-sm" value="<%= @settings[:tencent_ses_secret_id] %>" placeholder="<%= t('admin.settings.s002') %>">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label fw-semibold small">SecretKey</label>
+                <input type="password" name="settings[tencent_ses_secret_key]" class="form-control form-control-sm" value="<%= @settings[:tencent_ses_secret_key] %>" placeholder="<%= t('admin.settings.s003') %>">
+              </div>
+            </div>
+            <div class="row g-3 mb-3">
+              <div class="col-md-6">
+                <label class="form-label fw-semibold small"><%= t('admin.settings.s183') %></label>
+                <input type="email" name="settings[tencent_ses_from_email]" class="form-control form-control-sm" value="<%= @settings[:tencent_ses_from_email] %>" placeholder="noreply@example.com">
+                <div class="form-text"><%= t('admin.settings.s182') %></div>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label fw-semibold small"><%= t('admin.settings.s014') %></label>
+                <select name="settings[tencent_ses_region]" class="form-select form-select-sm">
+                  <option value="ap-guangzhou" <%= "selected" if @settings[:tencent_ses_region] == "ap-guangzhou" %>><%= t('admin.settings.s224') %></option>
+                  <option value="ap-shanghai" <%= "selected" if @settings[:tencent_ses_region] == "ap-shanghai" %>><%= t('admin.settings.s229') %></option>
+                  <option value="ap-beijing" <%= "selected" if @settings[:tencent_ses_region] == "ap-beijing" %>><%= t('admin.settings.s228') %></option>
+                  <option value="ap-chengdu" <%= "selected" if @settings[:tencent_ses_region] == "ap-chengdu" %>><%= t('admin.settings.s227') %></option>
+                  <option value="ap-hongkong" <%= "selected" if @settings[:tencent_ses_region] == "ap-hongkong" %>><%= t('admin.settings.s226') %></option>
+                  <option value="ap-singapore" <%= "selected" if @settings[:tencent_ses_region] == "ap-singapore" %>><%= t('admin.settings.s225') %></option>
+                  <option value="ap-bangkok" <%= "selected" if @settings[:tencent_ses_region] == "ap-bangkok" %>><%= t('admin.settings.s181') %></option>
+                  <option value="ap-tokyo" <%= "selected" if @settings[:tencent_ses_region] == "ap-tokyo" %>><%= t('admin.settings.s180') %></option>
+                  <option value="na-ashburn" <%= "selected" if @settings[:tencent_ses_region] == "na-ashburn" %>><%= t('admin.settings.s179') %></option>
+                  <option value="eu-frankfurt" <%= "selected" if @settings[:tencent_ses_region] == "eu-frankfurt" %>><%= t('admin.settings.s178') %></option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- <%= t('admin.settings.s177') %> -->
+      <div class="card card-admin mb-4" data-settings-group="user">
+        <div class="card-header py-3">
+          <h6 class="mb-0 fw-bold"><i class="bi bi-person-plus me-2 text-success"></i><%= t('admin.settings.s177') %></h6>
+        </div>
+        <div class="card-body">
+          <p class="text-muted small mb-3"><%= t('admin.settings.registration_hint') %></p>
+          <div class="row g-3">
+            <div class="col-md-4">
+              <label class="form-label fw-semibold small"><i class="bi bi-person me-1 text-primary"></i><%= t('admin.settings.s175') %></label>
+              <select name="settings[username_registration_enabled]" class="form-select form-select-sm">
+                <option value="false" <%= "selected" if @settings[:username_registration_enabled] != "true" %>><%= t('admin.settings.s223') %></option>
+                <option value="true" <%= "selected" if @settings[:username_registration_enabled] == "true" %>><%= t('admin.settings.s222') %></option>
+              </select>
+              <div class="form-text"><%= t('admin.settings.s174') %> + <%= t('admin.settings.s015') %></div>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label fw-semibold small"><i class="bi bi-envelope me-1 text-success"></i><%= t('admin.settings.s173') %></label>
+              <select name="settings[email_registration_enabled]" class="form-select form-select-sm">
+                <option value="false" <%= "selected" if @settings[:email_registration_enabled] != "true" %>><%= t('admin.settings.s223') %></option>
+                <option value="true" <%= "selected" if @settings[:email_registration_enabled] == "true" %>><%= t('admin.settings.s222') %></option>
+              </select>
+              <div class="form-text"><%= t('admin.settings.s172') %> + <%= t('admin.settings.s015') %></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 邀请码注册（invitation_codes 插件） -->
+      <% if Plugin.enabled?("invitation_codes") %>
+      <div class="card card-admin mb-4" data-settings-group="user">
+        <div class="card-header py-3">
+          <h6 class="mb-0 fw-bold"><i class="bi bi-key me-2 text-warning"></i><%= t('admin.settings.s079') %></h6>
+        </div>
+        <div class="card-body">
+          <p class="text-muted small mb-3"><%= t('admin.settings.invite_hint_html', mgmt: link_to(t('admin.settings.invite_mgmt'), admin_invitation_codes_path)).html_safe %></p>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold small"><%= t('admin.settings.s203') %></label>
+              <select name="settings[invitation_code_enabled]" class="form-select form-select-sm">
+                <option value="false" <%= "selected" if @settings[:invitation_code_enabled] != "true" %>><%= t('admin.settings.s223') %></option>
+                <option value="true" <%= "selected" if @settings[:invitation_code_enabled] == "true" %>><%= t('admin.settings.s222') %></option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold small"><%= t('admin.settings.s202') %></label>
+              <input type="text" name="settings[invitation_code_hint]" value="<%= @settings[:invitation_code_hint] %>" class="form-control form-control-sm" placeholder="<%= t('admin.settings.s201') %>">
+            </div>
+          </div>
+        </div>
+      </div>
+      <% end %>
+
+      <!-- <%= t('admin.settings.s200') %> -->
+      <div class="card card-admin mb-4" data-settings-group="thirdparty">
+        <div class="card-header py-3">
+          <h6 class="mb-0 fw-bold"><i class="bi bi-shield-check me-2 text-info"></i><%= t('admin.settings.s200') %></h6>
+        </div>
+        <div class="card-body">
+          <p class="text-muted small mb-3"><%= t('admin.settings.captcha_hint_html', docs: link_to(t('admin.settings.captcha_console'), 'https://console.cloud.tencent.com/captcha', target: '_blank', rel: 'noopener')).html_safe %></p>
+          <div class="row g-3 mb-3">
+            <div class="col-md-4">
+              <label class="form-label fw-semibold small"><%= t('admin.settings.s196') %></label>
+              <select name="settings[tencent_captcha_enabled]" class="form-select form-select-sm" onchange="toggleCaptchaConfig()">
+                <option value="false" <%= "selected" if @settings[:tencent_captcha_enabled] != "true" %>><%= t('admin.settings.s223') %></option>
+                <option value="true" <%= "selected" if @settings[:tencent_captcha_enabled] == "true" %>><%= t('admin.settings.s222') %></option>
+              </select>
+              <div class="form-text"><%= t('admin.settings.s195') %></div>
+            </div>
+          </div>
+          <div id="captchaConfigDetail" style="<%= @settings[:tencent_captcha_enabled] == 'true' ? '' : 'display:none' %>">
+            <div class="row g-3 mb-3">
+              <div class="col-md-6">
+                <label class="form-label fw-semibold small">CaptchaAppId</label>
+                <input type="text" name="settings[tencent_captcha_app_id]" class="form-control form-control-sm" value="<%= @settings[:tencent_captcha_app_id] %>" placeholder="<%= t('admin.settings.s194') %>">
+                <div class="form-text"><%= t('admin.settings.s037') %>【<%= t('admin.settings.s035') %>】<%= t('admin.settings.s193') %></div>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label fw-semibold small">AppSecretKey</label>
+                <input type="password" name="settings[tencent_captcha_app_secret_key]" class="form-control form-control-sm" value="<%= @settings[:tencent_captcha_app_secret_key] %>" placeholder="<%= t('admin.settings.s192') %>">
+                <div class="form-text"><%= t('admin.settings.s037') %>【<%= t('admin.settings.s035') %>】→【<%= t('admin.settings.s007') %>】<%= t('admin.settings.s191') %></div>
+              </div>
+            </div>
+            <hr class="my-3">
+            <p class="text-muted small mb-3"><%= t('admin.settings.captcha_api_hint_html', keys: link_to(t('admin.settings.api_key_management'), 'https://console.cloud.tencent.com/cam/capi', target: '_blank', rel: 'noopener')).html_safe %></p>
+            <div class="row g-3 mb-3">
+              <div class="col-md-6">
+                <label class="form-label fw-semibold small">SecretId</label>
+                <input type="text" name="settings[tencent_captcha_secret_id]" class="form-control form-control-sm" value="<%= @settings[:tencent_captcha_secret_id] %>" placeholder="<%= t('admin.settings.s188') %>">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label fw-semibold small">SecretKey</label>
+                <input type="password" name="settings[tencent_captcha_secret_key]" class="form-control form-control-sm" value="<%= @settings[:tencent_captcha_secret_key] %>" placeholder="<%= t('admin.settings.s292') %>">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- <%= t('admin.settings.s243') %>开关 -->
+      <div class="card card-admin mb-4" data-settings-group="ops">
+        <div class="card-header py-3">
+          <h6 class="mb-0 fw-bold"><i class="bi bi-puzzle me-2 text-primary"></i><%= t('admin.settings.s243') %></h6>
+        </div>
+        <div class="card-body">
+          <p class="text-muted small mb-3"><%= t('admin.settings.modules_hint') %></p>
+          <div class="row g-3">
+            <%# 课程/题库等模块开关已由「插件管理」统一管理 %>
+          </div>
+        </div>
+      </div>
+
+      <!-- <%= t('admin.settings.s244') %> -->
+      <div class="card card-admin mb-4" data-settings-group="thirdparty">
+        <div class="card-header py-3">
+          <h6 class="mb-0 fw-bold"><i class="bi bi-shield-check me-2 text-success"></i><%= t('admin.settings.s244') %></h6>
+        </div>
+        <div class="card-body">
+          <p class="text-muted small mb-3"><%= t('admin.settings.tms_hint_html', docs: link_to(t('admin.settings.cms_console'), 'https://console.cloud.tencent.com/cms/text/overview', target: '_blank', rel: 'noopener')).html_safe %></p>
+          <div class="row g-3 mb-3">
+            <div class="col-md-4">
+              <label class="form-label fw-semibold small"><%= t('admin.settings.enable_text_moderation') %></label>
+              <select name="settings[text_moderation_enabled]" class="form-select form-select-sm" onchange="toggleTmsConfig()">
+                <option value="false" <%= "selected" if @settings[:text_moderation_enabled] != "true" %>><%= t('admin.settings.s223') %></option>
+                <option value="true" <%= "selected" if @settings[:text_moderation_enabled] == "true" %>><%= t('admin.settings.s222') %></option>
+              </select>
+              <div class="form-text"><%= t('admin.settings.tms_check_hint') %></div>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label fw-semibold small"><%= t('admin.settings.s014') %></label>
+              <select name="settings[tencent_tms_region]" class="form-select form-select-sm">
+                <option value="ap-guangzhou" <%= "selected" if @settings[:tencent_tms_region] == "ap-guangzhou" %>><%= t('admin.settings.s224') %></option>
+                <option value="ap-shanghai" <%= "selected" if @settings[:tencent_tms_region] == "ap-shanghai" %>><%= t('admin.settings.s229') %></option>
+                <option value="ap-beijing" <%= "selected" if @settings[:tencent_tms_region] == "ap-beijing" %>><%= t('admin.settings.s228') %></option>
+                <option value="ap-chengdu" <%= "selected" if @settings[:tencent_tms_region] == "ap-chengdu" %>><%= t('admin.settings.s227') %></option>
+                <option value="ap-hongkong" <%= "selected" if @settings[:tencent_tms_region] == "ap-hongkong" %>><%= t('admin.settings.s226') %></option>
+                <option value="ap-singapore" <%= "selected" if @settings[:tencent_tms_region] == "ap-singapore" %>><%= t('admin.settings.s225') %></option>
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label fw-semibold small"><%= t('admin.settings.s245') %></label>
+              <select name="settings[tencent_tms_source_language]" class="form-select form-select-sm">
+                <option value="zh" <%= "selected" if @settings[:tencent_tms_source_language] == "zh" %>><%= t('admin.settings.s246') %></option>
+                <option value="en" <%= "selected" if @settings[:tencent_tms_source_language] == "en" %>><%= t('admin.settings.s247') %></option>
+              </select>
+            </div>
+          </div>
+          <div class="row g-3 mb-3" id="tmsConfigDetail" style="<%= @settings[:text_moderation_enabled] == 'true' ? '' : 'display:none' %>">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold small">SecretId</label>
+              <input type="text" name="settings[tencent_tms_secret_id]" class="form-control form-control-sm" value="<%= @settings[:tencent_tms_secret_id] %>" placeholder="<%= t('admin.settings.s002') %>">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold small">SecretKey</label>
+              <input type="password" name="settings[tencent_tms_secret_key]" class="form-control form-control-sm" value="<%= @settings[:tencent_tms_secret_key] %>" placeholder="<%= t('admin.settings.s003') %>">
+              <div class="form-text"><%= t('admin.settings.tms_keys_hint_html', keys: link_to(t('admin.settings.api_key_management'), 'https://console.cloud.tencent.com/cam/capi', target: '_blank', rel: 'noopener')).html_safe %></div>
+            </div>
+          </div>
+          <div class="row g-3" id="tmsConfigBizType" style="<%= @settings[:text_moderation_enabled] == 'true' ? '' : 'display:none' %>">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold small"><%= t('admin.settings.s248') %></label>
+              <input type="text" name="settings[tencent_tms_biz_type]" class="form-control form-control-sm" value="<%= @settings[:tencent_tms_biz_type] %>" placeholder="<%= t('admin.settings.s249') %>">
+              <div class="form-text"><%= t('admin.settings.s250') %></div>
+            </div>
+          </div>
+          <hr class="my-3" id="tmsConfigHr" style="<%= @settings[:text_moderation_enabled] == 'true' ? '' : 'display:none' %>">
+          <div class="d-flex justify-content-between align-items-center" id="tmsTestRow" style="<%= @settings[:text_moderation_enabled] == 'true' ? '' : 'display:none' %>">
+            <div>
+              <div class="fw-semibold small"><%= t('admin.settings.s251') %></div>
+              <div class="text-muted" style="font-size:0.78rem"><%= t('admin.settings.s252') %></div>
+            </div>
+            <div class="d-flex gap-2">
+              <input type="text" id="tms_test_text" class="form-control form-control-sm" placeholder="<%= t('admin.settings.enter_test_text') %>" style="width:240px;">
+              <button type="button" class="btn btn-outline-success btn-sm" id="btn-tms-test" onclick="testTms()">
+                <i class="bi bi-lightning me-1"></i><%= t('admin.settings.s009') %>
+              </button>
+            </div>
+          </div>
+          <div id="tms-test-result" class="mt-2" style="display:none"></div>
+        </div>
+      </div>
+
+      <!-- <%= t('admin.settings.s268') %> -->
+      <div class="card card-admin mb-4" id="ai-settings" data-settings-group="ai">
+        <div class="card-header py-3">
+          <h6 class="mb-0 fw-bold"><i class="bi bi-cpu me-2 text-primary"></i><%= t('admin.settings.s268') %></h6>
+        </div>
+        <div class="card-body">
+          <p class="text-muted small mb-3"><%= t('admin.settings.ai_hint') %></p>
+          <div class="row g-3 mb-3">
+            <div class="col-md-4">
+              <label class="form-label fw-semibold small"><%= t('admin.settings.s264') %></label>
+              <select id="aiProviderSelect" name="settings[ai_provider]" class="form-select form-select-sm" onchange="toggleAiProvider()">
+                <option value="aliyun" <%= "selected" if @settings[:ai_provider].blank? || @settings[:ai_provider] == "aliyun" %>><%= t('admin.settings.s267') %></option>
+                <option value="tencent" <%= "selected" if @settings[:ai_provider] == "tencent" %>><%= t('admin.settings.s266') %></option>
+                <option value="custom" <%= "selected" if @settings[:ai_provider] == "custom" %>><%= t('admin.settings.s265') %></option>
+              </select>
+            </div>
+            <div class="col-md-8">
+              <label class="form-label fw-semibold small">API <%= t('admin.settings.s007') %></label>
+              <%= f.text_field :ai_api_key, value: @settings[:ai_api_key], class: "form-control form-control-sm", placeholder: t('admin.settings.s273') %>
+            </div>
+          </div>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold small"><%= t('admin.settings.s270') %></label>
+              <input type="text" id="aiBaseUrlInput" name="settings[ai_base_url]" value="<%= @settings[:ai_base_url] %>" class="form-control form-control-sm" placeholder="https://dashscope.aliyuncs.com/compatible-mode/v1">
+              <div class="form-text" id="aiBaseUrlHint"><%= t('admin.settings.s018') %></div>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold small"><%= t('admin.settings.s272') %></label>
+              <input type="text" id="aiModelInput" name="settings[ai_model]" value="<%= @settings[:ai_model] %>" class="form-control form-control-sm" placeholder="qwen3.5-flash">
+              <div class="form-text" id="aiModelHint"><%= t('admin.settings.s018') %></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- <%= t('admin.settings.s274') %> -->
+      <div class="card card-admin mb-4" id="auto-topic-settings" data-settings-group="ai">
+        <div class="card-header py-3">
+          <h6 class="mb-0 fw-bold"><i class="bi bi-cpu me-2 text-purple"></i><%= t('admin.settings.s274') %></h6>
+        </div>
+        <div class="card-body">
+          <p class="text-muted small mb-3"><%= t('admin.settings.auto_topic_hint_html', page: link_to(t('admin.settings.auto_topics_page'), admin_auto_topics_path)).html_safe %></p>
+          <div class="row g-3 mb-3">
+            <div class="col-md-3">
+              <label class="form-label fw-semibold small"><%= t('admin.settings.enable_auto_create') %></label>
+              <select name="settings[auto_topic_enabled]" class="form-select form-select-sm">
+                <option value="false" <%= "selected" if @settings[:auto_topic_enabled] != "true" %>><%= t('admin.settings.s223') %></option>
+                <option value="true" <%= "selected" if @settings[:auto_topic_enabled] == "true" %>><%= t('admin.settings.s222') %></option>
+              </select>
+            </div>
+            <div class="col-md-3">
+              <label class="form-label fw-semibold small"><%= t('admin.settings.s276') %></label>
+              <input type="number" name="settings[auto_topic_daily_count]" value="<%= @settings[:auto_topic_daily_count] %>" class="form-control form-control-sm" min="0" max="50" placeholder="0">
+            </div>
+            <div class="col-md-3">
+              <label class="form-label fw-semibold small"><%= t('admin.settings.s277') %></label>
+              <select name="settings[auto_topic_mode]" class="form-select form-select-sm">
+                <option value="draft" <%= "selected" if @settings[:auto_topic_mode] == "draft" %>><%= t('admin.settings.s278') %></option>
+                <option value="publish" <%= "selected" if @settings[:auto_topic_mode] == "publish" %>><%= t('admin.settings.s279') %></option>
+              </select>
+            </div>
+          </div>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold small"><%= t('admin.settings.s019') %></label>
+              <div class="d-flex align-items-center gap-2">
+                <input type="number" name="settings[auto_topic_time_start]" value="<%= @settings[:auto_topic_time_start] %>" class="form-control form-control-sm" min="0" max="23" style="width:70px;">
+                <span class="text-muted"><%= t('admin.settings.s294') %></span>
+                <span class="text-muted fw-bold"><%= t('admin.settings.s017') %></span>
+                <input type="number" name="settings[auto_topic_time_end]" value="<%= @settings[:auto_topic_time_end] %>" class="form-control form-control-sm" min="0" max="23" style="width:70px;">
+                <span class="text-muted"><%= t('admin.settings.s294') %></span>
+              </div>
+              <div class="form-text"><%= t('admin.settings.s280') %></div>
+            </div>
+          </div>
+          <div class="row g-3 mt-1">
+            <div class="col-md-12">
+              <label class="form-label fw-semibold small"><%= t('admin.settings.s284') %></label>
+              <textarea name="settings[ai_topic_prompt]" class="form-control form-control-sm" rows="6" placeholder="<%= t('admin.settings.s036') %>"><%= @settings[:ai_topic_prompt] %></textarea>
+              <div class="form-text"><%= t('admin.settings.s285') %></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- <%= t('admin.settings.s257') %> -->
+      <div class="card card-admin mb-4" id="auto-comment-settings" data-settings-group="ai">
+        <div class="card-header py-3">
+          <h6 class="mb-0 fw-bold"><i class="bi bi-chat-square-text me-2" style="color:#6366f1"></i><%= t('admin.settings.s257') %></h6>
+        </div>
+        <div class="card-body">
+          <p class="text-muted small mb-3"><%= t('admin.settings.auto_comment_hint_html', page: link_to(t('admin.settings.auto_comments_page'), admin_auto_comments_path)).html_safe %></p>
+          <div class="row g-3 mb-3">
+            <div class="col-md-3">
+              <label class="form-label fw-semibold small"><%= t('admin.settings.s222') %><%= t('admin.settings.s016') %></label>
+              <select name="settings[auto_comment_enabled]" class="form-select form-select-sm">
+                <option value="false" <%= "selected" if @settings[:auto_comment_enabled] != "true" %>><%= t('admin.settings.s223') %></option>
+                <option value="true" <%= "selected" if @settings[:auto_comment_enabled] == "true" %>><%= t('admin.settings.s222') %></option>
+              </select>
+            </div>
+            <div class="col-md-3">
+              <label class="form-label fw-semibold small"><%= t('admin.settings.s281') %></label>
+              <input type="number" name="settings[auto_comment_daily_count]" value="<%= @settings[:auto_comment_daily_count] %>" class="form-control form-control-sm" min="0" max="100" placeholder="0">
+            </div>
+          </div>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold small"><%= t('admin.settings.s019') %></label>
+              <div class="d-flex align-items-center gap-2">
+                <input type="number" name="settings[auto_comment_time_start]" value="<%= @settings[:auto_comment_time_start] %>" class="form-control form-control-sm" min="0" max="23" style="width:70px;">
+                <span class="text-muted"><%= t('admin.settings.s294') %></span>
+                <span class="text-muted fw-bold"><%= t('admin.settings.s017') %></span>
+                <input type="number" name="settings[auto_comment_time_end]" value="<%= @settings[:auto_comment_time_end] %>" class="form-control form-control-sm" min="0" max="23" style="width:70px;">
+                <span class="text-muted"><%= t('admin.settings.s294') %></span>
+              </div>
+              <div class="form-text"><%= t('admin.settings.s286') %></div>
+            </div>
+          </div>
+          <div class="row g-3">
+            <div class="col-md-12">
+              <label class="form-label fw-semibold small"><%= t('admin.settings.s282') %></label>
+              <textarea name="settings[ai_comment_prompt]" class="form-control form-control-sm" rows="6" placeholder="<%= t('admin.settings.s036') %>"><%= @settings[:ai_comment_prompt] %></textarea>
+              <div class="form-text"><%= t('admin.settings.comment_prompt_hint') %></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- AI <%= t('admin.settings.s287') %> -->
+      <div class="card card-admin mb-4" data-settings-group="ai">
+        <div class="card-header py-3">
+          <h6 class="mb-0 fw-bold"><i class="bi bi-robot me-2 text-info"></i>AI <%= t('admin.settings.s287') %></h6>
+        </div>
+        <div class="card-body">
+          <p class="text-muted small mb-3"><%= t('admin.settings.ai_label_hint') %></p>
+          <div class="row g-3">
+            <div class="col-md-4">
+              <label class="form-label fw-semibold small"><%= t('admin.settings.s222') %> AI <%= t('admin.settings.s288') %></label>
+              <select name="settings[ai_label_enabled]" class="form-select form-select-sm">
+                <option value="false" <%= "selected" if @settings[:ai_label_enabled] != "true" %>><%= t('admin.settings.s223') %></option>
+                <option value="true" <%= "selected" if @settings[:ai_label_enabled] == "true" %>><%= t('admin.settings.s222') %></option>
+              </select>
+              <div class="form-text"><%= t('admin.settings.ai_label_note') %></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- <%= t('admin.settings.s258') %> -->
+      <div class="card card-admin mb-4" data-settings-group="ai">
+        <div class="card-header py-3">
+          <h6 class="mb-0 fw-bold"><i class="bi bi-megaphone me-2 text-warning"></i><%= t('admin.settings.s258') %></h6>
+        </div>
+        <div class="card-body">
+          <p class="text-muted small mb-3"><%= t('admin.settings.cps_hint') %></p>
+          <div class="row g-3 mb-3">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold small"><%= t('admin.settings.s222') %> <%= t('admin.settings.s258') %></label>
+              <select name="settings[cps_ad_enabled]" class="form-select form-select-sm">
+                <option value="false" <%= "selected" if @settings[:cps_ad_enabled] != "true" %>><%= t('admin.settings.s223') %></option>
+                <option value="true" <%= "selected" if @settings[:cps_ad_enabled] == "true" %>><%= t('admin.settings.s222') %></option>
+              </select>
+            </div>
+          </div>
+
+          <!-- 广告列表 -->
+          <div id="cpsAdsList" class="mb-3">
+            <div class="text-muted small"><i class="bi bi-arrow-repeat spin me-1"></i><%= t('admin.settings.s304') %></div>
+          </div>
+
+          <div class="d-flex gap-2">
+            <button type="button" class="btn btn-outline-primary btn-sm" onclick="showCpsAdForm()">
+              <i class="bi bi-plus-lg me-1"></i><%= t('admin.settings.s008') %>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- <%= t('admin.settings.s321') %><%= t('admin.settings.s158') %> Modal -->
+      <div class="modal fade" id="cpsAdModal" tabindex="-1">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h6 class="modal-title fw-bold" id="cpsAdModalTitle"><%= t('admin.settings.s008') %></h6>
+              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+              <input type="hidden" id="cps_ad_edit_id">
+              <div class="mb-3">
+                <label class="form-label fw-semibold small"><%= t('admin.settings.s320') %> <span class="text-danger">*</span></label>
+                <input type="text" id="cps_ad_form_title" class="form-control form-control-sm" placeholder="<%= t('admin.settings.s233') %><%= t('admin.settings.s319') %>">
+              </div>
+              <div class="mb-3">
+                <label class="form-label fw-semibold small"><%= t('admin.settings.s318') %></label>
+                <textarea id="cps_ad_form_description" class="form-control form-control-sm" rows="2" placeholder="<%= t('admin.settings.s317') %>"></textarea>
+              </div>
+              <div class="mb-3">
+                <label class="form-label fw-semibold small"><%= t('admin.settings.s316') %></label>
+                <input type="hidden" id="cps_ad_form_image_url">
+                <div class="mb-2">
+                  <div id="cpsAdFormImagePreview" class="border rounded-3 bg-light mb-2 overflow-hidden" style="max-width:340px;min-height:40px; display:none;">
+                    <img id="cpsAdFormImagePreviewImg" src="" alt="<%= t('admin.settings.s315') %>" style="max-height:180px;max-width:100%;object-fit:cover;display:block;margin:0 auto;">
+                  </div>
+                  <div class="d-flex align-items-center gap-2 flex-wrap">
+                    <button type="button" class="btn btn-outline-primary btn-sm mb-0" onclick="document.getElementById('cps_ad_form_image_file').click()">
+                      <i class="bi bi-cloud-upload me-1"></i><%= t('admin.settings.s302') %>
+                    </button>
+                    <span id="cpsAdFormImageUploading" class="text-muted small" style="display:none"><i class="bi bi-arrow-repeat spin me-1"></i><%= t('admin.settings.s303') %></span>
+                    <button type="button" class="btn btn-outline-danger btn-sm mb-0" onclick="removeCpsAdFormImage()" id="cpsAdFormRemoveImageBtn" style="display:none"><i class="bi bi-trash me-1"></i><%= t('admin.settings.s301') %></button>
+                    <a href="javascript:void(0)" class="text-muted small text-decoration-none mb-0" style="font-size:0.78rem" onclick="toggleCpsAdFormUrlInput()"><i class="bi bi-link-45deg me-1"></i><%= t('admin.settings.s314') %></a>
+                  </div>
+                </div>
+                <div id="cpsAdFormImageUrlRow" style="display:none">
+                  <input type="url" id="cps_ad_form_image_url_input" class="form-control form-control-sm" placeholder="https://example.com/ad-banner.png" oninput="syncCpsAdFormManualUrl(this.value)">
+                </div>
+                <div class="form-text"><%= t('admin.settings.s313') %>×180px，<%= t('admin.settings.s312') %></div>
+              </div>
+              <div class="mb-3">
+                <label class="form-label fw-semibold small"><%= t('admin.settings.s311') %> <span class="text-danger">*</span></label>
+                <input type="url" id="cps_ad_form_link_url" class="form-control form-control-sm" placeholder="https://example.com/promo?ref=yourcode">
+                <div class="form-text"><%= t('admin.settings.s310') %></div>
+              </div>
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label fw-semibold small"><%= t('admin.settings.sort_order_hint') %></label>
+                  <input type="number" id="cps_ad_form_sort_order" class="form-control form-control-sm" value="0" min="0">
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label fw-semibold small"><%= t('admin.settings.s300') %></label>
+                  <select id="cps_ad_form_is_active" class="form-select form-select-sm">
+                    <option value="true" selected><%= t('admin.settings.s222') %></option>
+                    <option value="false"><%= t('admin.settings.s295') %></option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal"><%= t('admin.settings.s299') %></button>
+              <button type="button" class="btn btn-primary btn-sm" onclick="saveCpsAd()">
+                <i class="bi bi-check-lg me-1"></i><%= t('admin.settings.s298') %>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <input type="file" id="cps_ad_form_image_file" accept="image/png,image/jpeg,image/gif,image/webp" style="display:none" onchange="uploadCpsAdFormImage(this)">
+
+      <!-- <%= t('admin.settings.s255') %><%= t('admin.settings.s323') %> -->
+      <div class="card card-admin mb-4" data-settings-group="ai">
+        <div class="card-header py-3">
+          <h6 class="mb-0 fw-bold"><i class="bi bi-bar-chart-line me-2 text-info"></i><%= t('admin.settings.s255') %><%= t('admin.settings.s323') %></h6>
+        </div>
+        <div class="card-body">
+          <p class="text-muted small mb-3"><%= t('admin.settings.virtual_hint') %></p>
+          <div class="row g-3">
+            <div class="col-md-4">
+              <label class="form-label fw-semibold small"><%= t('admin.settings.s076') %></label>
+              <input type="number" name="settings[fake_users_count]" value="<%= @settings[:fake_users_count] %>" class="form-control form-control-sm" min="0" placeholder="0">
+              <div class="form-text"><%= t('admin.settings.s075') %><%= User.count %></div>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label fw-semibold small"><%= t('admin.settings.s074') %></label>
+              <input type="number" name="settings[fake_topics_count]" value="<%= @settings[:fake_topics_count] %>" class="form-control form-control-sm" min="0" placeholder="0">
+              <div class="form-text"><%= t('admin.settings.s073') %><%= Topic.count %></div>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label fw-semibold small"><%= t('admin.settings.s072') %></label>
+              <input type="number" name="settings[fake_comments_count]" value="<%= @settings[:fake_comments_count] %>" class="form-control form-control-sm" min="0" placeholder="0">
+              <div class="form-text"><%= t('admin.settings.s071') %><%= Comment.count %></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- <%= t('admin.settings.s070') %> -->
+      <div class="card card-admin mb-4" data-settings-group="ai">
+        <div class="card-header py-3">
+          <h6 class="mb-0 fw-bold"><i class="bi bi-image me-2 text-primary"></i><%= t('admin.settings.s070') %></h6>
+        </div>
+        <div class="card-body">
+          <p class="text-muted small mb-3"><%= t('admin.settings.storage_hint') %></p>
+          <div class="mb-3">
+            <label class="form-label fw-semibold small"><%= t('admin.settings.s068') %></label>
+            <select name="settings[image_storage]" class="form-select form-select-sm" style="max-width:300px">
+              <option value="local" <%= "selected" if @settings[:image_storage] != "cos" %>><%= t('admin.settings.s067') %></option>
+              <option value="cos" <%= "selected" if @settings[:image_storage] == "cos" %>><%= t('admin.settings.s033') %></option>
+            </select>
+            <div class="form-text"><%= t('admin.settings.s066') %>；COS：<%= t('admin.settings.s065') %></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 图片水印 -->
+      <div class="card card-admin mb-4" data-settings-group="ops">
+        <div class="card-header py-3">
+          <h6 class="mb-0 fw-bold"><i class="bi bi-droplet-half me-2 text-info"></i><%= t('admin.settings.s064') %></h6>
+        </div>
+        <div class="card-body">
+          <p class="text-muted small mb-3"><%= t('admin.settings.watermark_hint_html', warning: content_tag(:strong, t('admin.settings.local_no_watermark'), class: 'text-warning')).html_safe %></p>
+          <div class="row g-3 mb-3">
+            <div class="col-md-4">
+              <label class="form-label fw-semibold small"><%= t('admin.settings.s096') %></label>
+              <select name="settings[watermark_enabled]" class="form-select form-select-sm" onchange="toggleWatermarkSettings()">
+                <option value="false" <%= "selected" if @settings[:watermark_enabled] != "true" %>><%= t('admin.settings.s223') %></option>
+                <option value="true" <%= "selected" if @settings[:watermark_enabled] == "true" %>><%= t('admin.settings.s222') %></option>
+              </select>
+            </div>
+            <div class="col-md-8">
+              <label class="form-label fw-semibold small"><%= t('admin.settings.s095') %></label>
+              <input type="text" name="settings[watermark_text]" value="<%= @settings[:watermark_text] %>" class="form-control form-control-sm" placeholder="<%= t('admin.settings.s233') %>© <%= t('admin.settings.s094') %>" maxlength="50">
+              <div class="form-text"><%= t('admin.settings.s093') %></div>
+            </div>
+          </div>
+          <div class="row g-3 mb-3" id="watermarkDetailSettings" style="<%= @settings[:watermark_enabled] == 'true' ? '' : 'display:none' %>">
+            <div class="col-md-4">
+              <label class="form-label fw-semibold small"><%= t('admin.settings.s092') %></label>
+              <select name="settings[watermark_position]" class="form-select form-select-sm">
+                <option value="top_left" <%= "selected" if @settings[:watermark_position] == "top_left" %>><%= t('admin.settings.s091') %></option>
+                <option value="top_center" <%= "selected" if @settings[:watermark_position] == "top_center" %>><%= t('admin.settings.s090') %></option>
+                <option value="top_right" <%= "selected" if @settings[:watermark_position] == "top_right" %>><%= t('admin.settings.s089') %></option>
+                <option value="center" <%= "selected" if @settings[:watermark_position] == "center" %>><%= t('admin.settings.s088') %></option>
+                <option value="bottom_left" <%= "selected" if @settings[:watermark_position] == "bottom_left" %>><%= t('admin.settings.s087') %></option>
+                <option value="bottom_center" <%= "selected" if @settings[:watermark_position] == "bottom_center" %>><%= t('admin.settings.s086') %></option>
+                <option value="bottom_right" <%= "selected" if @settings[:watermark_position] == "bottom_right" %>><%= t('admin.settings.s085') %></option>
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label fw-semibold small"><%= t('admin.settings.s084') %></label>
+              <input type="number" name="settings[watermark_opacity]" value="<%= @settings[:watermark_opacity] %>" class="form-control form-control-sm" min="5" max="100" placeholder="30">
+              <div class="form-text">5-100，<%= t('admin.settings.s083') %></div>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label fw-semibold small"><%= t('admin.settings.s082') %></label>
+              <input type="number" name="settings[watermark_font_size]" value="<%= @settings[:watermark_font_size] %>" class="form-control form-control-sm" min="10" max="200" placeholder="24">
+              <div class="form-text">10-200，<%= t('admin.settings.s081') %></div>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label fw-semibold small"><%= t('admin.settings.s080') %></label>
+              <div class="d-flex align-items-center gap-2">
+                <input type="color" id="watermark_fill_color_preview" value="<%= @settings[:watermark_fill_color] || '#888888' %>" class="form-control form-control-color" style="width:40px;height:32px;padding:2px" onclick="document.getElementById('watermark_fill_color_input').focus()">
+                <input type="text" id="watermark_fill_color_input" name="settings[watermark_fill_color]" value="<%= @settings[:watermark_fill_color] || '#888888' %>" class="form-control form-control-sm" placeholder="#888888" maxlength="7" pattern="^#[0-9A-Fa-f]{6}$">
+              </div>
+              <div class="form-text"><%= t('admin.settings.s041') %> #FF0000</div>
+            </div>
+          </div>
+          <hr class="my-3">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <div class="fw-semibold small"><%= t('admin.settings.s038') %></div>
+              <div class="text-muted" style="font-size:0.78rem"><%= t('admin.settings.s039') %> <code>/images/:id</code>，<%= t('admin.settings.s040') %></div>
+            </div>
+            <button type="button" class="btn btn-outline-info btn-sm" id="btn-rewrite-urls" onclick="rewriteImageUrlsToProxy()">
+              <i class="bi bi-arrow-repeat me-1"></i><%= t('admin.settings.s006') %>
+            </button>
+          </div>
+          <div id="rewrite-urls-result" class="mt-2" style="display:none"></div>
+        </div>
+      </div>
+
+      <!-- <%= t('admin.settings.s322') %><%= t('admin.settings.s030') %> -->
+      <div class="card card-admin mb-4" id="cos-settings-card" data-settings-group="media">
+        <div class="card-header py-3">
+          <h6 class="mb-0 fw-bold"><i class="bi bi-cloud-arrow-up me-2 text-success"></i><%= t('admin.settings.s033') %></h6>
+        </div>
+        <div class="card-body">
+          <p class="text-muted small mb-3"><%= t('admin.settings.cos_hint_html', docs: link_to(t('admin.settings.cos_console'), 'https://console.cloud.tencent.com/cos/bucket', target: '_blank', rel: 'noopener')).html_safe %></p>
+          <div class="row g-3 mb-3">
+            <div class="col-md-6">
+              <%= f.label :tencent_cos_bucket, t('admin.settings.s059'), class: "form-label fw-semibold small" %>
+              <%= f.text_field :tencent_cos_bucket, value: @settings[:tencent_cos_bucket], class: "form-control form-control-sm", placeholder: t('admin.settings.s058') %>
+              <div class="form-text"><%= t('admin.settings.s057') %> &lt;bucketname&gt;-&lt;appid&gt;</div>
+            </div>
+            <div class="col-md-6">
+              <%= f.label :tencent_cos_region, t('admin.settings.s056'), class: "form-label fw-semibold small" %>
+              <%= f.text_field :tencent_cos_region, value: @settings[:tencent_cos_region], class: "form-control form-control-sm", placeholder: t('admin.settings.s055') %>
+              <div class="form-text"><%= t('admin.settings.s054') %></div>
+            </div>
+          </div>
+          <div class="row g-3 mb-3">
+            <div class="col-md-6">
+              <%= f.label :tencent_cos_custom_domain, t('admin.settings.s053'), class: "form-label fw-semibold small" %>
+              <%= f.text_field :tencent_cos_custom_domain, value: @settings[:tencent_cos_custom_domain], class: "form-control form-control-sm", placeholder: t('admin.settings.s052') %>
+              <div class="form-text">COS <%= t('admin.settings.s051') %></div>
+            </div>
+          </div>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <%= f.label :tencent_cos_secret_id, "SecretId", class: "form-label fw-semibold small" %>
+              <%= f.text_field :tencent_cos_secret_id, value: @settings[:tencent_cos_secret_id], class: "form-control form-control-sm", placeholder: t('admin.settings.s002') %>
+            </div>
+            <div class="col-md-6">
+              <%= f.label :tencent_cos_secret_key, "SecretKey", class: "form-label fw-semibold small" %>
+              <%= f.text_field :tencent_cos_secret_key, value: @settings[:tencent_cos_secret_key], class: "form-control form-control-sm", placeholder: t('admin.settings.s003') %>
+              <div class="form-text"><%= t('admin.settings.s034') %> <a href="https://console.cloud.tencent.com/cam/capi" target="_blank">API <%= t('admin.settings.s001') %></a> <%= t('admin.settings.s050') %></div>
+            </div>
+          </div>
+          <hr class="my-3">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <div>
+              <div class="fw-semibold small"><%= t('admin.settings.s031') %> → <%= t('admin.settings.s030') %></div>
+              <div class="text-muted" style="font-size:0.78rem"><%= t('admin.settings.s049') %></div>
+            </div>
+            <button type="button" class="btn btn-outline-success btn-sm" id="btn-migrate-cos" onclick="migrateImagesToCos()">
+              <i class="bi bi-cloud-upload me-1"></i><%= t('admin.settings.s011') %>
+            </button>
+          </div>
+          <div id="migrate-cos-result" class="mb-3" style="display:none"></div>
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <div class="fw-semibold small"><%= t('admin.settings.s030') %> → <%= t('admin.settings.s031') %></div>
+              <div class="text-muted" style="font-size:0.78rem"><%= t('admin.settings.s048') %></div>
+            </div>
+            <button type="button" class="btn btn-outline-primary btn-sm" id="btn-migrate-local" onclick="migrateImagesToLocal()">
+              <i class="bi bi-cloud-download me-1"></i><%= t('admin.settings.s012') %>
+            </button>
+          </div>
+          <div id="migrate-local-result" class="mt-2" style="display:none"></div>
+        </div>
+      </div>
+
+      <!-- 腾讯云点播 -->
+      <div class="card card-admin mb-4" data-settings-group="ops">
+        <div class="card-header py-3">
+          <h6 class="mb-0 fw-bold"><i class="bi bi-cloud-play me-2" style="color:#006eff"></i><%= t('admin.settings.s047') %></h6>
+        </div>
+        <div class="card-body">
+          <p class="text-muted small mb-3"><%= t('admin.settings.vod_hint_html', keys: link_to(t('admin.settings.api_key_management'), 'https://console.cloud.tencent.com/cam/capi', target: '_blank', rel: 'noopener')).html_safe %></p>
+          <div class="row g-3 mb-3">
+            <div class="col-md-4">
+              <%= f.label :tencent_vod_app_id, "App ID", class: "form-label fw-semibold small" %>
+              <%= f.text_field :tencent_vod_app_id, value: @settings[:tencent_vod_app_id], class: "form-control form-control-sm", placeholder: t('admin.settings.s044') %>
+              <div class="form-text"><%= t('admin.settings.s043') %></div>
+            </div>
+            <div class="col-md-4">
+              <%= f.label :tencent_vod_psign_key, t('admin.settings.s293'), class: "form-label fw-semibold small" %>
+              <%= f.text_field :tencent_vod_psign_key, value: @settings[:tencent_vod_psign_key], class: "form-control form-control-sm", placeholder: t('admin.settings.s153') %>
+              <div class="form-text"><%= t('admin.settings.s152') %> > <%= t('admin.settings.s151') %> > <%= t('admin.settings.s150') %></div>
+            </div>
+            <div class="col-md-4">
+              <%= f.label :tencent_vod_license_url, t('admin.settings.s149'), class: "form-label fw-semibold small" %>
+              <%= f.text_field :tencent_vod_license_url, value: @settings[:tencent_vod_license_url], class: "form-control form-control-sm", placeholder: t('admin.settings.tcplayer_required') %>
+              <div class="form-text"><%= t('admin.settings.vod_license_hint_html', console: link_to(t('admin.settings.ve_console'), 'https://console.cloud.tencent.com/vcube', target: '_blank', rel: 'noopener')).html_safe %></div>
+            </div>
+          </div>
+          <div class="row g-3 mb-3">
+            <div class="col-md-6">
+              <%= f.label :tencent_vod_secret_id, "SecretId", class: "form-label fw-semibold small" %>
+              <%= f.text_field :tencent_vod_secret_id, value: @settings[:tencent_vod_secret_id], class: "form-control form-control-sm", placeholder: t('admin.settings.s002') %>
+            </div>
+            <div class="col-md-6">
+              <%= f.label :tencent_vod_secret_key, "SecretKey", class: "form-label fw-semibold small" %>
+              <%= f.text_field :tencent_vod_secret_key, value: @settings[:tencent_vod_secret_key], class: "form-control form-control-sm", placeholder: t('admin.settings.s003') %>
+              <div class="form-text"><%= t('admin.settings.s145') %></div>
+            </div>
+          </div>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <%= f.label :tencent_vod_sub_app_id, t('admin.settings.s144'), class: "form-label fw-semibold small" %>
+              <%= f.text_field :tencent_vod_sub_app_id, value: @settings[:tencent_vod_sub_app_id], class: "form-control form-control-sm", placeholder: t('admin.settings.s143') %>
+              <div class="form-text"><%= t('admin.settings.s142') %></div>
+            </div>
+          </div>
+          <div class="row g-3 mb-3">
+            <div class="col-md-4">
+              <%= f.label :tencent_vod_adaptive_definition, t('admin.settings.s141'), class: "form-label fw-semibold small" %>
+              <%= f.text_field :tencent_vod_adaptive_definition, value: @settings[:tencent_vod_adaptive_definition], class: "form-control form-control-sm", placeholder: t('admin.settings.s140') %>
+              <div class="form-text"><%= t('admin.settings.s139') %> > <%= t('admin.settings.s138') %></div>
+            </div>
+            <div class="col-md-4">
+              <%= f.label :tencent_vod_adaptive_drm_type, t('admin.settings.s137'), class: "form-label fw-semibold small" %>
+              <%= f.select :tencent_vod_adaptive_drm_type, options_for_select([
+                [t('admin.settings.s136'), "none"],
+                [t('admin.settings.s135'), "simple_aes"],
+                ["Widevine + FairPlay", "widevine_fairplay"],
+                [t('admin.settings.s171'), "widevine"],
+                [t('admin.settings.s170'), "fairplay"]
+              ], @settings[:tencent_vod_adaptive_drm_type]), {}, class: "form-select form-select-sm" %>
+              <div class="form-text"><%= t('admin.settings.s169') %></div>
+            </div>
+            <div class="col-md-4">
+              <%= f.label :tencent_vod_transcode_definitions, t('admin.settings.hls_template_id'), class: "form-label fw-semibold small" %>
+              <%= f.text_field :tencent_vod_transcode_definitions, value: @settings[:tencent_vod_transcode_definitions], class: "form-control form-control-sm", placeholder: t('admin.settings.s167') %>
+              <div class="form-text"><%= t('admin.settings.s166') %></div>
+            </div>
+          </div>
+          <div class="row g-3 mb-3">
+            <div class="col-md-6">
+              <%= f.label :tencent_vod_playback_domain, t('admin.settings.s165'), class: "form-label fw-semibold small" %>
+              <%= f.text_field :tencent_vod_playback_domain, value: @settings[:tencent_vod_playback_domain], class: "form-control form-control-sm", placeholder: t('admin.settings.s164') %>
+              <div class="form-text">psign <%= t('admin.settings.s163') %></div>
+            </div>
+        </div>
+      </div>
+      <% end %>
+      <div class="d-flex justify-content-end"<%= ' style="display:none"' unless @license_verified %>>
+        <button type="submit" class="btn btn-primary rounded-pill px-4">
+          <i class="bi bi-check-lg me-1"></i><%= t('admin.settings.s162') %>
+        </button>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<script>
+// ===== 设置页分类页签 =====
+(function() {
+  var tabs = document.querySelectorAll('#settingsTabs [data-settings-tab]');
+  function showGroup(group) {
+    var anyVisible = false;
+    document.querySelectorAll('[data-settings-group]').forEach(function(card) {
+      var show = (card.getAttribute('data-settings-group') === group);
+      card.style.display = show ? '' : 'none';
+      if (show) anyVisible = true;
+    });
+    // 该分组没有任何卡片时（如未授权时的非授权分组），显示占位提示
+    var placeholder = document.getElementById('settingsEmptyPlaceholder');
+    if (placeholder) placeholder.style.display = anyVisible ? 'none' : '';
+    tabs.forEach(function(t) { t.classList.toggle('active', t.getAttribute('data-settings-tab') === group); });
+  }
+  tabs.forEach(function(btn) {
+    btn.addEventListener('click', function() { showGroup(btn.getAttribute('data-settings-tab')); });
+  });
+  // 初始只显示第一个分组（授权）
+  if (tabs.length) showGroup(tabs[0].getAttribute('data-settings-tab'));
+})();
+
+// Show/hide COS config when storage method changes
+(function() {
+  var storageSelect = document.querySelector('select[name="settings[image_storage]"]');
+  var cosCard = document.getElementById('cos-settings-card');
+  if (storageSelect && cosCard) {
+    function toggleCosCard() {
+      cosCard.style.display = '';
+    }
+    storageSelect.addEventListener('change', toggleCosCard);
+    toggleCosCard();
+  }
+})();
+
+// === CPS Ads Management ===
+var cpsAdsToken = null;
+
+function getCpsAdsToken() {
+  if (!cpsAdsToken) {
+    var meta = document.querySelector('meta[name="csrf-token"]');
+    cpsAdsToken = meta ? meta.content : '';
+  }
+  return cpsAdsToken;
+}
+
+function loadCpsAds() {
+  var container = document.getElementById('cpsAdsList');
+  fetch('/admin/cps_ads', {
+    headers: { 'Accept': 'application/json', 'X-CSRF-Token': getCpsAdsToken() }
+  })
+  .then(function(r) {
+    if (!r.ok) return r.text().then(function(t) { throw new Error(r.status + ': ' + t.substring(0, 200)); });
+    return r.json();
+  })
+  .then(function(ads) {
+    if (!ads || ads.length === 0) {
+      container.innerHTML = '<div class="text-muted small"><i class="bi bi-info-circle me-1"></i><%= t('admin.settings.s161') %></div>';
+      return;
+    }
+    var html = '<div class="list-group list-group-flush">';
+    ads.forEach(function(ad) {
+      var statusBadge = ad.is_active
+        ? '<span class="badge bg-success-subtle text-success"><%= t('admin.settings.s222') %></span>'
+        : '<span class="badge bg-secondary"><%= t('admin.settings.s295') %></span>';
+      var imageHtml = ad.image_url
+        ? '<img src="' + ad.image_url + '" alt="" style="height:32px;width:48px;object-fit:cover;border-radius:4px;margin-right:8px;">'
+        : '<span class="bg-light border rounded d-inline-flex align-items-center justify-content-center me-2" style="height:32px;width:48px;"><i class="bi bi-image text-muted" style="font-size:0.8rem"></i></span>';
+      html += '<div class="list-group-item px-0 py-2 d-flex align-items-center">'
+        + imageHtml
+        + '<div class="flex-grow-1 min-w-0">'
+        + '<div class="fw-semibold small text-truncate">' + ad.title + '</div>'
+        + '<div class="text-muted" style="font-size:0.72rem;text-overflow:ellipsis;overflow:hidden;white-space:nowrap;max-width:200px;">' + ad.link_url + '</div>'
+        + '</div>'
+        + '<div class="d-flex align-items-center gap-2 flex-shrink-0 ms-2">'
+        + statusBadge
+        + '<span class="text-muted" style="font-size:0.72rem"><%= t('admin.settings.s160') %> ' + ad.sort_order + '</span>'
+        + '<button type="button" class="btn btn-outline-secondary btn-sm py-0 px-1" onclick="editCpsAd(' + ad.id + ')" title="<%= t('admin.settings.s297') %>"><i class="bi bi-pencil" style="font-size:0.75rem"></i></button>'
+        + '<button type="button" class="btn btn-outline-danger btn-sm py-0 px-1" onclick="deleteCpsAd(' + ad.id + ')" title="<%= t('admin.settings.s296') %>"><i class="bi bi-trash" style="font-size:0.75rem"></i></button>'
+        + '</div>'
+        + '</div>';
+    });
+    html += '</div>';
+    container.innerHTML = html;
+  })
+  .catch(function(err) {
+    container.innerHTML = '<div class="text-danger small"><i class="bi bi-exclamation-triangle me-1"></i><%= t('admin.settings.s159') %> ' + err.message + '</div>';
+  });
+}
+
+function showCpsAdForm(editId) {
+  document.getElementById('cps_ad_edit_id').value = editId || '';
+  document.getElementById('cps_ad_form_title').value = '';
+  document.getElementById('cps_ad_form_description').value = '';
+  document.getElementById('cps_ad_form_image_url').value = '';
+  document.getElementById('cps_ad_form_link_url').value = '';
+  document.getElementById('cps_ad_form_sort_order').value = '0';
+  document.getElementById('cps_ad_form_is_active').value = 'true';
+  document.getElementById('cpsAdFormImagePreview').style.display = 'none';
+  document.getElementById('cpsAdFormImagePreviewImg').src = '';
+  document.getElementById('cpsAdFormImageUrlRow').style.display = 'none';
+  document.getElementById('cps_ad_form_image_url_input').value = '';
+  document.getElementById('cpsAdFormRemoveImageBtn').style.display = 'none';
+
+  var modalTitle = document.getElementById('cpsAdModalTitle');
+  if (editId) {
+    modalTitle.textContent = '<%= t('admin.settings.s158') %>';
+    fetch('/admin/cps_ads/' + editId, { headers: { 'Accept': 'application/json' } })
+    .then(function(r) {
+    if (!r.ok) return r.text().then(function(t) { throw new Error(r.status + ': ' + t.substring(0, 200)); });
+    return r.json();
+  })
+    .then(function(ad) {
+      document.getElementById('cps_ad_form_title').value = ad.title || '';
+      document.getElementById('cps_ad_form_description').value = ad.description || '';
+      document.getElementById('cps_ad_form_image_url').value = ad.image_url || '';
+      document.getElementById('cps_ad_form_link_url').value = ad.link_url || '';
+      document.getElementById('cps_ad_form_sort_order').value = ad.sort_order || 0;
+      document.getElementById('cps_ad_form_is_active').value = ad.is_active ? 'true' : 'false';
+      if (ad.image_url) {
+        document.getElementById('cpsAdFormImagePreviewImg').src = ad.image_url;
+        document.getElementById('cpsAdFormImagePreview').style.display = 'block';
+        document.getElementById('cpsAdFormRemoveImageBtn').style.display = '';
+      }
+    });
+  } else {
+    modalTitle.textContent = '<%= t('admin.settings.s008') %>';
+  }
+  new bootstrap.Modal(document.getElementById('cpsAdModal')).show();
+}
+
+function editCpsAd(id) {
+  showCpsAdForm(id);
+}
+
+function saveCpsAd() {
+  var title = document.getElementById('cps_ad_form_title').value.trim();
+  var linkUrl = document.getElementById('cps_ad_form_link_url').value.trim();
+  if (!title) { alert('<%= t('admin.settings.s157') %>'); return; }
+  if (!linkUrl) { alert('<%= t('admin.settings.s156') %>'); return; }
+
+  var editId = document.getElementById('cps_ad_edit_id').value;
+  var data = {
+    cps_ad: {
+      title: title,
+      description: document.getElementById('cps_ad_form_description').value.trim(),
+      image_url: document.getElementById('cps_ad_form_image_url').value.trim(),
+      link_url: linkUrl,
+      sort_order: parseInt(document.getElementById('cps_ad_form_sort_order').value) || 0,
+      is_active: document.getElementById('cps_ad_form_is_active').value === 'true'
+    }
+  };
+
+  var url, method;
+  if (editId) {
+    url = '/admin/cps_ads/' + editId;
+    method = 'PATCH';
+  } else {
+    url = '/admin/cps_ads';
+    method = 'POST';
+  }
+
+  fetch(url, {
+    method: method,
+    headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': getCpsAdsToken(), 'Accept': 'application/json' },
+    body: JSON.stringify(data)
+  })
+  .then(function(r) {
+    if (r.ok) return r.json();
+    return r.json().then(function(e) { throw new Error((e.errors || []).join(', ')); });
+  })
+  .then(function() {
+    bootstrap.Modal.getInstance(document.getElementById('cpsAdModal')).hide();
+    loadCpsAds();
+  })
+  .catch(function(err) { alert('<%= t('admin.settings.s155') %> ' + err.message); });
+}
+
+function deleteCpsAd(id) {
+  if (!confirm('<%= t('admin.settings.s154') %>')) return;
+  fetch('/admin/cps_ads/' + id, {
+    method: 'DELETE',
+    headers: { 'X-CSRF-Token': getCpsAdsToken(), 'Accept': 'application/json' }
+  })
+  .then(function(r) {
+    if (r.ok) { loadCpsAds(); }
+    else { throw new Error('<%= t('admin.settings.s234') %>'); }
+  })
+  .catch(function(err) { alert(err.message); });
+}
+
+function uploadCpsAdFormImage(input) {
+  if (!input.files || !input.files[0]) return;
+  var file = input.files[0];
+  if (file.size > 5 * 1024 * 1024) {
+    alert('<%= t('admin.settings.s305') %>');
+    input.value = '';
+    return;
+  }
+  var formData = new FormData();
+  formData.append('image', file);
+  var xhr = new XMLHttpRequest();
+  document.getElementById('cpsAdFormImageUploading').style.display = '';
+  xhr.open('POST', '/images');
+  xhr.setRequestHeader('X-CSRF-Token', getCpsAdsToken());
+  xhr.onload = function() {
+    document.getElementById('cpsAdFormImageUploading').style.display = 'none';
+    if (xhr.status === 200) {
+      try {
+        var res = JSON.parse(xhr.responseText);
+        var url = res.url || (res.image && res.image.url);
+        if (url) {
+          document.getElementById('cps_ad_form_image_url').value = url;
+          document.getElementById('cpsAdFormImagePreviewImg').src = url;
+          document.getElementById('cpsAdFormImagePreview').style.display = 'block';
+          document.getElementById('cpsAdFormRemoveImageBtn').style.display = '';
+          document.getElementById('cps_ad_form_image_url_input').value = '';
+          document.getElementById('cpsAdFormImageUrlRow').style.display = 'none';
+        }
+      } catch(e) { alert('<%= t('admin.settings.s114') %>'); }
+    } else { alert('<%= t('admin.settings.s113') %>'); }
+    input.value = '';
+  };
+  xhr.onerror = function() {
+    document.getElementById('cpsAdFormImageUploading').style.display = 'none';
+    alert('<%= t('admin.settings.s112') %>');
+    input.value = '';
+  };
+  xhr.send(formData);
+}
+
+function removeCpsAdFormImage() {
+  document.getElementById('cps_ad_form_image_url').value = '';
+  document.getElementById('cps_ad_form_image_url_input').value = '';
+  document.getElementById('cpsAdFormImagePreview').style.display = 'none';
+  document.getElementById('cpsAdFormImagePreviewImg').src = '';
+  document.getElementById('cpsAdFormRemoveImageBtn').style.display = 'none';
+}
+
+function toggleCpsAdFormUrlInput() {
+  var row = document.getElementById('cpsAdFormImageUrlRow');
+  row.style.display = row.style.display === 'none' ? 'block' : 'none';
+}
+
+function syncCpsAdFormManualUrl(url) {
+  document.getElementById('cps_ad_form_image_url').value = url;
+  var preview = document.getElementById('cpsAdFormImagePreview');
+  var img = document.getElementById('cpsAdFormImagePreviewImg');
+  if (url.trim()) {
+    img.src = url;
+    preview.style.display = 'block';
+    document.getElementById('cpsAdFormRemoveImageBtn').style.display = '';
+  } else {
+    preview.style.display = 'none';
+    img.src = '';
+    document.getElementById('cpsAdFormRemoveImageBtn').style.display = 'none';
+  }
+}
+
+// Initialize ad list on page load
+document.addEventListener('DOMContentLoaded', loadCpsAds);
+
+function migrateImagesToCos() {
+  var btn = document.getElementById('btn-migrate-cos');
+  var resultDiv = document.getElementById('migrate-cos-result');
+
+  if (!confirm('<%= t('admin.settings.s111') %>\n\n<%= t('admin.settings.s020') %>\n1. <%= t('admin.settings.s110') %>\n2. <%= t('admin.settings.s109') %>\n3. <%= t('admin.settings.s028') %>\n\n<%= t('admin.settings.s108') %>')) return;
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span><%= t('admin.settings.s027') %>';
+  resultDiv.style.display = 'block';
+  resultDiv.innerHTML = '<div class="text-muted small"><i class="bi bi-arrow-repeat spin me-1"></i><%= t('admin.settings.s107') %></div>';
+
+  var token = document.querySelector('meta[name="csrf-token"]');
+  fetch('/admin/settings/migrate_images_to_cos', {
+    method: 'POST',
+    headers: {
+      'X-CSRF-Token': token ? token.content : '',
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    }
+  })
+  .then(function(r) {
+    if (!r.ok) return r.text().then(function(t) { throw new Error(r.status + ': ' + t.substring(0, 200)); });
+    return r.json();
+  })
+  .then(function(data) {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="bi bi-cloud-upload me-1"></i><%= t('admin.settings.s011') %>';
+    if (data.error) {
+      resultDiv.innerHTML = '<div class="alert alert-danger py-2 small mb-0"><i class="bi bi-exclamation-triangle me-1"></i>' + data.error + '</div>';
+    } else {
+      resultDiv.innerHTML = '<div class="alert alert-success py-2 small mb-0"><i class="bi bi-check-circle me-1"></i><%= t('admin.settings.s025') %> <strong>' + data.migrated + '</strong> <%= t('admin.settings.s024') %> <strong>' + data.failed + '</strong> <%= t('admin.settings.s023') %> <strong>' + data.url_map_size + '</strong> <%= t('admin.settings.s022') %></div>';
+    }
+  })
+  .catch(function(err) {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="bi bi-cloud-upload me-1"></i><%= t('admin.settings.s011') %>';
+    resultDiv.innerHTML = '<div class="alert alert-danger py-2 small mb-0"><i class="bi bi-exclamation-triangle me-1"></i><%= t('admin.settings.s021') %>' + err.message + '</div>';
+  });
+}
+
+function migrateImagesToLocal() {
+  var btn = document.getElementById('btn-migrate-local');
+  var resultDiv = document.getElementById('migrate-local-result');
+
+  if (!confirm('<%= t('admin.settings.s106') %>\n\n<%= t('admin.settings.s020') %>\n1. <%= t('admin.settings.s105') %>\n2. <%= t('admin.settings.s104') %>\n3. <%= t('admin.settings.s028') %>\n\n<%= t('admin.settings.s103') %>')) return;
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span><%= t('admin.settings.s027') %>';
+  resultDiv.style.display = 'block';
+  resultDiv.innerHTML = '<div class="text-muted small"><i class="bi bi-arrow-repeat spin me-1"></i><%= t('admin.settings.s102') %></div>';
+
+  var token = document.querySelector('meta[name="csrf-token"]');
+  fetch('/admin/settings/migrate_images_to_local', {
+    method: 'POST',
+    headers: {
+      'X-CSRF-Token': token ? token.content : '',
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    }
+  })
+  .then(function(r) {
+    if (!r.ok) return r.text().then(function(t) { throw new Error(r.status + ': ' + t.substring(0, 200)); });
+    return r.json();
+  })
+  .then(function(data) {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="bi bi-cloud-download me-1"></i><%= t('admin.settings.s012') %>';
+    if (data.error) {
+      resultDiv.innerHTML = '<div class="alert alert-danger py-2 small mb-0"><i class="bi bi-exclamation-triangle me-1"></i>' + data.error + '</div>';
+    } else {
+      resultDiv.innerHTML = '<div class="alert alert-success py-2 small mb-0"><i class="bi bi-check-circle me-1"></i><%= t('admin.settings.s025') %> <strong>' + data.migrated + '</strong> <%= t('admin.settings.s024') %> <strong>' + data.failed + '</strong> <%= t('admin.settings.s023') %> <strong>' + data.url_map_size + '</strong> <%= t('admin.settings.s022') %></div>';
+    }
+  })
+  .catch(function(err) {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="bi bi-cloud-download me-1"></i><%= t('admin.settings.s012') %>';
+    resultDiv.innerHTML = '<div class="alert alert-danger py-2 small mb-0"><i class="bi bi-exclamation-triangle me-1"></i><%= t('admin.settings.s021') %>' + err.message + '</div>';
+  });
+}
+
+function toggleWatermarkSettings() {
+  var enabled = document.querySelector('select[name="settings[watermark_enabled]"]').value === 'true';
+  var detail = document.getElementById('watermarkDetailSettings');
+  if (detail) {
+    detail.style.display = enabled ? '' : 'none';
+  }
+}
+
+// Sync watermark color picker with text input
+document.addEventListener('DOMContentLoaded', function() {
+  var preview = document.getElementById('watermark_fill_color_preview');
+  var input = document.getElementById('watermark_fill_color_input');
+  if (preview && input) {
+    preview.addEventListener('input', function() { input.value = preview.value; });
+    input.addEventListener('input', function() {
+      if (/^#[0-9A-Fa-f]{6}$/.test(input.value)) preview.value = input.value;
+    });
+  }
+});
+
+function rewriteImageUrlsToProxy() {
+  var btn = document.getElementById('btn-rewrite-urls');
+  var resultDiv = document.getElementById('rewrite-urls-result');
+
+  if (!confirm('<%= t('admin.settings.s101') %>\n\n<%= t('admin.settings.s100') %>\n\n<%= t('admin.settings.s099') %>')) return;
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span><%= t('admin.settings.s098') %>';
+  resultDiv.style.display = 'block';
+  resultDiv.innerHTML = '<div class="text-muted small"><i class="bi bi-arrow-repeat spin me-1"></i><%= t('admin.settings.s042') %></div>';
+
+  var token = document.querySelector('meta[name="csrf-token"]');
+  fetch('/admin/settings/rewrite_image_urls_to_proxy', {
+    method: 'POST',
+    headers: {
+      'X-CSRF-Token': token ? token.content : '',
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    }
+  })
+  .then(function(r) {
+    if (!r.ok) return r.text().then(function(t) { throw new Error(r.status + ': ' + t.substring(0, 200)); });
+    return r.json();
+  })
+  .then(function(data) {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="bi bi-arrow-repeat me-1"></i><%= t('admin.settings.s006') %>';
+    if (data.message) {
+      resultDiv.innerHTML = '<div class="alert alert-success py-2 small mb-0"><i class="bi bi-info-circle me-1"></i>' + data.message + '</div>';
+    } else {
+      resultDiv.innerHTML = '<div class="alert alert-success py-2 small mb-0"><i class="bi bi-check-circle me-1"></i><%= t('admin.settings.s134') %> <strong>' + data.replaced + '</strong> <%= t('admin.settings.s133') %> <strong>' + data.url_map_size + '</strong> <%= t('admin.settings.s132') %></div>';
+    }
+  })
+  .catch(function(err) {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="bi bi-arrow-repeat me-1"></i><%= t('admin.settings.s006') %>';
+    resultDiv.innerHTML = '<div class="alert alert-danger py-2 small mb-0"><i class="bi bi-exclamation-triangle me-1"></i><%= t('admin.settings.s131') %>' + err.message + '</div>';
+  });
+}
+
+function toggleEmailProvider() {
+  var provider = document.getElementById('emailProviderSelect').value;
+  document.getElementById('sendflareConfig').style.display = provider === 'sendflare' ? 'block' : 'none';
+  document.getElementById('tencentSesConfig').style.display = provider === 'tencent_ses' ? 'block' : 'none';
+}
+
+var AI_PROVIDERS = {
+  aliyun: { url: 'https://dashscope.aliyuncs.com/compatible-mode/v1', model: 'qwen3.5-flash' },
+  tencent: { url: 'https://tokenhub.tencentmaas.com/v1', model: 'deepseek-v3' },
+  custom: { url: '', model: '' }
+};
+
+function toggleAiProvider() {
+  var provider = document.getElementById('aiProviderSelect').value;
+  var config = AI_PROVIDERS[provider];
+  if (config.url) document.getElementById('aiBaseUrlInput').value = config.url;
+  if (config.model) document.getElementById('aiModelInput').value = config.model;
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  toggleEmailProvider();
+  var provider = document.getElementById('aiProviderSelect').value;
+  if (provider && !document.getElementById('aiBaseUrlInput').value) toggleAiProvider();
+});
+
+function toggleTmsConfig() {
+  var enabled = document.querySelector('select[name="settings[text_moderation_enabled]"]').value === 'true';
+  var els = ['tmsConfigDetail', 'tmsConfigBizType', 'tmsConfigHr', 'tmsTestRow'];
+  els.forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) el.style.display = enabled ? '' : 'none';
+  });
+}
+
+function toggleCaptchaConfig() {
+  var enabled = document.querySelector('select[name="settings[tencent_captcha_enabled]"]').value === 'true';
+  var el = document.getElementById('captchaConfigDetail');
+  if (el) el.style.display = enabled ? '' : 'none';
+}
+
+function testTms() {
+  var btn = document.getElementById('btn-tms-test');
+  var resultDiv = document.getElementById('tms-test-result');
+  var text = document.getElementById('tms_test_text').value.trim();
+
+  if (!text) { alert('<%= t('admin.settings.s130') %>'); return; }
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span><%= t('admin.settings.s129') %>';
+  resultDiv.style.display = 'block';
+  resultDiv.innerHTML = '<div class="text-muted small"><i class="bi bi-arrow-repeat spin me-1"></i><%= t('admin.settings.s128') %></div>';
+
+  var token = document.querySelector('meta[name="csrf-token"]');
+  fetch('/admin/settings/test_tms', {
+    method: 'POST',
+    headers: {
+      'X-CSRF-Token': token ? token.content : '',
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    },
+    body: JSON.stringify({ text: text })
+  })
+  .then(function(r) {
+    if (!r.ok) return r.text().then(function(t) { throw new Error(r.status + ': ' + t.substring(0, 200)); });
+    return r.json();
+  })
+  .then(function(data) {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="bi bi-lightning me-1"></i><%= t('admin.settings.s009') %>';
+    if (data.error) {
+      resultDiv.innerHTML = '<div class="alert alert-danger py-2 small mb-0"><i class="bi bi-exclamation-triangle me-1"></i>' + data.error + '</div>';
+    } else {
+      var suggestionColor = data.suggestion === 'Block' ? 'danger' : (data.suggestion === 'Review' ? 'warning' : 'success');
+      resultDiv.innerHTML = '<div class="alert alert-' + suggestionColor + ' py-2 small mb-0"><i class="bi bi-' + (data.suggestion === 'Block' ? 'x-circle' : data.suggestion === 'Review' ? 'exclamation-circle' : 'check-circle') + ' me-1"></i>'
+        + '<strong><%= t('admin.settings.s127') %></strong>' + data.suggestion + ' | '
+        + '<strong><%= t('admin.settings.s126') %></strong>' + (data.label || 'Normal') + ' | '
+        + '<strong><%= t('admin.settings.s125') %></strong>' + (data.score || 0) + '/100'
+        + (data.keywords && data.keywords.length > 0 ? ' | <strong><%= t('admin.settings.s124') %></strong>' + data.keywords.join(', ') : '')
+        + '</div>';
+    }
+  })
+  .catch(function(err) {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="bi bi-lightning me-1"></i><%= t('admin.settings.s009') %>';
+    resultDiv.innerHTML = '<div class="alert alert-danger py-2 small mb-0"><i class="bi bi-exclamation-triangle me-1"></i><%= t('admin.settings.s029') %>' + err.message + '</div>';
+  });
+}
+
+function verifyLicense() {
+  var fileInput = document.querySelector('[name="settings[license_file]"]');
+  var licenseFile = fileInput ? fileInput.value.trim() : '';
+  var resultDiv = document.getElementById('licenseVerifyResult');
+  var btn = document.getElementById('btnVerifyLicense');
+
+  if (!licenseFile) {
+    resultDiv.innerHTML = '<div class="alert alert-warning py-2 small mb-0"><i class="bi bi-exclamation-triangle me-1"></i><%= t('admin.settings.s123') %></div>';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status"></span><%= t('admin.settings.s122') %>';
+  resultDiv.innerHTML = '';
+
+  fetch('/admin/settings/verify_license', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content },
+    body: JSON.stringify({ license_file: licenseFile })
+  })
+  .then(function(res) { return res.json(); })
+  .then(function(data) {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="bi bi-lightning me-1"></i><%= t('admin.settings.s013') %>';
+    if (data.success) {
+      var d = data.data || {};
+      var expiresInfo = d.end_date ? ' | <strong><%= t('admin.settings.s032') %></strong>' + new Date(d.end_date).toLocaleString('zh-CN') : ' | <strong><%= t('admin.settings.s032') %></strong><%= t('admin.settings.s121') %>';
+      resultDiv.innerHTML = '<div class="alert alert-success py-2 small mb-0"><i class="bi bi-check-circle me-1"></i>'
+        + '<strong><%= t('admin.settings.s120') %></strong> | '
+        + '<strong><%= t('admin.settings.s119') %></strong>' + (d.product || '-') + ' | '
+        + '<strong><%= t('admin.settings.s118') %></strong>' + (d.status || '-')
+        + (d.plan ? ' | <strong><%= t('admin.settings.s334') %></strong>' + d.plan : '')
+        + (d.license_key ? ' | <strong><%= t('admin.settings.s116') %></strong>' + d.license_key : '')
+        + expiresInfo
+        + '</div>';
+      setTimeout(function(){ location.reload(); }, 1500);
+    } else {
+      resultDiv.innerHTML = '<div class="alert alert-danger py-2 small mb-0"><i class="bi bi-x-circle me-1"></i><%= t('admin.settings.s115') %>' + (data.error || '<%= t('admin.settings.s306') %>') + '</div>';
+    }
+  })
+  .catch(function(err) {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="bi bi-lightning me-1"></i><%= t('admin.settings.s013') %>';
+    resultDiv.innerHTML = '<div class="alert alert-danger py-2 small mb-0"><i class="bi bi-x-circle me-1"></i><%= t('admin.settings.s115') %>' + err.message + '</div>';
+  });
+}
+</script>

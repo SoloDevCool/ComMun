@@ -1,0 +1,113 @@
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h4 class="text-dark fw-bold mb-0"><%= t('admin.ui.m760') %></h4>
+  <span class="badge bg-light text-dark rounded-pill px-3 py-2">
+    <%= t('admin.ui.m013') %> <%= InvitationCode.count %> <%= t('admin.ui.m761') %>
+    &middot; <%= t('admin.ui.m762') %> <%= InvitationCode.active.count %> 个
+  </span>
+</div>
+
+<!-- <%= t('admin.ui.m763') %> -->
+<div class="card card-admin mb-4">
+  <div class="card-header py-3">
+    <h6 class="mb-0 fw-bold"><i class="bi bi-plus-circle me-2 text-primary"></i><%= t('admin.ui.m763') %></h6>
+  </div>
+  <div class="card-body">
+    <%= form_with url: admin_invitation_codes_path, method: :post, class: "row g-3 align-items-end" do |f| %>
+      <div class="col-md-3">
+        <label class="form-label fw-semibold small"><%= t('admin.ui.m119') %></label>
+        <input type="number" name="count" value="1" min="1" max="100" class="form-control form-control-sm">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label fw-semibold small"><%= t('admin.ui.m764') %></label>
+        <input type="number" name="max_uses" value="1" min="1" class="form-control form-control-sm" placeholder="1">
+        <div class="form-text"><%= t('admin.ui.m765') %></div>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label fw-semibold small"><%= t('admin.expires_at') %></label>
+        <input type="datetime-local" name="expires_at" class="form-control form-control-sm">
+        <div class="form-text"><%= t('admin.ui.m766') %></div>
+      </div>
+      <div class="col-md-3">
+        <button type="submit" class="btn btn-primary btn-sm w-100" data-confirm="<%= t('admin.ui.m767') %>">
+          <i class="bi bi-plus-lg me-1"></i><%= t('admin.ui.m004') %>
+        </button>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<!-- <%= t('admin.ui.m768') %><%= t('admin.ui.m732') %> -->
+<div class="card card-admin">
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-hover mb-0">
+        <thead>
+          <tr>
+            <th class="ps-3"><%= t('admin.ui.m768') %></th>
+            <th><%= t('admin.status') %></th>
+            <th><%= t('admin.ui.m769') %></th>
+            <th class="d-none d-md-table-cell"><%= t('admin.ui.m047') %></th>
+            <th class="d-none d-lg-table-cell"><%= t('admin.expires_at') %></th>
+            <th class="d-none d-lg-table-cell"><%= t('admin.ui.m039') %></th>
+            <th class="pe-3 text-end"><%= t('admin.actions') %></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @invitation_codes.each do |code| %>
+            <tr>
+              <td class="ps-3">
+                <code class="text-decoration-none" style="font-size:0.9rem;letter-spacing:0.08em" onclick="navigator.clipboard.writeText('<%= code.code %>').then(()=>{this.classList.add('text-success');setTimeout(()=>this.classList.remove('text-success'),1000)})" title="<%= t('admin.ui.m770') %>"><%= code.code %></code>
+                <i class="bi bi-clipboard text-muted ms-1" style="font-size:0.75rem"></i>
+              </td>
+              <td>
+                <% if !code.enabled? %>
+                  <span class="badge bg-secondary bg-opacity-10 text-secondary rounded-pill"><%= t('admin.disabled_badge') %></span>
+                <% elsif code.expired? %>
+                  <span class="badge bg-danger bg-opacity-10 text-danger rounded-pill"><%= t('admin.expired') %></span>
+                <% elsif !code.usable? %>
+                  <span class="badge bg-warning bg-opacity-10 text-warning rounded-pill"><%= t('admin.ui.m078') %></span>
+                <% else %>
+                  <span class="badge bg-success bg-opacity-10 text-success rounded-pill"><%= t('admin.available') %></span>
+                <% end %>
+              </td>
+              <td>
+                <% if code.max_uses.nil? %>
+                  <span class="text-muted"><%= code.used_count %> <%= t('admin.ui.m771') %></span>
+                <% else %>
+                  <span><%= code.used_count %>/<%= code.max_uses %></span>
+                  <div class="progress mt-1" style="height:4px;width:60px">
+                    <div class="progress-bar bg-<%= code.used_count >= code.max_uses ? 'danger' : 'primary' %>" style="width:<%= [code.used_count.to_f / code.max_uses * 100, 100].min %>%"></div>
+                  </div>
+                <% end %>
+              </td>
+              <td class="d-none d-md-table-cell text-muted"><small><%= code.created_by.display_name %></small></td>
+              <td class="d-none d-lg-table-cell text-muted"><small><%= code.expires_at ? code.expires_at.strftime("%Y-%m-%d %H:%M") : t("admin.never_expires") %></small></td>
+              <td class="d-none d-lg-table-cell text-muted"><small><%= code.created_at.strftime("%Y-%m-%d %H:%M") %></small></td>
+              <td class="pe-3 text-end">
+                <div class="d-flex gap-1 justify-content-end">
+                  <%= link_to admin_invitation_code_path(code), class: "btn btn-sm btn-outline-primary btn-action", title: t('admin.ui.m772') do %>
+                    <i class="bi bi-eye"></i>
+                  <% end %>
+                  <%= button_to admin_invitation_code_path(code), method: :delete, class: "btn btn-sm btn-outline-danger btn-action", title: t("admin.delete"), data: { confirm: "确定删除邀请码 #{code.code} 吗？" } do %>
+                    <i class="bi bi-trash"></i>
+                  <% end %>
+                </div>
+              </td>
+            </tr>
+          <% end %>
+          <% if @invitation_codes.empty? %>
+            <tr>
+              <td colspan="7" class="text-center text-muted py-4"><%= t('admin.ui.m774') %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<% if @pagy.last > 1 %>
+  <div class="mt-3 d-flex justify-content-center">
+    <%== @pagy.series_nav(:bootstrap) %>
+  </div>
+<% end %>

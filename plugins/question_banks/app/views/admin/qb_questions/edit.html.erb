@@ -1,0 +1,119 @@
+<div class="d-flex align-items-center gap-2 mb-4">
+  <%= link_to admin_qb_exam_qb_questions_path(@qb_exam), class: "btn btn-outline-secondary btn-sm rounded-pill px-2" do %>
+    <i class="bi bi-arrow-left"></i>
+  <% end %>
+  <h4 class="text-dark fw-bold mb-0"><%= t('admin.ui.m280') %></h4>
+</div>
+
+<div class="card card-admin" style="max-width:760px">
+  <div class="card-body p-4">
+    <%= form_with model: [:admin, @qb_exam, @qb_question], local: true do |f| %>
+      <% if @qb_question.errors.any? %>
+        <div class="alert alert-danger rounded-3 py-2">
+          <i class="bi bi-exclamation-circle me-1"></i>
+          <ul class="mb-0 ms-3">
+            <% @qb_question.errors.full_messages.each do |msg| %>
+              <li><%= msg %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <div class="row g-3 mb-3">
+        <div class="col-md-4">
+          <%= f.label :question_type, t('admin.ui.m109'), class: "form-label fw-semibold small text-muted" %>
+          <%= f.select :question_type, QbQuestion::QUESTION_TYPE_LABELS.invert.to_a, {}, class: "form-select rounded-3", onchange: "toggleOptions()" %>
+        </div>
+        <div class="col-md-4">
+          <%= f.label :category, t("admin.category"), class: "form-label fw-semibold small text-muted" %>
+          <%= f.text_field :category, class: "form-control rounded-3", placeholder: t('admin.ui.m108') %>
+        </div>
+        <div class="col-md-4">
+          <%= f.label :sort_order, t("admin.sort_order"), class: "form-label fw-semibold small text-muted" %>
+          <%= f.number_field :sort_order, class: "form-control rounded-3", min: 0 %>
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <%= f.label :content, t("admin.question_content"), class: "form-label fw-semibold small text-muted" %>
+        <%= f.text_area :content, class: "form-control rounded-3", rows: 3, placeholder: t('admin.ui.m106') %>
+      </div>
+
+      <div class="mb-3" id="options-section" <%= 'style=display:none' if @qb_question.question_type == 2 %>>
+        <%= f.label :options, t('admin.ui.m105'), class: "form-label fw-semibold small text-muted" %>
+        <div class="row g-2 mb-2" id="options-inputs">
+          <% current_options = @qb_question.options || [] %>
+          <div class="col-md-6"><div class="input-group"><span class="input-group-text rounded-start-3 fw-bold">A</span><input type="text" name="options_a" class="form-control rounded-end-3" value="<%= current_options[0] %>" placeholder="<%= t('admin.ui.m104') %>"></div></div>
+          <div class="col-md-6"><div class="input-group"><span class="input-group-text rounded-start-3 fw-bold">B</span><input type="text" name="options_b" class="form-control rounded-end-3" value="<%= current_options[1] %>" placeholder="<%= t('admin.ui.m103') %>"></div></div>
+          <div class="col-md-6"><div class="input-group"><span class="input-group-text rounded-start-3 fw-bold">C</span><input type="text" name="options_c" class="form-control rounded-end-3" value="<%= current_options[2] %>" placeholder="<%= t('admin.ui.m102') %>"></div></div>
+          <div class="col-md-6"><div class="input-group"><span class="input-group-text rounded-start-3 fw-bold">D</span><input type="text" name="options_d" class="form-control rounded-end-3" value="<%= current_options[3] %>" placeholder="<%= t('admin.ui.m101') %>"></div></div>
+        </div>
+        <%= f.hidden_field :options, id: "question_options_value", value: current_options.to_json %>
+      </div>
+
+      <div class="row g-3 mb-3">
+        <div class="col-md-6">
+          <%= f.label :answer, t('admin.ui.m099'), class: "form-label fw-semibold small text-muted" %>
+          <div id="answer-choice-section" <%= 'style=display:none' if @qb_question.question_type == 2 %>>
+            <%= f.select :answer, [["A", 0], ["B", 1], ["C", 2], ["D", 3]], {}, class: "form-select rounded-3" %>
+          </div>
+          <div id="answer-judge-section" <%= 'style=display:none' if @qb_question.question_type != 2 %>>
+            <%= f.select :answer, [[t('admin.ui.m005'), 1], [t("admin.error"), 0]], {}, class: "form-select rounded-3" %>
+          </div>
+        </div>
+      </div>
+
+      <div class="mb-4">
+        <%= f.label :explanation, t("admin.parse"), class: "form-label fw-semibold small text-muted" %>
+        <%= f.text_area :explanation, class: "form-control rounded-3", rows: 2, placeholder: t('admin.ui.m098') %>
+      </div>
+
+      <div class="d-flex gap-2">
+        <%= f.submit t("admin.save_changes"), class: "btn btn-primary rounded-pill px-4" %>
+        <%= link_to t("admin.cancel"), admin_qb_exam_qb_questions_path(@qb_exam), class: "btn btn-outline-secondary rounded-pill px-4" %>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<script>
+function toggleOptions() {
+  var type = document.querySelector('#qb_question_question_type').value;
+  var optSection = document.getElementById('options-section');
+  var choiceAnswer = document.getElementById('answer-choice-section');
+  var judgeAnswer = document.getElementById('answer-judge-section');
+  if (type === '2') {
+    optSection.style.display = 'none';
+    choiceAnswer.style.display = 'none';
+    choiceAnswer.querySelector('select').disabled = true;
+    judgeAnswer.style.display = '';
+    judgeAnswer.querySelector('select').disabled = false;
+  } else {
+    optSection.style.display = '';
+    choiceAnswer.style.display = '';
+    choiceAnswer.querySelector('select').disabled = false;
+    judgeAnswer.style.display = 'none';
+    judgeAnswer.querySelector('select').disabled = true;
+  }
+}
+toggleOptions();
+
+document.querySelector('form').addEventListener('submit', function(e) {
+  var type = document.querySelector('#qb_question_question_type').value;
+  var optValue = document.getElementById('question_options_value');
+  if (type !== '2') {
+    var inputs = document.querySelectorAll('#options-inputs input[type="text"]');
+    var options = [];
+    inputs.forEach(function(input) {
+      if (input.value.trim()) options.push(input.value.trim());
+    });
+    optValue.value = JSON.stringify(options);
+    if (options.length < 2) {
+      e.preventDefault();
+      alert('<%= t('admin.ui.m050') %>');
+    }
+  } else {
+    optValue.value = JSON.stringify([]);
+  }
+});
+</script>

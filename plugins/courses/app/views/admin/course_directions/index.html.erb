@@ -1,0 +1,145 @@
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h4 class="text-dark fw-bold mb-0"><%= t('admin.ui.m638') %></h4>
+  <div class="d-flex gap-2 align-items-center">
+    <span class="text-muted" style="font-size:0.85rem">
+      <i class="bi bi-info-circle me-1"></i><%= t('admin.ui.m639') %>
+    </span>
+    <%= link_to new_admin_course_direction_path, class: "btn btn-primary rounded-pill px-3" do %>
+      <i class="bi bi-plus-lg me-1"></i><%= t('admin.ui.m640') %>
+    <% end %>
+  </div>
+</div>
+
+<div class="row g-4">
+  <div class="col-lg-8">
+    <div class="card card-admin">
+      <div class="card-header py-3 d-flex justify-content-between align-items-center">
+        <h6 class="mb-0 fw-bold"><i class="bi bi-compass me-2 text-primary"></i><%= t('admin.ui.m641') %></h6>
+        <span class="badge bg-primary"><%= @course_directions.size %> <%= t('admin.ui.m642') %></span>
+      </div>
+      <div class="card-body p-0">
+        <% if @course_directions.any? %>
+          <table class="table table-hover mb-0">
+            <thead>
+              <tr>
+                <th style="width:8%"><%= t('admin.sort_order') %></th>
+                <th style="width:25%"><%= t('admin.name') %></th>
+                <th><%= t('admin.ui.m232') %></th>
+                <th style="width:10%"><%= t('admin.status') %></th>
+                <th style="width:10%"><%= t('admin.actions') %></th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @course_directions.each do |dir| %>
+                <tr>
+                  <td class="text-muted small"><%= dir.sort_order %></td>
+                  <td>
+                    <span class="fw-semibold"><%= dir.name %></span>
+                  </td>
+                  <td>
+                    <span class="badge bg-light text-dark rounded-pill"><%= dir.courses.count %></span>
+                  </td>
+                  <td>
+                    <% if dir.is_active? %>
+                      <span class="badge bg-success-subtle text-success"><%= t('admin.enable') %></span>
+                    <% else %>
+                      <span class="badge bg-secondary-subtle text-secondary"><%= t('admin.disable') %></span>
+                    <% end %>
+                  </td>
+                  <td>
+                    <div class="d-flex gap-1">
+                      <button type="button" class="btn btn-sm btn-outline-primary btn-action" data-bs-toggle="modal" data-bs-target="#editModal_<%= dir.id %>" title="<%= t('admin.edit') %>">
+                        <i class="bi bi-pencil"></i>
+                      </button>
+                      <%= button_to admin_course_direction_path(dir), method: :delete, class: "btn btn-sm btn-outline-danger btn-action", title: t("admin.delete"), data: { turbo_confirm: "确定删除方向「#{dir.name}」？" } do %>
+                        <i class="bi bi-trash"></i>
+                      <% end %>
+                    </div>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        <% else %>
+          <div class="text-center text-muted py-5">
+            <i class="bi bi-compass d-block fs-1 mb-2"></i>
+            <p><%= t('admin.ui.m644') %></p>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-4">
+    <div class="card card-admin mb-4">
+      <div class="card-header py-3">
+        <h6 class="mb-0 fw-bold"><i class="bi bi-plus-circle me-2 text-success"></i><%= t('admin.ui.m230') %></h6>
+      </div>
+      <div class="card-body">
+        <%= form_with model: [:admin, CourseDirection.new], url: admin_course_directions_path, class: "needs-validation" do |f| %>
+          <div class="mb-3">
+            <%= f.label :name, t('admin.ui.m231'), class: "form-label fw-semibold small" %>
+            <%= f.text_field :name, class: "form-control form-control-sm", placeholder: t('admin.ui.m645'), required: true %>
+          </div>
+          <div class="row g-3 mb-3">
+            <div class="col-6">
+              <%= f.label :sort_order, t("admin.sort_order"), class: "form-label fw-semibold small" %>
+              <%= f.number_field :sort_order, class: "form-control form-control-sm", value: 0, min: 0 %>
+            </div>
+            <div class="col-6">
+              <%= f.label :is_active, t("admin.status"), class: "form-label fw-semibold small" %>
+              <select name="course_direction[is_active]" class="form-select form-select-sm">
+                <option value="true" selected><%= t('admin.enable') %></option>
+                <option value="false"><%= t('admin.disable') %></option>
+              </select>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary rounded-pill w-100">
+            <i class="bi bi-plus-lg me-1"></i><%= t('admin.ui.m230') %>
+          </button>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- <%= t('admin.ui.m008') %>弹窗 -->
+<% @course_directions.each do |dir| %>
+  <div class="modal fade" id="editModal_<%= dir.id %>" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h6 class="modal-title fw-bold"><%= t('admin.ui.m646') %></h6>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <%= form_with model: [:admin, dir], url: admin_course_direction_path(dir), method: :patch do |f| %>
+            <div class="mb-3">
+              <%= f.label :name, t('admin.ui.m231'), class: "form-label fw-semibold small" %>
+              <%= f.text_field :name, class: "form-control form-control-sm", required: true %>
+            </div>
+            <div class="row g-3 mb-3">
+              <div class="col-6">
+                <%= f.label :sort_order, t("admin.sort_order"), class: "form-label fw-semibold small" %>
+                <%= f.number_field :sort_order, class: "form-control form-control-sm", min: 0 %>
+              </div>
+              <div class="col-6">
+                <%= f.label :is_active, t("admin.status"), class: "form-label fw-semibold small" %>
+                <select name="course_direction[is_active]" class="form-select form-select-sm">
+                  <option value="true" <%= "selected" if dir.is_active? %>><%= t('admin.enable') %></option>
+                  <option value="false" <%= "selected" unless dir.is_active? %>><%= t('admin.disable') %></option>
+                </select>
+              </div>
+            </div>
+            <div class="d-flex justify-content-end gap-2">
+              <button type="button" class="btn btn-light rounded-pill" data-bs-dismiss="modal"><%= t('admin.cancel') %></button>
+              <button type="submit" class="btn btn-primary rounded-pill">
+                <i class="bi bi-check-lg me-1"></i><%= t('admin.ui.m002') %>
+              </button>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>

@@ -1,0 +1,835 @@
+<% content_for :title, "#{@current_lesson.title} - #{@course.title} - 课程 - #{site_name}" %>
+<% content_for :head do %>
+  <%= seo_meta_tags(title: "#{@current_lesson.title} - #{@course.title} - 课程 - #{site_name}", description: "正在学习#{@current_lesson.title}，属于#{@course.title}课程的一部分。在#{site_name}课程与社区成员一起学习成长。") %>
+<% end %>
+
+<style>
+  /* 学习页面布局 */
+  .learn-layout {
+    display: flex;
+    gap: 1.25rem;
+    align-items: flex-start;
+  }
+
+  /* 左侧主内容区 */
+  .learn-main {
+    flex: 1;
+    min-width: 0;
+  }
+
+  /* 右侧侧边栏 */
+  .learn-sidebar {
+    width: 340px;
+    flex-shrink: 0;
+    position: sticky;
+    top: 76px;
+    max-height: calc(100vh - 92px);
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* 视频播放区 */
+  .video-player-wrapper {
+    background: #000;
+    border-radius: 0.75rem;
+    overflow: hidden;
+    aspect-ratio: 16 / 9;
+    position: relative;
+  }
+  .video-player-wrapper video,
+  .video-player-wrapper .video-js {
+    width: 100% !important;
+    height: 100% !important;
+  }
+  .video-player-wrapper video {
+    object-fit: contain;
+  }
+  .video-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #1a1a2e, #16213e);
+    color: #fff;
+  }
+  .video-placeholder i {
+    font-size: 3.5rem;
+    opacity: 0.6;
+    margin-bottom: 0.75rem;
+  }
+  .video-placeholder span {
+    font-size: 0.9rem;
+    opacity: 0.5;
+  }
+
+  /* 课时信息 */
+  .lesson-header {
+    padding: 1.25rem 0;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 1.25rem;
+  }
+  .lesson-breadcrumb {
+    font-size: 0.78rem;
+    color: var(--text-faint);
+    margin-bottom: 0.5rem;
+  }
+  .lesson-breadcrumb a {
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color 0.15s;
+  }
+  .lesson-breadcrumb a:hover {
+    color: var(--text-link);
+  }
+  .lesson-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1.4;
+    margin-bottom: 0.75rem;
+  }
+  .lesson-meta {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  .lesson-meta-item {
+    font-size: 0.82rem;
+    color: var(--text-faint);
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+  .lesson-type-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.15rem 0.5rem;
+    font-size: 0.72rem;
+    font-weight: 500;
+    border-radius: 0.25rem;
+  }
+  .lesson-type-badge-video { background: rgba(99, 102, 241, 0.1); color: #6366f1; }
+  .lesson-type-badge-text  { background: rgba(5, 150, 105, 0.1);  color: #059669; }
+  .lesson-type-badge-quiz  { background: rgba(217, 119, 6, 0.1);  color: #d97706; }
+
+  /* 图文内容区 */
+  .lesson-content {
+    font-size: 0.92rem;
+    color: var(--text-secondary);
+    line-height: 1.8;
+  }
+  .lesson-content h2 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 1.5rem 0 0.75rem;
+  }
+  .lesson-content h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 1.25rem 0 0.5rem;
+  }
+  .lesson-content p {
+    margin-bottom: 1rem;
+  }
+  .lesson-content pre {
+    background: var(--bg-input);
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    padding: 1rem;
+    overflow-x: auto;
+    font-size: 0.85rem;
+    margin: 1rem 0;
+  }
+  .lesson-content code {
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    font-size: 0.85rem;
+  }
+  .lesson-content ul, .lesson-content ol {
+    padding-left: 1.5rem;
+    margin-bottom: 1rem;
+  }
+  .lesson-content li {
+    margin-bottom: 0.35rem;
+  }
+  .lesson-content blockquote {
+    border-left: 3px solid #6366f1;
+    padding: 0.75rem 1rem;
+    background: rgba(99, 102, 241, 0.05);
+    border-radius: 0 0.5rem 0.5rem 0;
+    margin: 1rem 0;
+    font-size: 0.88rem;
+  }
+
+  /* 底部导航 */
+  .lesson-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.25rem 0;
+    border-top: 1px solid var(--border-color);
+    margin-top: 2rem;
+  }
+  .lesson-nav-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    text-decoration: none;
+    transition: all 0.15s;
+    max-width: 45%;
+  }
+  .lesson-nav-btn:hover {
+    border-color: var(--border-color-stronger);
+    color: var(--text-primary);
+    background: var(--bg-card-hover);
+  }
+  .lesson-nav-btn.disabled {
+    opacity: 0.4;
+    pointer-events: none;
+  }
+  .lesson-nav-btn .nav-label {
+    font-size: 0.72rem;
+    color: var(--text-faint);
+    display: block;
+  }
+  .lesson-nav-btn .nav-title {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .lesson-nav-back {
+    color: var(--text-muted);
+    font-size: 0.82rem;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    transition: color 0.15s;
+  }
+  .lesson-nav-back:hover {
+    color: var(--text-primary);
+  }
+
+  /* 侧边栏 - 课程大纲 */
+  .sidebar-header {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 0.75rem 0.75rem 0 0;
+    padding: 0.85rem 1rem;
+    border-bottom: none;
+  }
+  .sidebar-course-title {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    margin-bottom: 0.5rem;
+  }
+  .sidebar-progress {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+    color: var(--text-faint);
+  }
+  .sidebar-progress-bar {
+    flex: 1;
+    height: 4px;
+    background: var(--bg-input);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .sidebar-progress-fill {
+    height: 100%;
+    background: #6366f1;
+    border-radius: 2px;
+    transition: width 0.3s;
+  }
+
+  /* 侧边栏 - 课时列表 */
+  .sidebar-lessons {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 0 0 0.75rem 0.75rem;
+    border-top: none;
+    overflow-y: auto;
+    flex: 1;
+  }
+  .sidebar-chapter-title {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 0.6rem 1rem 0.35rem;
+  }
+  .sidebar-lesson-item {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.55rem 1rem;
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: background-color 0.1s;
+    cursor: pointer;
+    border-left: 2px solid transparent;
+  }
+  .sidebar-lesson-item:hover {
+    background: var(--bg-card-hover);
+  }
+  .sidebar-lesson-item.active {
+    background: rgba(99, 102, 241, 0.06);
+    color: var(--text-primary);
+    border-left-color: #6366f1;
+    font-weight: 500;
+  }
+  .sidebar-lesson-item.completed .lesson-status-icon {
+    color: #059669;
+  }
+  .lesson-status-icon {
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: var(--bg-input);
+    color: var(--text-faint);
+  }
+  .sidebar-lesson-item.active .lesson-status-icon {
+    background: #6366f1;
+    color: #fff;
+  }
+  .sidebar-lesson-title {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .sidebar-lesson-duration {
+    font-size: 0.72rem;
+    color: var(--text-faint);
+    flex-shrink: 0;
+  }
+
+  /* 暗色主题适配 */
+  [data-bs-theme="dark"] .lesson-type-badge-video { background: rgba(99, 102, 241, 0.15); color: #818cf8; }
+  [data-bs-theme="dark"] .lesson-type-badge-text  { background: rgba(5, 150, 105, 0.15);  color: #34d399; }
+  [data-bs-theme="dark"] .lesson-type-badge-quiz  { background: rgba(217, 119, 6, 0.15);  color: #fbbf24; }
+  [data-bs-theme="dark"] .video-placeholder { background: linear-gradient(135deg, #0f0f1a, #0a1628); }
+  [data-bs-theme="dark"] .sidebar-lesson-item.active { background: rgba(99, 102, 241, 0.1); }
+
+  /* 响应式 */
+  @media (max-width: 991px) {
+    .learn-layout { flex-direction: column; }
+    .learn-sidebar { width: 100%; position: static; max-height: none; }
+  }
+</style>
+
+<div class="container-lg py-4">
+  <!-- 面包屑 -->
+  <nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb mb-0" style="font-size:0.82rem">
+      <li class="breadcrumb-item"><a href="<%= courses_path %>" class="text-decoration-none" style="color:var(--text-muted)">课程</a></li>
+      <li class="breadcrumb-item"><a href="<%= course_path(@course) %>" class="text-decoration-none" style="color:var(--text-muted)"><%= @course.title %></a></li>
+      <li class="breadcrumb-item active" style="color:var(--text-primary)"><%= @current_lesson.title %></li>
+    </ol>
+  </nav>
+
+  <div class="learn-layout">
+    <!-- 左侧主内容区 -->
+    <div class="learn-main">
+      <!-- 视频 / 图文播放区 -->
+      <% if @current_lesson.lesson_type == 'video' %>
+        <div class="video-player-wrapper" id="videoPlayerContainer">
+          <% if @current_lesson.local_video? %>
+            <!-- 本地视频播放 -->
+            <video id="localPlayer" width="100%" height="100%" controls preload="auto" playsinline>
+              <source src="<%= url_for(@current_lesson.video) %>" type="<%= @current_lesson.video.content_type %>">
+              您的浏览器不支持视频播放
+            </video>
+          <% elsif @current_lesson.vod_video? %>
+            <!-- 腾讯云点播播放 -->
+            <video id="tcPlayer" width="100%" height="100%" preload="auto" playsinline webkit-playsinline disablepictureinpicture controlsList="nodownload nofullscreen noremoteplayback"></video>
+          <% else %>
+            <div class="video-placeholder">
+              <i class="bi bi-play-circle"></i>
+              <span><%= @current_lesson.title %></span>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+
+      <!-- 课时信息 -->
+      <div class="lesson-header">
+        <div class="lesson-breadcrumb">
+          <a href="<%= course_path(@course) %>"><%= @course.title %></a>
+          <span class="mx-1">/</span>
+          <a href="<%= learn_course_path(@course, lesson_id: @current_chapter.course_lessons.ordered.first.id) %>"><%= @current_chapter.title %></a>
+        </div>
+        <h1 class="lesson-title"><%= @current_lesson.title %></h1>
+        <div class="lesson-meta">
+          <span class="lesson-type-badge lesson-type-badge-<%= @current_lesson.lesson_type %>">
+            <i class="bi bi-<%= @current_lesson.lesson_type == 'video' ? 'camera-video' : @current_lesson.lesson_type == 'text' ? 'file-text' : 'patch-question' %>"></i>
+            <%= @current_lesson.lesson_type_label %>
+          </span>
+          <% if @current_lesson.duration.present? %>
+            <span class="lesson-meta-item"><i class="bi bi-clock"></i><%= @current_lesson.duration %></span>
+          <% end %>
+          <span class="lesson-meta-item"><i class="bi bi-book"></i>第 <%= @lesson_list.flat_map { |g| g[:lessons] }.index(@current_lesson) + 1 %> / <%= @lesson_list.flat_map { |g| g[:lessons] }.size %> 课时</span>
+        </div>
+      </div>
+
+      <!-- 图文内容 -->
+      <% if @current_lesson.lesson_type == 'text' && @current_lesson.content.present? %>
+        <div class="lesson-content markdown-body" id="lessonMarkdownContent"></div>
+        <script>
+        (function() {
+          var el = document.getElementById('lessonMarkdownContent');
+          if (!el || typeof marked === 'undefined') return;
+          try {
+            var raw = <%= raw @current_lesson.content.to_json %>;
+            if (raw) el.innerHTML = marked.parse(raw);
+          } catch(e) { console.error('Markdown render error:', e); }
+        })();
+        </script>
+      <% elsif @current_lesson.lesson_type == 'text' %>
+        <div class="lesson-content">
+          <h2>课程概述</h2>
+          <p>本节将带你从零开始了解 <strong><%= @current_lesson.title %></strong> 的核心概念与最佳实践。通过理论讲解和实际案例，帮助你快速掌握关键知识点。</p>
+
+          <blockquote>
+            提示：建议先阅读完整的课程大纲，了解整体学习路径，再逐步深入学习每个章节。
+          </blockquote>
+
+          <h2>核心知识点</h2>
+
+          <h3>1. 基础概念</h3>
+          <p>在开始实际编码之前，我们需要先理解几个基础概念。这些概念是整个课程的基石，后续所有内容都建立在这些基础之上。</p>
+          <ul>
+            <li>理解项目架构与目录结构</li>
+            <li>掌握核心组件的作用与关系</li>
+            <li>熟悉开发环境的配置与调试技巧</li>
+            <li>了解常用工具链的使用方法</li>
+          </ul>
+
+          <h3>2. 实战演练</h3>
+          <p>接下来我们通过一个实际案例来加深理解。下面是一个典型的配置示例：</p>
+
+          <pre><code># 基础配置示例
+config = {
+  environment: "production",
+  database_url: ENV["DATABASE_URL"],
+  cache_enabled: true,
+  logger_level: :info
+}
+
+# 初始化应用
+Application.configure do |app|
+  app.setup(config)
+  app.boot!
+end</code></pre>
+
+          <h3>3. 常见问题</h3>
+          <p>在学习和实践过程中，你可能会遇到以下常见问题：</p>
+          <ol>
+            <li><strong>环境不一致</strong> — 确保团队成员使用相同版本的依赖</li>
+            <li><strong>性能瓶颈</strong> — 使用缓存策略优化响应速度</li>
+            <li><strong>安全配置</strong> — 始终在部署前检查安全相关设置</li>
+          </ol>
+
+          <h2>本节总结</h2>
+          <p>通过本节的学习，你应该已经掌握了 <%= @current_lesson.title %> 的基础知识。在下一节中，我们将深入探讨更高级的主题，并完成一个完整的实战项目。</p>
+        </div>
+      <% elsif @current_lesson.lesson_type == 'quiz' %>
+        <div class="lesson-content">
+          <h2>随堂测验</h2>
+          <p>完成以下题目，检验你对本章节内容的掌握程度。</p>
+
+          <div class="rounded-3 p-3 mb-3" style="background:var(--bg-card);border:1px solid var(--border-color)">
+            <p class="fw-semibold mb-2" style="font-size:0.92rem;color:var(--text-primary)">1. 以下哪个选项描述了正确的项目架构？</p>
+            <div class="d-flex flex-column gap-2">
+              <label class="d-flex align-items-center gap-2 p-2 rounded" style="background:var(--bg-input);font-size:0.85rem;color:var(--text-secondary);cursor:pointer">
+                <input type="radio" name="q1" class="form-check-input m-0"> A. 所有代码放在一个文件中
+              </label>
+              <label class="d-flex align-items-center gap-2 p-2 rounded" style="background:var(--bg-input);font-size:0.85rem;color:var(--text-secondary);cursor:pointer">
+                <input type="radio" name="q1" class="form-check-input m-0"> B. 按功能模块分层组织
+              </label>
+              <label class="d-flex align-items-center gap-2 p-2 rounded" style="background:var(--bg-input);font-size:0.85rem;color:var(--text-secondary);cursor:pointer">
+                <input type="radio" name="q1" class="form-check-input m-0"> C. 不需要任何架构设计
+              </label>
+              <label class="d-flex align-items-center gap-2 p-2 rounded" style="background:var(--bg-input);font-size:0.85rem;color:var(--text-secondary);cursor:pointer">
+                <input type="radio" name="q1" class="form-check-input m-0"> D. 随意放置即可
+              </label>
+            </div>
+          </div>
+
+          <div class="rounded-3 p-3 mb-3" style="background:var(--bg-card);border:1px solid var(--border-color)">
+            <p class="fw-semibold mb-2" style="font-size:0.92rem;color:var(--text-primary)">2. 缓存策略的主要目的是什么？</p>
+            <div class="d-flex flex-column gap-2">
+              <label class="d-flex align-items-center gap-2 p-2 rounded" style="background:var(--bg-input);font-size:0.85rem;color:var(--text-secondary);cursor:pointer">
+                <input type="radio" name="q2" class="form-check-input m-0"> A. 增加代码复杂度
+              </label>
+              <label class="d-flex align-items-center gap-2 p-2 rounded" style="background:var(--bg-input);font-size:0.85rem;color:var(--text-secondary);cursor:pointer">
+                <input type="radio" name="q2" class="form-check-input m-0"> B. 提升应用响应速度
+              </label>
+              <label class="d-flex align-items-center gap-2 p-2 rounded" style="background:var(--bg-input);font-size:0.85rem;color:var(--text-secondary);cursor:pointer">
+                <input type="radio" name="q2" class="form-check-input m-0"> C. 减少数据库大小
+              </label>
+              <label class="d-flex align-items-center gap-2 p-2 rounded" style="background:var(--bg-input);font-size:0.85rem;color:var(--text-secondary);cursor:pointer">
+                <input type="radio" name="q2" class="form-check-input m-0"> D. 以上都不是
+              </label>
+            </div>
+          </div>
+
+          <div class="rounded-3 p-3 mb-3" style="background:var(--bg-card);border:1px solid var(--border-color)">
+            <p class="fw-semibold mb-2" style="font-size:0.92rem;color:var(--text-primary)">3. 部署前需要检查的安全配置包括？</p>
+            <div class="d-flex flex-column gap-2">
+              <label class="d-flex align-items-center gap-2 p-2 rounded" style="background:var(--bg-input);font-size:0.85rem;color:var(--text-secondary);cursor:pointer">
+                <input type="checkbox" name="q3" class="form-check-input m-0"> 环境变量与密钥管理
+              </label>
+              <label class="d-flex align-items-center gap-2 p-2 rounded" style="background:var(--bg-input);font-size:0.85rem;color:var(--text-secondary);cursor:pointer">
+                <input type="checkbox" name="q3" class="form-check-input m-0"> SSL/TLS 证书配置
+              </label>
+              <label class="d-flex align-items-center gap-2 p-2 rounded" style="background:var(--bg-input);font-size:0.85rem;color:var(--text-secondary);cursor:pointer">
+                <input type="checkbox" name="q3" class="form-check-input m-0"> 跨域资源共享 (CORS) 设置
+              </label>
+              <label class="d-flex align-items-center gap-2 p-2 rounded" style="background:var(--bg-input);font-size:0.85rem;color:var(--text-secondary);cursor:pointer">
+                <input type="checkbox" name="q3" class="form-check-input m-0"> 日志级别与敏感信息过滤
+              </label>
+            </div>
+          </div>
+
+          <button class="btn mt-3" style="background:var(--bg-btn-primary);color:var(--text-btn-primary);border-radius:0.5rem;font-weight:600;font-size:0.85rem;padding:0.5rem 1.5rem">
+            <i class="bi bi-check2-circle me-1"></i>提交答案
+          </button>
+        </div>
+      <% else %>
+        <div class="lesson-content">
+          <h2>课程视频</h2>
+          <p>请观看上方视频内容，学习本节的核心知识点。视频播放完成后，点击下方"下一课"继续学习。</p>
+
+          <blockquote>
+            学习提示：建议边看视频边做笔记，遇到不理解的地方可以暂停反复观看。完成视频学习后，可以尝试动手实践以加深理解。
+          </blockquote>
+
+          <h2>视频要点</h2>
+          <ul>
+            <li>理解本节课时的核心概念与设计思路</li>
+            <li>掌握关键代码的实现方式</li>
+            <li>了解实际开发中常见的注意事项</li>
+            <li>学会如何将所学应用到自己的项目中</li>
+          </ul>
+
+          <h2>课后练习</h2>
+          <p>完成视频学习后，建议你：</p>
+          <ol>
+            <li>按照视频中的步骤，在自己的项目中完成实践</li>
+            <li>尝试对代码进行修改和扩展，加深理解</li>
+            <li>在社区中分享你的学习心得和遇到的问题</li>
+          </ol>
+        </div>
+      <% end %>
+
+      <!-- 底部导航 -->
+      <div class="lesson-nav">
+        <% if @prev_lesson %>
+          <a href="<%= learn_course_path(@course, lesson_id: @prev_lesson.id) %>" class="lesson-nav-btn">
+            <i class="bi bi-chevron-left"></i>
+            <div>
+              <span class="nav-label">上一课</span>
+              <span class="nav-title"><%= @prev_lesson.title %></span>
+            </div>
+          </a>
+        <% else %>
+          <span class="lesson-nav-btn disabled">
+            <i class="bi bi-chevron-left"></i>
+            <div>
+              <span class="nav-label">上一课</span>
+              <span class="nav-title">已是最前面</span>
+            </div>
+          </span>
+        <% end %>
+
+        <a href="<%= course_path(@course) %>" class="lesson-nav-back">
+          <i class="bi bi-grid"></i>课程大纲
+        </a>
+
+        <% if @next_lesson %>
+          <a href="<%= learn_course_path(@course, lesson_id: @next_lesson.id) %>" class="lesson-nav-btn" style="text-align:right">
+            <div>
+              <span class="nav-label">下一课</span>
+              <span class="nav-title"><%= @next_lesson.title %></span>
+            </div>
+            <i class="bi bi-chevron-right"></i>
+          </a>
+        <% else %>
+          <a href="<%= course_path(@course) %>" class="lesson-nav-btn" style="text-align:right">
+            <div>
+              <span class="nav-label">课程完成</span>
+              <span class="nav-title">返回课程详情</span>
+            </div>
+            <i class="bi bi-check-circle"></i>
+          </a>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- 右侧侧边栏 -->
+    <div class="learn-sidebar">
+      <!-- 课程信息 + 进度 -->
+      <div class="sidebar-header">
+        <div class="d-flex justify-content-between align-items-start mb-1">
+          <span class="sidebar-course-title"><%= @course.title %></span>
+          <a href="<%= course_path(@course) %>" class="text-decoration-none" style="font-size:0.75rem;color:var(--text-faint);white-space:nowrap;flex-shrink:0">
+            <i class="bi bi-box-arrow-up-right"></i>
+          </a>
+        </div>
+        <div class="sidebar-progress">
+          <span>0/<%= @progress[:total] %></span>
+          <div class="sidebar-progress-bar">
+            <div class="sidebar-progress-fill" style="width:0%"></div>
+          </div>
+          <span>0%</span>
+        </div>
+      </div>
+
+      <!-- 课时列表 -->
+      <div class="sidebar-lessons">
+        <% @lesson_list.each do |group| %>
+          <div class="sidebar-chapter-title"><%= group[:chapter].title %></div>
+          <% group[:lessons].each do |lesson| %>
+            <a href="<%= learn_course_path(@course, lesson_id: lesson.id) %>" class="sidebar-lesson-item <%= 'active' if lesson == @current_lesson %>" data-lesson-id="<%= lesson.id %>">
+              <span class="lesson-status-icon">
+                <% if lesson == @current_lesson %>
+                  <i class="bi bi-play-fill"></i>
+                <% else %>
+                  <i class="bi bi-circle"></i>
+                <% end %>
+              </span>
+              <span class="sidebar-lesson-title"><%= lesson.title %></span>
+              <span class="sidebar-lesson-duration"><%= lesson.duration if lesson.duration.present? %></span>
+            </a>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<% if @current_lesson.lesson_type == 'video' && @current_lesson.vod_video? && @current_lesson.video_url.present? %>
+<link href="https://cdn.jsdelivr.net/npm/tcplayer.js/dist/tcplayer.min.css" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/tcplayer.js/dist/tcplayer.v5.3.4.min.js" charset="utf-8"></script>
+<script>
+(function() {
+  var fileId = '<%= j(@current_lesson.video_url) %>';
+  var appID = '<%= SiteSetting.get("tencent_vod_sub_app_id", default: SiteSetting.get("tencent_vod_app_id", default: "")) %>';
+  var licenseUrl = '<%= SiteSetting.get("tencent_vod_license_url", default: "") %>';
+  var lessonId = '<%= @current_lesson.id %>';
+  var courseId = '<%= @course.id %>';
+  var containerId = 'tcPlayer';
+  var STORAGE_KEY = 'course_progress_' + courseId;
+
+  if (!appID || !licenseUrl || !licenseUrl.startsWith('http')) {
+    document.getElementById(containerId).outerHTML = '<p style="padding:20px;color:#999;">请先在后台配置腾讯云点播相关参数</p>';
+    return;
+  }
+
+  // 读取进度
+  function getProgress() {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; } catch(e) { return {}; }
+  }
+  function saveProgress(data) {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch(e) {}
+  }
+
+  // 保存当前课时进度
+  function saveLessonProgress(seconds, duration) {
+    var progress = getProgress();
+    var watched = Math.max(0, seconds || 0);
+    var dur = Math.max(0, duration || 0);
+    // 观看超过 90% 视频时长视为完成
+    var completed = dur > 0 && watched >= dur * 0.9;
+    progress[lessonId] = { t: Math.round(watched), d: Math.round(dur), c: completed };
+    saveProgress(progress);
+    updateSidebar(progress);
+  }
+
+  // 更新侧边栏完成状态
+  function updateSidebar(progress) {
+    document.querySelectorAll('.sidebar-lesson-item[data-lesson-id]').forEach(function(el) {
+      var lid = el.getAttribute('data-lesson-id');
+      var p = progress[lid];
+      if (p && p.c) {
+        el.classList.add('completed');
+        var icon = el.querySelector('.lesson-status-icon');
+        if (icon) icon.innerHTML = '<i class="bi bi-check-circle-fill"></i>';
+      }
+    });
+    // 更新进度条
+    var keys = Object.keys(progress);
+    var total = document.querySelectorAll('.sidebar-lesson-item[data-lesson-id]').length;
+    var done = keys.filter(function(k) { return progress[k] && progress[k].c; }).length;
+    if (total > 0) {
+      var pct = Math.round(done / total * 100);
+      var bar = document.querySelector('.sidebar-progress-fill');
+      var spans = document.querySelectorAll('.sidebar-progress span');
+      if (bar) bar.style.width = pct + '%';
+      if (spans[0]) spans[0].textContent = done + '/' + total;
+      if (spans[1]) spans[1].textContent = pct + '%';
+    }
+  }
+
+  // 通过服务端获取 psign，再用 FileID 模式播放
+  fetch('/api/vod/psign?file_id=' + encodeURIComponent(fileId))
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+      if (data.psign) {
+        var saved = getProgress()[lessonId] || {};
+        var player = TCPlayer(containerId, {
+          fileID: fileId,
+          appID: Number(appID),
+          psign: data.psign,
+          licenseUrl: licenseUrl,
+          autoplay: false,
+          controls: true,
+          width: '100%',
+          height: '100%',
+          // 防嗅探：优先使用 HLS 协议播放，避免暴露 MP4 直链
+          // HLS 分片传输，嗅探器只能抓到 .m3u8 索引而非完整视频
+          preferHls: true,
+          // 禁止画中画（减少录屏/下载入口）
+          pictureInPicture: false,
+          // 禁止截图相关
+          screenshot: false,
+          // 播放速率限制
+          playbackRates: [0.5, 0.75, 1, 1.25, 1.5, 2]
+        });
+
+        var saveTimer = null;
+        var video = document.querySelector('#' + containerId + ' video') || document.querySelector('#' + containerId + ' .video-js');
+
+        player.on('loadedmetadata', function() {
+          // 恢复上次播放位置
+          if (saved.t && saved.t > 5) {
+            player.currentTime(saved.t);
+          }
+          // 初始化侧边栏
+          updateSidebar(getProgress());
+        });
+
+        player.on('timeupdate', function() {
+          if (saveTimer) clearTimeout(saveTimer);
+          saveTimer = setTimeout(function() {
+            saveLessonProgress(player.currentTime(), player.duration());
+          }, 3000);
+        });
+
+        player.on('pause', function() {
+          saveLessonProgress(player.currentTime(), player.duration());
+        });
+
+        player.on('ended', function() {
+          saveLessonProgress(player.duration(), player.duration());
+        });
+
+        // 页面离开时保存
+        window.addEventListener('beforeunload', function() {
+          saveLessonProgress(player.currentTime(), player.duration());
+        });
+      } else {
+        document.getElementById(containerId).innerHTML = '<p style="padding:20px;color:#f66;">获取播放签名失败</p>';
+      }
+    })
+    .catch(function(err) {
+      console.error('[VOD] 初始化失败:', err);
+      document.getElementById(containerId).innerHTML = '<p style="padding:20px;color:#f66;">播放器初始化失败</p>';
+    });
+})();
+
+// 页面加载时初始化侧边栏状态
+(function() {
+  var courseId = '<%= @course.id %>';
+  var currentLessonId = '<%= @current_lesson.id %>';
+  try {
+    var progress = JSON.parse(localStorage.getItem('course_progress_' + courseId)) || {};
+    document.querySelectorAll('.sidebar-lesson-item[data-lesson-id]').forEach(function(el) {
+      var lid = el.getAttribute('data-lesson-id');
+      var p = progress[lid];
+      if (p && p.c && lid !== currentLessonId) {
+        el.classList.add('completed');
+        var icon = el.querySelector('.lesson-status-icon');
+        if (icon) icon.innerHTML = '<i class="bi bi-check-circle-fill"></i>';
+      }
+    });
+  } catch(e) {}
+})();
+
+// 防嗅探增强：禁止视频区域右键菜单
+(function() {
+  var container = document.getElementById('videoPlayerContainer');
+  if (container) {
+    container.addEventListener('contextmenu', function(e) {
+      e.preventDefault();
+      return false;
+    });
+  }
+
+  // 阻止拖拽视频元素
+  var video = document.querySelector('#tcPlayer');
+  if (video) {
+    video.addEventListener('dragstart', function(e) { e.preventDefault(); });
+  }
+})();
+
+// 动态防录屏水印（显示用户信息跑马灯）
+(function() {
+  var container = document.getElementById('videoPlayerContainer');
+  if (!container) return;
+
+  var username = '<%= user_signed_in? ? j(current_user.display_name) : "访客" %>';
+  var userId = '<%= user_signed_in? ? current_user.id : "0" %>';
+  var watermarkText = username + ' ' + userId;
+
+  var watermarkEl = document.createElement('div');
+  watermarkEl.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:10;overflow:hidden;';
+  container.style.position = 'relative';
+
+  var span = document.createElement('span');
+  span.textContent = watermarkText;
+  span.style.cssText = 'position:absolute;font-size:12px;color:rgba(255,255,255,0.12);white-space:nowrap;transform:rotate(-25deg);user-select:none;pointer-events:none;text-shadow:1px 1px 2px rgba(0,0,0,0.3);';
+
+  watermarkEl.appendChild(span);
+  container.appendChild(watermarkEl);
+
+  // 跑马灯动画
+  var pos = 0;
+  function animateWatermark() {
+    pos += 0.3;
+    if (pos > 120) pos = -30;
+    span.style.top = (30 + Math.sin(pos * Math.PI / 60) * 25) + '%';
+    span.style.left = (pos + 10) + '%';
+    requestAnimationFrame(animateWatermark);
+  }
+  animateWatermark();
+})();
+</script>
+<% end %>

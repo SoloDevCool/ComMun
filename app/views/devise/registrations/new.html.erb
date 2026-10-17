@@ -1,0 +1,186 @@
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+      <div class="card shadow-sm">
+        <div class="card-body p-4">
+          <h2 class="text-center mb-4"><%= t('.title') %></h2>
+
+          <% username_enabled = SiteSetting.get("username_registration_enabled", default: "true") == "true" %>
+          <% email_enabled = SiteSetting.get("email_registration_enabled", default: "true") == "true" %>
+          <% has_both_modes = username_enabled && email_enabled %>
+
+          <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { class: "needs-validation" }) do |f| %>
+            <%= render "devise/shared/error_messages", resource: resource %>
+
+            <% if has_both_modes %>
+              <!-- 注册方式切换 -->
+              <div class="btn-group w-100 mb-3" role="group">
+                <input type="radio" class="btn-check" name="reg_mode" id="modeUsername" value="username" autocomplete="off">
+                <label class="btn btn-outline-primary" for="modeUsername"><%= t('.sign_up_with_username') %></label>
+                <input type="radio" class="btn-check" name="reg_mode" id="modeEmail" value="email" autocomplete="off" checked>
+                <label class="btn btn-outline-primary" for="modeEmail"><%= t('.sign_up_with_email') %></label>
+              </div>
+
+              <input type="hidden" name="user[registration_mode]" id="registrationModeInput" value="email">
+            <% else %>
+              <input type="hidden" name="user[registration_mode]" id="registrationModeInput" value="<%= username_enabled ? 'username' : 'email' %>">
+            <% end %>
+
+            <!-- 用户名 -->
+            <div class="mb-3" id="usernameField" style="<%= email_enabled && !username_enabled ? 'display:none' : '' %>">
+              <%= f.label :username, t('.username'), class: "form-label" %>
+              <%= f.text_field :username, autocomplete: "username", class: "form-control", placeholder: t('.username_placeholder') %>
+            </div>
+
+            <!-- 邮箱 -->
+            <div class="mb-3" id="emailField" style="<%= username_enabled && !email_enabled ? 'display:none' : '' %>">
+              <%= f.label :email, t('.email'), class: "form-label" %>
+              <div class="input-group">
+                <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "form-control", placeholder: t('.email_placeholder'), id: "registration_email" %>
+                <% if EmailVerificationService.enabled? %>
+                  <button type="button" class="btn btn-outline-secondary" id="sendCodeBtn" onclick="sendVerificationCode()"><%= t('devise.shared.mailer.send_code') %></button>
+                <% end %>
+              </div>
+              <div class="form-text text-danger" id="emailError"></div>
+            </div>
+
+            <% if EmailVerificationService.enabled? %>
+              <!-- 验证码（仅邮箱模式显示） -->
+              <div class="mb-3" id="verificationCodeField">
+                <%= f.label :verification_code, t('.verification_code'), class: "form-label" %>
+                <input type="text" name="user[verification_code]" id="user_verification_code" class="form-control" placeholder="<%= t('devise.shared.mailer.verification_code_placeholder') %>" maxlength="6" inputmode="numeric" autocomplete="one-time-code">
+              </div>
+            <% end %>
+
+            <% if InvitationCode.requirement_enabled? %>
+              <div class="mb-3">
+                <%= f.label :invitation_code, t('.invitation_code'), class: "form-label" %>
+                <input type="text" name="user[invitation_code]" id="user_invitation_code" class="form-control text-uppercase" placeholder="<%= t('.invitation_code_placeholder') %>" autocomplete="off" style="letter-spacing:0.1em">
+                <div class="form-text"><%= SiteSetting.get("invitation_code_hint", default: t('.invitation_code_default_hint')) %></div>
+              </div>
+            <% end %>
+
+            <div class="mb-3">
+              <%= f.label :password, t('.password'), class: "form-label" %>
+              <% if @minimum_password_length %>
+                <small class="text-muted"><%= t('.min_characters', count: @minimum_password_length) %></small>
+              <% end %>
+              <%= f.password_field :password, autocomplete: "new-password", class: "form-control", placeholder: t('.password_placeholder') %>
+            </div>
+
+            <div class="mb-3">
+              <%= f.label :password_confirmation, t('.password_confirmation'), class: "form-label" %>
+              <%= f.password_field :password_confirmation, autocomplete: "new-password", class: "form-control", placeholder: t('.password_confirmation_placeholder') %>
+            </div>
+
+            <div class="d-grid">
+              <%= f.submit t('.submit'), class: "btn btn-primary" %>
+            </div>
+          <% end %>
+
+          <hr>
+          <%= render "devise/shared/links" %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+<% if has_both_modes %>
+// 仅在两种模式都可用时，监听 radio 切换
+document.querySelectorAll('input[name="reg_mode"]').forEach(function(radio) {
+  radio.addEventListener('change', function() {
+    switchMode(this.value);
+  });
+});
+<% end %>
+
+function switchMode(mode) {
+  document.getElementById('registrationModeInput').value = mode;
+  document.getElementById('usernameField').style.display = mode === 'username' ? '' : 'none';
+  document.getElementById('emailField').style.display = mode === 'email' ? '' : 'none';
+<% if EmailVerificationService.enabled? %>
+  document.getElementById('verificationCodeField').style.display = mode === 'email' ? '' : 'none';
+<% end %>
+  // 切换 focus
+  if (mode === 'username') {
+    document.getElementById('user_username').focus();
+  } else {
+    var emailEl = document.getElementById('registration_email');
+    if (emailEl) emailEl.focus();
+  }
+}
+</script>
+
+<% if EmailVerificationService.enabled? %>
+  <script>
+    function sendVerificationCode() {
+      var emailInput = document.getElementById('registration_email');
+      var btn = document.getElementById('sendCodeBtn');
+      var errorDiv = document.getElementById('emailError');
+      var email = emailInput.value.trim();
+
+      // Validate email format
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        errorDiv.textContent = '<%= j t('devise.shared.mailer.invalid_email') %>';
+        emailInput.classList.add('is-invalid');
+        return;
+      }
+
+      emailInput.classList.remove('is-invalid');
+      errorDiv.textContent = '';
+      btn.disabled = true;
+      btn.textContent = '<%= j t('devise.shared.mailer.sending') %>';
+
+      var csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+      fetch('<%= send_verification_code_path(format: :json) %>', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': csrfToken
+        },
+        body: JSON.stringify({ email: email })
+      })
+      .then(function(response) { return response.json(); })
+      .then(function(data) {
+        if (data.success) {
+          startCountdown(btn, 60);
+          errorDiv.textContent = '';
+          errorDiv.classList.remove('text-danger');
+          errorDiv.classList.add('text-success');
+          errorDiv.textContent = data.message;
+        } else {
+          btn.disabled = false;
+          btn.textContent = '<%= j t('devise.shared.mailer.send_code') %>';
+          errorDiv.classList.remove('text-success');
+          errorDiv.classList.add('text-danger');
+          errorDiv.textContent = data.message;
+        }
+      })
+      .catch(function() {
+        btn.disabled = false;
+        btn.textContent = '<%= j t('devise.shared.mailer.send_code') %>';
+        errorDiv.classList.remove('text-success');
+        errorDiv.classList.add('text-danger');
+        errorDiv.textContent = '<%= j t('devise.shared.mailer.network_error') %>';
+      });
+    }
+
+    function startCountdown(btn, seconds) {
+      var remaining = seconds;
+      btn.disabled = true;
+      btn.textContent = '<%= j t('devise.shared.mailer.resend_in', seconds: '%s') %>'.replace('%s', remaining);
+      var timer = setInterval(function() {
+        remaining--;
+        if (remaining <= 0) {
+          clearInterval(timer);
+          btn.disabled = false;
+          btn.textContent = '<%= j t('devise.shared.mailer.send_code') %>';
+        } else {
+          btn.textContent = '<%= j t('devise.shared.mailer.resend_in', seconds: '%s') %>'.replace('%s', remaining);
+        }
+      }, 1000);
+    }
+  </script>
+<% end %>

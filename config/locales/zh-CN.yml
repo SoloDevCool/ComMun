@@ -1,0 +1,164 @@
+zh-CN:
+  activerecord:
+    attributes:
+      topic:
+        title: "标题"
+        content: "内容"
+      topic_draft:
+        title: "标题"
+        content: "内容"
+      node:
+        name: "名称"
+        slug: "标识"
+      user:
+        username: "用户名"
+        email: "邮箱"
+        password: "密码"
+        current_password: "当前密码"
+      course:
+        title: "课程名称"
+      course_review:
+        content: "评价内容"
+      comment:
+        content: "评论内容"
+    errors:
+      format: "%{message}"
+      models:
+        topic:
+          attributes:
+            title:
+              blank: "标题不能为空"
+              too_short: "标题太短了（至少需要 %{count} 个字符）"
+              too_long: "标题太长了（最多 %{count} 个字符）"
+            content:
+              blank: "内容不能为空"
+              too_short: "内容太短了（至少需要 %{count} 个字符）"
+            node:
+              blank: "请选择版块"
+        topic_draft:
+          attributes:
+            title:
+              blank: "标题不能为空"
+              too_short: "标题太短了（至少需要 %{count} 个字符）"
+              too_long: "标题太长了（最多 %{count} 个字符）"
+            content:
+              blank: "内容不能为空"
+              too_short: "内容太短了（至少需要 %{count} 个字符）"
+            node:
+              blank: "请选择版块"
+        node:
+          attributes:
+            name:
+              blank: "名称不能为空"
+            slug:
+              blank: "标识不能为空"
+              invalid: "标识只能包含小写字母、数字和连字符"
+        user:
+          attributes:
+            username:
+              blank: "用户名不能为空"
+              too_short: "用户名太短了（至少需要 %{count} 个字符）"
+              too_long: "用户名太长了（最多 %{count} 个字符）"
+              taken: "该用户名已被占用"
+            email:
+              blank: "邮箱不能为空"
+              taken: "该邮箱已被注册"
+            password:
+              blank: "密码不能为空"
+              too_short: "密码太短了（至少需要 %{count} 个字符）"
+            current_password:
+              invalid: "当前密码不正确"
+        course:
+          attributes:
+            title:
+              blank: "课程名称不能为空"
+        course_review:
+          attributes:
+            content:
+              blank: "评价内容不能为空"
+        comment:
+          attributes:
+            content:
+              blank: "评论内容不能为空"
+              too_short: "评论内容太短了（至少需要 %{count} 个字符）"
+      messages:
+        record_invalid: "验证失败： %{errors}"
+        taken: "已被占用"
+        record_not_unique: "记录已存在"
+      template:
+        header:
+          one: "有 1 个错误导致无法保存"
+          other: "有 %{count} 个错误导致无法保存"
+        body: "以下字段存在问题："
+
+  datetime:
+    distance_in_words:
+      half_a_minute: "半分钟"
+      less_than_x_seconds:
+        one: "不到1秒"
+        other: "不到%{count}秒"
+      x_seconds:
+        one: "1秒"
+        other: "%{count}秒"
+      less_than_x_minutes:
+        one: "不到1分钟"
+        other: "不到%{count}分钟"
+      x_minutes:
+        one: "1分钟"
+        other: "%{count}分钟"
+      about_x_hours:
+        one: "大约1小时"
+        other: "大约%{count}小时"
+      x_days:
+        one: "1天"
+        other: "%{count}天"
+      about_x_months:
+        one: "大约1个月"
+        other: "大约%{count}个月"
+      x_months:
+        one: "1个月"
+        other: "%{count}个月"
+      almost_x_years:
+        one: "近1年"
+        other: "近%{count}年"
+      about_x_years:
+        one: "约1年"
+        other: "约%{count}年"
+      over_x_years:
+        one: "超过1年"
+        other: "超过%{count}年"
+      prompts:
+        second: "秒"
+        minute: "分"
+        hour: "时"
+        day: "日"
+        month: "月"
+        year: "年"
+
+  devise:
+    failure:
+      already_authenticated: "你已经登录了"
+      unauthenticated: "请先登录或注册"
+      invalid: "邮箱或密码不正确"
+      not_found_in_database: "邮箱或密码不正确"
+      locked: "账户已被锁定，请稍后再试"
+      last_attempt: "还有最后一次尝试机会，再次失败账户将被锁定"
+    sessions:
+      signed_in: "登录成功"
+      signed_out: "退出成功"
+    registrations:
+      signed_up: "注册成功，欢迎加入！"
+      signed_up_but_inactive: "注册成功，但账户尚未激活"
+      updated: "信息更新成功"
+      update_needs_confirmation: "信息更新成功，需要验证新邮箱"
+      destroyed: "账户已注销"
+    passwords:
+      send_instructions: "密码重置链接已发送到您的邮箱"
+      updated: "密码修改成功"
+    omniauth_callbacks:
+      success: "授权登录成功"
+    errors:
+      messages:
+        not_saved:
+          one: "有 1 个错误导致无法保存"
+          other: "有 %{count} 个错误导致无法保存"

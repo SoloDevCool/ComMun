@@ -1,0 +1,496 @@
+<% content_for :title, "#{@course.title} - 课程 - #{site_name}" %>
+<% content_for :head do %>
+  <%= seo_meta_tags(title: "#{@course.title} - 课程 - #{site_name}", description: "#{@course.title} - #{@total_lessons}节精选课程内容，帮助学习者掌握核心技能。在#{site_name}课程开启你的学习之旅。") %>
+<% end %>
+
+<style>
+  /* 课程详情页 Hero */
+  .course-hero {
+    background: var(--bg-card);
+    border-bottom: 1px solid var(--border-color);
+  }
+  .course-hero-cover {
+    height: 220px;
+    position: relative;
+    overflow: hidden;
+    border-radius: 0.75rem;
+  }
+  .course-hero-cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .course-hero-cover .cover-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 50%;
+    background: linear-gradient(to top, rgba(0,0,0,0.5), transparent);
+  }
+
+  /* 课程元信息 */
+  .course-info-bar {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    flex-wrap: wrap;
+  }
+  .course-info-item {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+  .course-info-item i {
+    font-size: 0.9rem;
+  }
+
+  /* 大纲折叠 */
+  .chapter-item {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 0.75rem;
+    margin-bottom: 0.75rem;
+    overflow: hidden;
+    transition: border-color 0.15s;
+  }
+  .chapter-item:hover {
+    border-color: var(--border-node-card-hover);
+  }
+  .chapter-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.25rem;
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.15s;
+  }
+  .chapter-header:hover {
+    background: var(--bg-card-hover);
+  }
+  .chapter-header .bi-chevron-down {
+    transition: transform 0.2s;
+  }
+  .chapter-header.collapsed .bi-chevron-down {
+    transform: rotate(-90deg);
+  }
+  .chapter-lessons {
+    border-top: 1px solid var(--border-color);
+  }
+  .lesson-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1.25rem 0.75rem 2.5rem;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    border-bottom: 1px solid var(--border-color);
+    transition: background-color 0.1s;
+  }
+  .lesson-item:last-child {
+    border-bottom: none;
+  }
+  .lesson-item:hover {
+    background: var(--bg-card-hover);
+  }
+  .lesson-type-icon {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.375rem;
+    font-size: 0.72rem;
+    flex-shrink: 0;
+  }
+  .lesson-type-video {
+    background: rgba(99, 102, 241, 0.1);
+    color: #6366f1;
+  }
+  .lesson-type-text {
+    background: rgba(5, 150, 105, 0.1);
+    color: #059669;
+  }
+  .lesson-type-quiz {
+    background: rgba(217, 119, 6, 0.1);
+    color: #d97706;
+  }
+  .lesson-free-badge {
+    font-size: 0.65rem;
+    padding: 0.1rem 0.35rem;
+    background: rgba(5, 150, 105, 0.1);
+    color: #059669;
+    border-radius: 0.25rem;
+    font-weight: 500;
+  }
+  .lesson-duration {
+    margin-left: auto;
+    font-size: 0.78rem;
+    color: var(--text-faint);
+    flex-shrink: 0;
+  }
+
+  /* 讲师卡片 */
+  .instructor-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 0.75rem;
+    padding: 1.25rem;
+  }
+  .instructor-avatar {
+    width: 56px;
+    height: 56px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #fff;
+    flex-shrink: 0;
+  }
+  .instructor-stat {
+    text-align: center;
+  }
+  .instructor-stat-num {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+  .instructor-stat-label {
+    font-size: 0.72rem;
+    color: var(--text-faint);
+  }
+
+  /* 评价 */
+  .review-item {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 0.75rem;
+    padding: 1rem 1.25rem;
+    margin-bottom: 0.75rem;
+  }
+  .review-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #fff;
+    flex-shrink: 0;
+  }
+  .review-stars {
+    color: #f59e0b;
+    font-size: 0.75rem;
+    letter-spacing: 1px;
+  }
+  .review-content {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+  .review-time {
+    font-size: 0.72rem;
+    color: var(--text-faint);
+  }
+
+  /* 侧边栏课程卡片（小） */
+  .related-course-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 0.75rem;
+    overflow: hidden;
+    transition: all 0.15s;
+    text-decoration: none;
+  }
+  .related-course-card:hover {
+    border-color: var(--border-node-card-hover);
+    box-shadow: 0 2px 8px var(--shadow-card);
+  }
+  .related-course-cover {
+    aspect-ratio: 2 / 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* 暗色主题适配 */
+  [data-bs-theme="dark"] .lesson-type-video {
+    background: rgba(99, 102, 241, 0.15);
+    color: #818cf8;
+  }
+  [data-bs-theme="dark"] .lesson-type-text {
+    background: rgba(5, 150, 105, 0.15);
+    color: #34d399;
+  }
+  [data-bs-theme="dark"] .lesson-type-quiz {
+    background: rgba(217, 119, 6, 0.15);
+    color: #fbbf24;
+  }
+  [data-bs-theme="dark"] .lesson-free-badge {
+    background: rgba(5, 150, 105, 0.15);
+    color: #34d399;
+  }
+</style>
+
+<div class="container-lg py-4">
+  <!-- 面包屑 -->
+  <nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb mb-0" style="font-size:0.82rem">
+      <li class="breadcrumb-item"><a href="<%= courses_path %>" class="text-decoration-none" style="color:var(--text-muted)">课程</a></li>
+      <li class="breadcrumb-item active" style="color:var(--text-primary)"><%= @course.title %></li>
+    </ol>
+  </nav>
+
+  <div class="row g-4">
+    <!-- 左侧主内容 -->
+    <div class="col-lg-8">
+      <!-- Hero 区域 -->
+      <div class="course-hero rounded-3 p-4 mb-4">
+        <div class="row g-3">
+          <!-- 封面 -->
+          <div class="col-md-5">
+            <div class="course-hero-cover" style="background-color: <%= @course.color %>15">
+              <% if @course.cover.attached? %>
+                <img src="<%= url_for(@course.cover.variant(resize_to_fill: [500, 300])) %>" alt="<%= @course.title %>">
+                <div class="cover-overlay"></div>
+              <% else %>
+                <div class="w-100 h-100 d-flex flex-column align-items-center justify-content-center">
+                  <i class="bi <%= @course.icon %>" style="font-size:3.5rem;color:<%= @course.color %>"></i>
+                  <span style="font-size:0.8rem;color:var(--text-faint);margin-top:0.5rem">课程封面</span>
+                </div>
+              <% end %>
+            </div>
+          </div>
+          <!-- 信息 -->
+          <div class="col-md-7 d-flex flex-column">
+            <div class="d-flex flex-wrap gap-1 mb-2">
+              <span class="course-tag course-tag-direction"><%= @course.direction_label %></span>
+              <span class="course-tag course-tag-difficulty course-tag-<%= @course.difficulty_css_class %>"><%= @course.difficulty_label %></span>
+            </div>
+            <h4 class="fw-bold mb-2" style="font-size:1.3rem;color:var(--text-primary);line-height:1.4"><%= @course.title %></h4>
+            <% if @course.description.present? %>
+              <p class="mb-3" style="font-size:0.85rem;color:var(--text-muted);line-height:1.6"><%= @course.description %></p>
+            <% end %>
+            <div class="course-info-bar mb-3">
+              <% if @total_lessons > 0 %>
+                <span class="course-info-item"><i class="bi bi-play-circle"></i><%= @total_lessons %> 课时</span>
+              <% elsif @course.lessons_count > 0 %>
+                <span class="course-info-item"><i class="bi bi-play-circle"></i><%= @course.lessons_count %> 课时</span>
+              <% end %>
+              <% if @course.duration.present? %>
+                <span class="course-info-item"><i class="bi bi-clock"></i><%= @course.duration %></span>
+              <% end %>
+              <% if @course.students_count > 0 %>
+                <span class="course-info-item"><i class="bi bi-people"></i><%= @course.students_count %> 人学习</span>
+              <% end %>
+            </div>
+            <div class="d-flex gap-2 mt-auto">
+              <a href="<%= learn_course_path(@course) %>" class="btn flex-grow-1 text-decoration-none" style="background:var(--bg-btn-primary);color:var(--text-btn-primary);border-radius:0.5rem;font-weight:600">
+                <i class="bi bi-play-fill me-1"></i>开始学习
+              </a>
+              <button class="btn" style="background:var(--bg-btn-outline);color:var(--text-btn-outline);border-color:var(--border-btn-outline);border-radius:0.5rem">
+                <i class="bi bi-heart"></i>
+              </button>
+              <button class="btn" style="background:var(--bg-btn-outline);color:var(--text-btn-outline);border-color:var(--border-btn-outline);border-radius:0.5rem">
+                <i class="bi bi-share"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 课程大纲 -->
+      <div class="mb-4">
+        <h5 class="fw-bold mb-3" style="font-size:1rem;color:var(--text-primary)">
+          <i class="bi bi-list-ul me-1" style="color:#6366f1"></i>课程大纲
+          <span style="font-size:0.78rem;font-weight:400;color:var(--text-faint);margin-left:0.5rem">
+            共 <%= @total_lessons %> 节课<% if @total_free_lessons > 0 %> · <%= @total_free_lessons %> 节免费试看<% end %>
+          </span>
+        </h5>
+        <% if @chapters.any? %>
+          <div id="course-outline">
+            <% @chapters.each_with_index do |chapter, ci| %>
+              <div class="chapter-item">
+                <div class="chapter-header" data-bs-toggle="collapse" data-bs-target="#chapter-<%= ci %>">
+                  <div>
+                    <span style="font-size:0.85rem;font-weight:600;color:var(--text-primary)"><%= chapter.title %></span>
+                    <span style="font-size:0.75rem;color:var(--text-faint);margin-left:0.5rem"><%= chapter.course_lessons.size %> 节</span>
+                  </div>
+                  <i class="bi bi-chevron-down" style="color:var(--text-faint);font-size:0.8rem"></i>
+                </div>
+                <div class="collapse <%= ci == 0 ? 'show' : '' %>" id="chapter-<%= ci %>">
+                  <div class="chapter-lessons">
+                    <% chapter.course_lessons.ordered.each do |lesson| %>
+                      <div class="lesson-item">
+                        <div class="lesson-type-icon lesson-type-<%= lesson.lesson_type %>">
+                          <i class="bi bi-<%= lesson.lesson_type == 'video' ? 'play-circle' : lesson.lesson_type == 'text' ? 'file-text' : 'patch-question' %>"></i>
+                        </div>
+                        <span class="flex-grow-1" style="color:var(--text-secondary)"><%= lesson.title %></span>
+                        <% if lesson.is_free? %>
+                          <span class="lesson-free-badge">免费试看</span>
+                        <% end %>
+                        <span class="lesson-duration"><%= lesson.duration if lesson.duration.present? %></span>
+                      </div>
+                    <% end %>
+                  </div>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        <% else %>
+          <div class="text-center text-muted py-4">
+            <i class="bi bi-journal-text d-block" style="font-size:2rem;margin-bottom:0.5rem"></i>
+            <p style="font-size:0.85rem">课程大纲正在制作中，敬请期待</p>
+          </div>
+        <% end %>
+      </div>
+
+      <!-- 讲师信息 -->
+      <% if @instructor.present? %>
+      <div class="mb-4">
+        <h5 class="fw-bold mb-3" style="font-size:1rem;color:var(--text-primary)">
+          <i class="bi bi-person-badge me-1" style="color:#6366f1"></i>讲师介绍
+        </h5>
+        <div class="instructor-card">
+          <div class="d-flex align-items-start gap-3 mb-3">
+            <% if @instructor.avatar_url.present? %>
+              <div class="instructor-avatar overflow-hidden">
+                <img src="<%= @instructor.avatar_url %>" class="w-100 h-100" style="object-fit:cover" alt="">
+              </div>
+            <% else %>
+              <div class="instructor-avatar" style="background:linear-gradient(135deg, #6366f1, #8b5cf6)">
+                <%= @instructor.name[0] %>
+              </div>
+            <% end %>
+            <div class="flex-grow-1">
+              <div class="fw-semibold" style="font-size:0.92rem;color:var(--text-primary)"><%= @instructor.name %></div>
+              <% if @instructor.title.present? %>
+                <div style="font-size:0.78rem;color:var(--text-faint)"><%= @instructor.title %></div>
+              <% end %>
+            </div>
+          </div>
+          <% if @instructor.bio.present? %>
+            <p style="font-size:0.85rem;color:var(--text-muted);line-height:1.7;margin-bottom:1rem"><%= @instructor.bio %></p>
+          <% end %>
+          <div class="d-flex gap-4 pt-2" style="border-top:1px solid var(--border-color)">
+            <div class="instructor-stat">
+              <div class="instructor-stat-num"><%= @instructor.courses.active.count %></div>
+              <div class="instructor-stat-label">课程</div>
+            </div>
+            <div class="instructor-stat">
+              <div class="instructor-stat-num"><%= @instructor.courses.active.sum(:students_count) %></div>
+              <div class="instructor-stat-label">学员</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <% end %>
+
+      <!-- 学员评价 -->
+      <% if @reviews.any? %>
+      <div>
+        <h5 class="fw-bold mb-3" style="font-size:1rem;color:var(--text-primary)">
+          <i class="bi bi-chat-square-text me-1" style="color:#6366f1"></i>学员评价
+        </h5>
+        <% @reviews.each do |review| %>
+          <div class="review-item">
+            <div class="d-flex align-items-center gap-2 mb-2">
+              <div class="review-avatar" style="background:linear-gradient(135deg, #6366f1, #a78bfa)"><%= review.user_name[0] %></div>
+              <div>
+                <div style="font-size:0.82rem;font-weight:600;color:var(--text-primary)"><%= review.user_name %></div>
+                <div class="review-stars">
+                  <% review.rating.times do %><i class="bi bi-star-fill"></i><% end %>
+                  <% (5 - review.rating).times do %><i class="bi bi-star"></i><% end %>
+                  <span class="review-time ms-2"><%= time_ago_in_words(review.created_at) %>前</span>
+                </div>
+              </div>
+            </div>
+            <p class="review-content mb-0"><%= review.content %></p>
+          </div>
+        <% end %>
+      </div>
+      <% end %>
+    </div>
+
+    <!-- 右侧边栏 -->
+    <div class="col-lg-4">
+      <!-- 课程信息卡片 -->
+      <div class="rounded-3 p-3 mb-3" style="background:var(--bg-card);border:1px solid var(--border-color)">
+        <div class="fw-semibold mb-2" style="font-size:0.85rem;color:var(--text-primary)">课程信息</div>
+        <div class="d-flex flex-column gap-2" style="font-size:0.82rem">
+          <div class="d-flex justify-content-between">
+            <span style="color:var(--text-faint)">难度等级</span>
+            <span class="course-tag course-tag-difficulty course-tag-<%= @course.difficulty_css_class %>"><%= @course.difficulty_label %></span>
+          </div>
+          <div class="d-flex justify-content-between">
+            <span style="color:var(--text-faint)">课程方向</span>
+            <span style="color:var(--text-secondary)"><%= @course.direction_label %></span>
+          </div>
+          <% if @total_lessons > 0 %>
+            <div class="d-flex justify-content-between">
+              <span style="color:var(--text-faint)">课时数量</span>
+              <span style="color:var(--text-secondary)"><%= @total_lessons %> 节<% if @total_free_lessons > 0 %> · <%= @total_free_lessons %> 节免费<% end %></span>
+            </div>
+          <% end %>
+          <% if @course.duration.present? %>
+            <div class="d-flex justify-content-between">
+              <span style="color:var(--text-faint)">课程时长</span>
+              <span style="color:var(--text-secondary)"><%= @course.duration %></span>
+            </div>
+          <% end %>
+          <div class="d-flex justify-content-between">
+            <span style="color:var(--text-faint)">学习人数</span>
+            <span style="color:var(--text-secondary)"><%= @course.students_count %> 人</span>
+          </div>
+          <% if @course.instructor.present? %>
+            <div class="d-flex justify-content-between">
+              <span style="color:var(--text-faint)">授课讲师</span>
+              <span style="color:var(--text-secondary)"><%= @course.instructor.name %></span>
+            </div>
+          <% end %>
+        </div>
+      </div>
+
+      <!-- 相关课程 -->
+      <% if @related_courses.any? %>
+        <div class="mb-3">
+          <div class="fw-semibold mb-2" style="font-size:0.85rem;color:var(--text-primary)">
+            <i class="bi bi-collection me-1" style="color:var(--text-faint)"></i>同方向课程
+          </div>
+          <% @related_courses.each do |rc| %>
+            <a href="<%= course_path(rc) %>" class="related-course-card d-block mb-2 text-decoration-none">
+              <div class="related-course-cover" style="background-color: <%= rc.color %>15; border-bottom: 2px solid <%= rc.color %>">
+                <% if rc.cover.attached? %>
+                  <img src="<%= url_for(rc.cover.variant(resize_to_fill: [400, 200])) %>" class="w-100 h-100" style="object-fit:cover" alt="<%= rc.title %>">
+                <% else %>
+                  <i class="bi <%= rc.icon %>" style="font-size:1.5rem;color:<%= rc.color %>"></i>
+                <% end %>
+              </div>
+              <div class="p-2">
+                <div style="font-size:0.8rem;font-weight:600;color:var(--text-primary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><%= rc.title %></div>
+                <div class="d-flex gap-1 mt-1">
+                  <span class="course-tag course-tag-difficulty course-tag-<%= rc.difficulty_css_class %>" style="font-size:0.65rem"><%= rc.difficulty_label %></span>
+                  <% if rc.lessons_count > 0 %>
+                    <span style="font-size:0.7rem;color:var(--text-faint)"><%= rc.lessons_count %> 课时</span>
+                  <% end %>
+                </div>
+              </div>
+            </a>
+          <% end %>
+        </div>
+      <% end %>
+
+      <!-- 返回课程 -->
+      <a href="<%= courses_path %>" class="btn w-100 mt-2" style="background:var(--bg-btn-outline);color:var(--text-btn-outline);border-color:var(--border-btn-outline);border-radius:0.5rem;font-size:0.82rem">
+        <i class="bi bi-arrow-left me-1"></i>返回课程列表
+      </a>
+    </div>
+  </div>
+</div>

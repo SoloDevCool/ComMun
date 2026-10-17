@@ -1,0 +1,488 @@
+<% page_title = "#{@node ? @node.name + ' - ' : ''}#{@kind ? Node.kinds_i18n[@kind.to_sym] + ' - ' : ''}#{site_name}" %>
+<% content_for :title, page_title %>
+<% content_for :head do %>
+  <% node_desc = @node&.description.present? ? @node.description : "t('.seo_description', site_name: site_name)" %>
+  <%= seo_meta_tags(title: page_title, description: node_desc) %>
+  <% breadcrumb_items = [{ name: t('.home'), url: root_url }] %>
+  <% breadcrumb_items << { name: @node.name, url: topics_url(node: @node.slug) } if @node %>
+  <% breadcrumb_items << { name: Node.kinds_i18n[@kind.to_sym], url: topics_url(kind: @kind) } if @kind %>
+  <%= json_ld_breadcrumb(breadcrumb_items) %>
+<% end %>
+
+<div class="container-lg py-3">
+  <!-- Mobile node scroll bar -->
+  <div class="mobile-node-bar">
+    <div class="mobile-node-bar-inner">
+      <a href="<%= topics_path %>" class="<%= !params[:node] && !params[:kind] ? 'active' : '' %>">
+        <i class="bi bi-grid"></i> <%= t('.all') %>
+      </a>
+      <% system_nodes = @all_nodes.select { |n| n.kind == "system" } %>
+      <% interest_nodes = @all_nodes.select { |n| n.kind == "interest" } %>
+      <% if system_nodes.any? %>
+        <span class="mobile-node-group-label label-system"><i class="bi bi-gear-fill"></i><%= Node.kinds_i18n[:system] %></span>
+        <% system_nodes.each do |node| %>
+          <a href="<%= node_topics_path(node) %>" class="<%= params[:node] == node.slug ? 'active' : '' %>">
+            <%= node_icon(node, size: "1rem") %> <%= node.name %>
+          </a>
+        <% end %>
+      <% end %>
+      <% if interest_nodes.any? %>
+        <span class="mobile-node-group-label label-interest"><i class="bi bi-stars"></i><%= Node.kinds_i18n[:interest] %></span>
+        <% interest_nodes.each do |node| %>
+          <a href="<%= node_topics_path(node) %>" class="<%= params[:node] == node.slug ? 'active' : '' %>">
+            <%= node_icon(node, size: "1rem") %> <%= node.name %>
+          </a>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="row g-3">
+
+    <!-- 左侧版块列表 -->
+    <div class="col-lg-2 left-sidebar">
+      <div class="node-list">
+        <a href="<%= topics_path %>" class="node-item <%= !params[:node] && !params[:kind] ? 'active' : '' %>">
+          <span class="node-icon"><i class="bi bi-grid"></i></span>
+          <span><%= t('.all') %></span>
+          <span class="node-count"><%= Topic.count %></span>
+        </a>
+        <% system_nodes = @all_nodes.select { |n| n.kind == "system" } %>
+        <% interest_nodes = @all_nodes.select { |n| n.kind == "interest" } %>
+
+        <!-- 系统版块：浅底卡片容器 + 靛蓝色标识，突出官方感 -->
+        <% if system_nodes.any? %>
+          <div class="node-group node-group-system">
+            <div class="node-group-header node-group-header-system">
+              <i class="bi bi-gear-fill"></i><span><%= Node.kinds_i18n[:system] %></span>
+              <span class="node-group-line"></span>
+            </div>
+            <div class="node-group-system-items">
+              <% system_nodes.each do |node| %>
+                <a href="<%= node_topics_path(node) %>" class="node-item node-item-system <%= params[:node] == node.slug ? 'active' : '' %>">
+                  <span class="node-icon node-icon-chip node-icon-chip-system"><%= node_icon(node, size: "1.05rem") %></span>
+                  <span><%= node.name %></span>
+                  <span class="node-count"><%= node.topics_count %></span>
+                </a>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+
+        <!-- 兴趣版块：轻量列表 + 琥珀色标识 -->
+        <% if interest_nodes.any? %>
+          <div class="node-group node-group-interest">
+            <div class="node-group-header node-group-header-interest">
+              <i class="bi bi-stars"></i><span><%= Node.kinds_i18n[:interest] %></span>
+              <span class="node-group-line"></span>
+              <%= link_to topics_path(kind: "interest"), class: "node-group-more text-decoration-none #{params[:kind] == 'interest' && !params[:node] ? 'text-primary fw-semibold' : 'text-muted'}" do %><%= t('.all') %><% end %>
+            </div>
+            <% if user_signed_in? %>
+              <% if @sidebar_followed_nodes.present? %>
+                <% @sidebar_followed_nodes.each do |node| %>
+                  <a href="<%= node_topics_path(node) %>" class="node-item node-item-interest <%= params[:node] == node.slug ? 'active' : '' %>">
+                    <span class="node-icon node-icon-chip node-icon-chip-interest"><%= node_icon(node, size: "1.05rem") %></span>
+                    <span><%= node.name %></span>
+                    <span class="node-count"><%= node.topics_count %></span>
+                  </a>
+                <% end %>
+              <% else %>
+                <div class="text-muted text-center py-2" style="font-size:0.78rem">
+                  <a href="<%= topics_path(kind: 'interest') %>" class="text-decoration-none"><%= t('.discover_nodes') %></a>
+                </div>
+              <% end %>
+            <% else %>
+              <div class="text-muted text-center py-2" style="font-size:0.78rem">
+                <a href="<%= new_user_session_path %>" class="text-decoration-none"><%= t('.sign_in_to_view') %></a>
+              </div>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- 主题列表 -->
+    <div class="col-lg-7">
+      <div class="list-container">
+        <!-- 标题栏 -->
+        <% if @node || @kind_nodes %>
+        <div class="d-flex align-items-center border-bottom px-3 py-2">
+          <h6 class="mb-0 fw-bold">
+            <% if @scope == 'trending' %>
+              <i class="bi bi-graph-up-arrow me-2"></i><%= t('.trending_title') %>
+              <span class="text-muted fw-normal ms-1" style="font-size:0.8rem"><%= t('.trending_subtitle') %></span>
+            <% elsif @kind_nodes %>
+              <i class="bi <%= @kind == 'system' ? 'bi-gear' : 'bi-star' %> me-2"></i><%= Node.kinds_i18n[@kind.to_sym] %>
+              <span class="text-muted fw-normal ms-1" style="font-size:0.8rem"><%= t('.nodes_count', count: @kind_nodes.count) %></span>
+            <% elsif @node %>
+              <span><%= node_icon(@node) %></span> <%= @node.name %>
+              <% if @node.description.present? %>
+                <div class="text-muted fw-normal mt-1" style="font-size:0.8rem"><%= @node.description %></div>
+              <% end %>
+            <% end %>
+          </h6>
+          <% if @node&.interest? && user_signed_in? %>
+            <div class="ms-auto">
+              <% if @followed_node_ids&.include?(@node.id) %>
+                <%= button_to unfollow_node_path(@node), method: :delete, form: { data: { turbo: false } }, class: "btn btn-sm btn-outline-secondary rounded-pill px-3" do %>
+                  <i class="bi bi-check-lg me-1"></i><%= t('.followed') %>
+                <% end %>
+              <% else %>
+                <%= button_to follow_node_path(@node), method: :post, form: { data: { turbo: false } }, class: "btn btn-sm btn-outline-primary rounded-pill px-3" do %>
+                  <i class="bi bi-plus me-1"></i><%= t('.follow') %>
+                <% end %>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+        <% end %>
+
+        <% if @kind_nodes %>
+          <!-- 版块按钮网格 -->
+          <div class="d-flex align-items-center border-bottom px-3 py-2 gap-1 topic-tab-bar">
+            <% if @kind == "interest" %>
+              <%= link_to topics_path(kind: @kind, node_tab: "followed"), class: "btn btn-sm #{@node_tab == 'followed' ? 'btn-primary' : 'btn-outline-primary'} rounded-pill px-3" do %>
+                <i class="bi bi-people me-1"></i><%= t('.followed') %>
+              <% end %>
+            <% end %>
+            <%= link_to topics_path(kind: @kind, node_tab: "all"), class: "btn btn-sm #{@node_tab == 'all' ? 'btn-primary' : 'btn-outline-primary'} rounded-pill px-3" do %>
+              <i class="bi bi-grid me-1"></i><%= t('.all_kind', kind: Node.kinds_i18n[@kind.to_sym]) %>
+            <% end %>
+          </div>
+          <div class="p-4">
+            <div class="row g-3 row-cols-2 row-cols-md-4 row-cols-lg-4 align-items-stretch">
+              <% nodes = @node_tab == 'followed' ? @followed_nodes : @kind_nodes %>
+              <% nodes.each do |node| %>
+                <div class="col d-flex">
+                  <div class="d-block text-decoration-none text-center p-3 border rounded-2 node-card-btn position-relative">
+                    <% if @kind == "interest" && user_signed_in? && @followed_node_ids.include?(node.id) %>
+                      <%= button_to unfollow_node_path(node), method: :delete, form: { data: { turbo: false } }, class: "btn btn-outline-secondary btn-sm position-absolute top-0 end-0 m-1 rounded-pill px-2 py-0", style: "font-size:0.65rem" do %>
+                        <i class="bi bi-check-lg"></i><%= t('.followed') %>
+                      <% end %>
+                    <% elsif @kind == "interest" && user_signed_in? %>
+                      <%= button_to follow_node_path(node), method: :post, form: { data: { turbo: false } }, class: "btn btn-outline-primary btn-sm position-absolute top-0 end-0 m-1 rounded-pill px-2 py-0", style: "font-size:0.65rem" do %>
+                        <i class="bi bi-plus"></i><%= t('.follow') %>
+                      <% end %>
+                    <% end %>
+                    <%= link_to node_topics_path(node), class: "text-decoration-none" do %>
+                      <div style="font-size:2rem"><%= node_icon(node, size: "2rem") %></div>
+                      <div class="fw-semibold text-dark mt-1" style="font-size:0.88rem"><%= node.name %></div>
+                      <% if node.description.present? %>
+                        <div class="text-muted mt-1 node-card-desc" style="font-size:0.72rem"><%= truncate(node.description, length: 60) %></div>
+                      <% else %>
+                        <div class="mt-1 node-card-desc" style="font-size:0.72rem"></div>
+                      <% end %>
+                      <div class="text-muted mt-1" style="font-size:0.72rem"><%= t('.node_topics_count', count: node.topics_count) %></div>
+                    <% end %>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+            <% if nodes.empty? %>
+              <div class="text-center text-muted py-5">
+                <i class="bi bi-inbox d-block mb-2" style="font-size:2rem"></i>
+                <% if @node_tab == 'followed' %>
+                  <p><%= t('.no_followed_nodes') %></p>
+                <% else %>
+                  <p><%= t('.no_nodes') %></p>
+                <% end %>
+              </div>
+            <% end %>
+          </div>
+        <% else %>
+          <!-- Tab bar -->
+          <div class="d-flex align-items-center border-bottom px-3 py-2 gap-1 topic-tab-bar">
+            <%= link_to topics_path(scope: "hot", node: params[:node], kind: params[:kind]), class: "btn btn-sm #{@scope == 'hot' ? 'btn-primary' : 'btn-outline-primary'} px-3" do %>
+              <i class="bi bi-fire me-1"></i><%= t('.hot') %>
+            <% end %>
+            <%= link_to topics_path(scope: "trending"), class: "btn btn-sm #{@scope == 'trending' ? 'btn-primary' : 'btn-outline-primary'} px-3" do %>
+              <i class="bi bi-graph-up-arrow me-1"></i><%= t('.trending') %>
+            <% end %>
+            <%= link_to topics_path(scope: "recent", node: params[:node], kind: params[:kind]), class: "btn btn-sm #{@scope == 'recent' ? 'btn-primary' : 'btn-outline-primary'} px-3" do %>
+              <i class="bi bi-clock me-1"></i><%= t('.recent') %>
+            <% end %>
+            <% if user_signed_in? %>
+              <%= link_to topics_path(scope: "followed"), class: "btn btn-sm #{@scope == 'followed' ? 'btn-primary' : 'btn-outline-primary'} px-3" do %>
+                <i class="bi bi-people me-1"></i><%= t('.followed') %>
+              <% end %>
+            <% end %>
+            <div class="ms-auto">
+              <% if user_signed_in? %>
+                <%= link_to new_topic_path, class: "btn btn-sm btn-primary" do %><i class="bi bi-plus-lg me-1"></i><%= t('.create_topic') %><% end %>
+              <% else %>
+                <%= link_to new_user_session_path, class: "btn btn-sm btn-outline-primary" do %><i class="bi bi-box-arrow-in-right me-1"></i><%= t('.sign_in_to_publish') %><% end %>
+              <% end %>
+            </div>
+          </div>
+
+          <% if @node&.tip.present? %>
+          <div class="alert mb-0 rounded-0 border-0 d-flex align-items-start gap-2" style="font-size:0.85rem;background-color:#fff3cd;color:#dc3545">
+            <i class="bi bi-megaphone-fill flex-shrink-0 mt-1"></i>
+            <div><%= sanitize @node.tip, tags: %w(a br b strong i em p div span ul ol li h1 h2 h3 h4 h5 h6), attributes: %w(href target class style) %></div>
+          </div>
+          <% end %>
+
+          <!-- Topic list -->
+          <% image_text_mode = topic_list_style == "image_text" %>
+          <div class="topic-list <%= 'topic-list-image-text' if image_text_mode %>">
+            <% @topics.each do |topic| %>
+              <% if image_text_mode %>
+                <!-- 图文列表模式 -->
+                <div class="topic-item topic-item-image-text">
+                  <div class="topic-card-header">
+                    <% if topic.user.has_avatar? %>
+                      <div class="topic-avatar">
+                        <img src="<%= topic.user.avatar_data_url %>" class="w-100 h-100" style="object-fit:cover" alt="">
+                      </div>
+                    <% else %>
+                      <div class="topic-avatar bg-avatar-<%= topic.user.id % 5 + 1 %>">
+                        <%= user_initial(topic.user) %>
+                      </div>
+                    <% end %>
+                    <div class="topic-meta-top">
+                      <% unless @node %>
+                        <span class="badge badge-node"><%= node_icon(topic.node, size: "0.85em") %> <%= topic.node.name %></span>
+                      <% end %>
+                      <strong><%= user_link_to_with_official(topic.user, class: "text-decoration-none", style: "color:var(--text-secondary)") %></strong>
+                      <span><%= t('.time_ago', time: time_ago_in_words(topic.created_at)) %></span>
+                    </div>
+                  </div>
+                  <div class="d-flex align-items-start gap-1">
+                    <% if topic.pinned? %>
+                      <span class="badge bg-danger text-white flex-shrink-0" style="font-size:0.65rem;margin-top:3px"><i class="bi bi-pin-angle-fill me-1"></i><%= t('.pinned') %></span>
+                    <% end %>
+                    <% if topic.has_poll? %>
+                      <span class="badge bg-primary text-white flex-shrink-0" style="font-size:0.65rem;margin-top:3px"><i class="bi bi-bar-chart-line me-1"></i><%= t('.poll') %></span>
+                    <% end %>
+                    <% if topic.ai_generated? && ai_label_enabled? %>
+                      <span class="badge bg-light text-secondary flex-shrink-0" style="font-size:0.62rem;margin-top:3px;border:1px solid var(--border-color)"><i class="bi bi-robot me-0"></i>AI</span>
+                    <% end %>
+                    <a href="<%= topic_path(topic) %>" class="topic-title"><%= topic.title %></a>
+                  </div>
+                  <% excerpt = topic.content_excerpt(length: 80) %>
+                  <% if excerpt.present? %>
+                    <div class="topic-excerpt"><%= excerpt %></div>
+                  <% end %>
+                  <% if topic.first_image_url %>
+                    <a href="<%= topic_path(topic) %>" class="topic-thumb">
+                      <img src="<%= topic.first_image_url %>" loading="lazy" alt="">
+                    </a>
+                  <% end %>
+                  <div class="topic-card-footer">
+                    <span><i class="bi bi-chat-dots me-1"></i><%= topic.comments_count %></span>
+                    <span><i class="bi bi-eye me-1"></i><%= topic.views_count %></span>
+                    <% if topic.last_reply_at.present? %>
+                      <span class="topic-footer-right"><i class="bi bi-reply me-1"></i><%= t('.time_ago', time: time_ago_in_words(topic.last_reply_at)) %></span>
+                    <% end %>
+                  </div>
+                </div>
+              <% else %>
+                <!-- 文章列表模式 -->
+                <div class="topic-item">
+                  <% if topic.user.has_avatar? %>
+                    <div class="topic-avatar">
+                      <img src="<%= topic.user.avatar_data_url %>" class="w-100 h-100" style="object-fit:cover" alt="">
+                    </div>
+                  <% else %>
+                    <div class="topic-avatar bg-avatar-<%= topic.user.id % 5 + 1 %>">
+                      <%= user_initial(topic.user) %>
+                    </div>
+                  <% end %>
+                  <div class="topic-body">
+                    <div class="d-flex align-items-start gap-1">
+                      <% if topic.pinned? %>
+                        <span class="badge bg-danger text-white flex-shrink-0" style="font-size:0.65rem;margin-top:2px"><i class="bi bi-pin-angle-fill me-1"></i><%= t('.pinned') %></span>
+                      <% end %>
+                      <% if topic.has_poll? %>
+                        <span class="badge bg-primary text-white flex-shrink-0" style="font-size:0.65rem;margin-top:2px"><i class="bi bi-bar-chart-line me-1"></i><%= t('.poll') %></span>
+                      <% end %>
+                      <% if topic.ai_generated? && ai_label_enabled? %>
+                        <span class="badge bg-light text-secondary flex-shrink-0" style="font-size:0.62rem;margin-top:2px;border:1px solid var(--border-color)"><i class="bi bi-robot me-0"></i>AI</span>
+                      <% end %>
+                      <a href="<%= topic_path(topic) %>" class="topic-title"><%= topic.title %></a>
+                    </div>
+                    <div class="topic-meta">
+                      <% unless @node %>
+                        <span class="badge badge-node"><%= node_icon(topic.node, size: "0.85em") %> <%= topic.node.name %></span>
+                      <% end %>
+                      <strong><%= user_link_to_with_official(topic.user, class: "text-decoration-none", style: "color:var(--text-secondary)") %></strong>
+                      <span>&bull;</span>
+                      <span><%= t('.time_ago', time: time_ago_in_words(topic.created_at)) %></span>
+                      <% if topic.last_reply_at.present? %>
+                        <span class="d-none d-md-inline">&bull;</span>
+                        <span class="d-none d-md-inline"><%= t('.last_reply') %> <%= topic.last_reply_user ? user_link_to(topic.last_reply_user, class: "text-decoration-none", style: "color:var(--text-muted)") : t('.unknown') %></span>
+                      <% end %>
+                    </div>
+                  </div>
+                  <div class="topic-stats">
+                    <a href="<%= topic_path(topic) %>" class="topic-replies-badge"><%= topic.comments_count %></a>
+                  </div>
+                </div>
+              <% end %>
+            <% end %>
+            <% if @topics.empty? %>
+              <div class="text-center text-muted py-5">
+                <i class="bi bi-chat-square-text d-block mb-2" style="font-size:2rem"></i>
+                <% if @scope == 'followed' %>
+                  <p><%= t('.no_followed_users') %></p>
+                <% elsif @scope == 'trending' %>
+                  <p><%= t('.no_hot_today') %></p>
+                <% else %>
+                  <p><%= t('.no_topics') %></p>
+                  <% if user_signed_in? %>
+                    <%= link_to t('.first_topic'), new_topic_path, class: "btn btn-sm btn-primary rounded-pill px-3" %>
+                  <% end %>
+                <% end %>
+              </div>
+            <% end %>
+          </div>
+
+          <!-- 分页 -->
+          <% if @pagy.last > 1 %>
+            <div class="d-flex justify-content-center py-3 border-top">
+              <%== @pagy.series_nav(:bootstrap) %>
+            </div>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- 右侧栏 -->
+    <div class="col-lg-3 right-sidebar">
+      <!-- User Card -->
+      <div class="sidebar-card user-card mb-3">
+        <div class="card-header-bg"></div>
+        <div class="card-body text-center pb-0">
+          <div class="avatar-wrapper">
+            <% if user_signed_in? %>
+              <%= link_to profile_path, class: "d-block" do %>
+                <div class="user-avatar bg-avatar-1">
+                  <% if current_user.has_avatar? %>
+                    <img src="<%= current_user.avatar_data_url %>" class="rounded-3 w-100 h-100" style="object-fit:cover" alt="头像">
+                  <% else %>
+                    <%= user_initial(current_user) %>
+                  <% end %>
+                </div>
+              <% end %>
+            <% else %>
+              <div class="user-avatar bg-avatar-1">
+                <i class="bi bi-person" style="font-size:1.5rem"></i>
+              </div>
+            <% end %>
+          </div>
+          <div class="user-name">
+            <% if user_signed_in? %>
+              <%= link_to profile_path, class: "text-decoration-none text-dark" do %>
+                <%= current_user.display_name %>
+              <% end %>
+              <span class="badge <%= current_user.role_badge_class %> user-role-badge" style="font-size:0.6rem">
+                <%= current_user.role_label %>
+              </span>
+            <% else %>
+              <%= t('.guest') %>
+            <% end %>
+          </div>
+          <div class="user-stats-row">
+            <div class="user-stat">
+              <% if user_signed_in? %>
+                <%= link_to topics_path, class: "text-decoration-none" do %>
+                  <div class="user-stat-value"><%= current_user.topics.count %></div>
+                  <div class="user-stat-label"><%= t('.stat_topics') %></div>
+                <% end %>
+              <% else %>
+                <div class="user-stat-value">0</div>
+                <div class="user-stat-label"><%= t('.stat_topics') %></div>
+              <% end %>
+            </div>
+            <div class="user-stat">
+              <% if user_signed_in? %>
+                <%= link_to profile_path(tab: "following"), class: "text-decoration-none" do %>
+                  <div class="user-stat-value"><%= current_user.following.count %></div>
+                  <div class="user-stat-label"><%= t('.stat_following') %></div>
+                <% end %>
+              <% else %>
+                <div class="user-stat-value">0</div>
+                <div class="user-stat-label"><%= t('.stat_following') %></div>
+              <% end %>
+            </div>
+            <div class="user-stat">
+              <% if user_signed_in? %>
+                <%= link_to profile_path(tab: "followers"), class: "text-decoration-none" do %>
+                  <div class="user-stat-value"><%= current_user.followers.count %></div>
+                  <div class="user-stat-label"><%= t('.stat_followers') %></div>
+                <% end %>
+              <% else %>
+                <div class="user-stat-value">0</div>
+                <div class="user-stat-label"><%= t('.stat_followers') %></div>
+              <% end %>
+            </div>
+            <div class="user-stat">
+              <% if user_signed_in? %>
+                <div class="user-stat-value"><%= current_user.points %></div>
+                <div class="user-stat-label"><%= t('.stat_points') %></div>
+              <% else %>
+                <div class="user-stat-value">0</div>
+                <div class="user-stat-label"><%= t('.stat_points') %></div>
+              <% end %>
+            </div>
+          </div>
+          <% if user_signed_in? %>
+          <div class="text-center px-3">
+            <%= link_to new_topic_path, class: "btn btn-primary rounded-2 w-100 mt-3 mb-#{current_user.admin? ? 2 : 3}" do %>
+              <i class="bi bi-plus-lg me-1"></i><%= t('.create_topic') %>
+            <% end %>
+            <% if current_user.admin? %>
+              <%= link_to admin_root_path, class: "btn btn-outline-secondary rounded-2 w-100 mb-3" do %>
+                <i class="bi bi-speedometer2 me-1"></i><%= t('.admin_console') %>
+              <% end %>
+            <% end %>
+          </div>
+          <% end %>
+        </div>
+      </div>
+
+      <%= render "shared/cps_ad" %>
+
+      <!-- 热门版块 -->
+      <div class="sidebar-card">
+        <div class="card-header d-flex align-items-center">
+          <i class="bi bi-fire text-danger me-2"></i><%= t('.hot_nodes') %>
+        </div>
+        <div class="card-body p-0">
+          <% @hot_nodes.each do |node| %>
+            <a href="<%= node_topics_path(node) %>" class="hot-item hot-item-node d-flex align-items-center gap-2">
+              <span class="hot-node-icon"><%= node_icon(node) %></span>
+              <span class="text-truncate flex-grow-1"><%= node.name %></span>
+              <span class="hot-node-count"><%= node.topics_count %></span>
+              <i class="bi bi-chevron-right hot-node-arrow"></i>
+            </a>
+          <% end %>
+        </div>
+      </div>
+
+      <!-- 社区运行状况 -->
+      <div class="sidebar-card mt-3">
+        <div class="card-header d-flex align-items-center">
+          <i class="bi bi-activity text-success me-2"></i><%= t('.community_health') %>
+        </div>
+        <div class="card-body py-3">
+          <div class="d-flex justify-content-between text-center">
+            <div class="flex-fill mb-3">
+              <div class="fw-bold text-primary" style="font-size:1.1rem"><%= number_to_human(@community_stats[:users_count], delimiter: ",") %></div>
+              <div class="text-muted" style="font-size:0.75rem"><%= t('.members') %></div>
+            </div>
+            <div class="flex-fill">
+              <div class="fw-bold text-success" style="font-size:1.1rem"><%= number_to_human(@community_stats[:topics_count], delimiter: ",") %></div>
+              <div class="text-muted" style="font-size:0.75rem"><%= t('.stat_topics') %></div>
+            </div>
+            <div class="flex-fill">
+              <div class="fw-bold text-warning" style="font-size:1.1rem"><%= number_to_human(@community_stats[:comments_count], delimiter: ",") %></div>
+              <div class="text-muted" style="font-size:0.75rem"><%= t('.replies') %></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

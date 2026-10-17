@@ -1,0 +1,254 @@
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h4 class="text-dark fw-bold mb-0">
+    <i class="bi bi-clipboard-check me-2 text-primary"></i><%= t('admin.ui.m491') %>
+  </h4>
+  <div class="d-flex gap-2">
+    <form id="batchRejectForm" method="post" action="<%= batch_reject_admin_qb_reviews_path %>" style="display:none">
+      <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
+      <input type="hidden" name="question_ids" id="batchRejectIds">
+      <input type="hidden" name="rejection_reason" id="batchRejectReason">
+    </form>
+    <button class="btn btn-outline-danger rounded-pill px-3" id="batchRejectBtn" disabled>
+      <i class="bi bi-x-circle me-1"></i><%= t('admin.ui.m182') %>
+    </button>
+    <form id="batchApproveForm" method="post" action="<%= batch_approve_admin_qb_reviews_path %>" style="display:none">
+      <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
+      <input type="hidden" name="question_ids" id="batchApproveIds">
+    </form>
+    <button class="btn btn-success rounded-pill px-3" id="batchApproveBtn" disabled>
+      <i class="bi bi-check-circle me-1"></i><%= t('admin.ui.m180') %>
+    </button>
+  </div>
+</div>
+
+<!-- <%= t('admin.ui.m100') %>弹窗 -->
+<div class="modal fade" id="rejectModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content" style="border-radius:16px">
+      <div class="modal-header border-0 pb-0">
+        <h5 class="modal-title fw-bold"><%= t('admin.ui.m100') %></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <textarea id="rejectReasonInput" class="form-control rounded-3" rows="3" placeholder="<%= t('admin.ui.m492') %>"></textarea>
+      </div>
+      <div class="modal-footer border-0 pt-0">
+        <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal"><%= t('admin.cancel') %></button>
+        <button type="button" class="btn btn-danger rounded-pill px-4" id="confirmRejectBtn"><%= t('admin.ui.m493') %></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 状态切换 Tab -->
+<ul class="nav nav-pills mb-3" style="font-size:0.85rem">
+  <% pending_count = QbQuestion.pending_review.count %>
+  <% rejected_count = QbQuestion.rejected.count %>
+  <li class="nav-item">
+    <%= link_to admin_qb_reviews_path(status: "pending"), class: "nav-link rounded-pill px-3 #{@status == 'pending' ? 'active' : ''}" do %>
+      <%= t('admin.ui.m494') %><% if pending_count > 0 %> <span class="badge bg-warning text-dark" style="font-size:0.65rem"><%= pending_count %></span><% end %>
+    <% end %>
+  </li>
+  <li class="nav-item">
+    <%= link_to admin_qb_reviews_path(status: "rejected"), class: "nav-link rounded-pill px-3 #{@status == 'rejected' ? 'active' : ''}" do %>
+      <%= t('admin.ui.m495') %><% if rejected_count > 0 %> <span class="badge bg-secondary" style="font-size:0.65rem"><%= rejected_count %></span><% end %>
+    <% end %>
+  </li>
+  <li class="nav-item">
+    <%= link_to admin_qb_reviews_path(status: "approved"), class: "nav-link rounded-pill px-3 #{@status == 'approved' ? 'active' : ''}" do %>
+      <%= t('admin.ui.m496') %>
+    <% end %>
+  </li>
+</ul>
+
+<!-- <%= t('admin.ui.m488') %>目<%= t('admin.ui.m732') %> -->
+<div class="card card-admin">
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-hover mb-0">
+        <thead>
+          <tr>
+            <th style="width:40px" class="ps-3"><input type="checkbox" class="form-check-input" id="selectAll"></th>
+            <th><%= t('admin.question_content') %></th>
+            <th class="d-none d-md-table-cell"><%= t('admin.ui.m497') %></th>
+            <th class="d-none d-lg-table-cell"><%= t('admin.ui.m107') %></th>
+            <th class="text-center"><%= t('admin.type') %></th>
+            <th class="text-center d-none d-md-table-cell"><%= t('admin.ui.m097') %></th>
+            <th class="text-center" style="width:160px"><%= t('admin.actions') %></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @qb_questions.each do |q| %>
+            <tr data-id="<%= q.id %>">
+              <td class="ps-3">
+                <% if q.pending? %>
+                  <input type="checkbox" class="form-check-input question-checkbox" value="<%= q.id %>">
+                <% end %>
+              </td>
+              <td>
+                <div style="max-width:320px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+                  <%= truncate(q.content, length: 50) %>
+                </div>
+                <div class="text-muted" style="font-size:0.75rem">
+                  <%= q.created_at.strftime('%m-%d %H:%M') %>
+                  <% if q.rejected? && q.rejection_reason.present? %>
+                    <span class="text-danger ms-1"><%= t('admin.ui.m498') %><%= truncate(q.rejection_reason, length: 20) %></span>
+                  <% end %>
+                </div>
+              </td>
+              <td class="d-none d-md-table-cell">
+                <span class="badge bg-light text-muted rounded-pill" style="font-size:0.75rem"><%= q.qb_exam.name %></span>
+              </td>
+              <td class="d-none d-lg-table-cell">
+                <% if q.user %>
+                  <div class="d-flex align-items-center">
+                    <% if q.user.has_avatar? %>
+                      <img src="<%= q.user.avatar_data_url %>" class="rounded-3 me-1" style="width:24px;height:24px;object-fit:cover">
+                    <% else %>
+                      <div class="rounded-3 bg-primary bg-opacity-10 text-primary d-flex align-items-center justify-content-center me-1" style="width:24px;height:24px;font-size:0.65rem"><i class="bi bi-person"></i></div>
+                    <% end %>
+                    <small><%= q.user.display_name %></small>
+                  </div>
+                <% else %>
+                  <span class="text-muted" style="font-size:0.8rem"><%= t('admin.ui.m028') %></span>
+                <% end %>
+              </td>
+              <td class="text-center">
+                <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill" style="font-size:0.75rem"><%= q.question_type_label %></span>
+              </td>
+              <td class="text-center d-none d-md-table-cell">
+                <span class="badge bg-success bg-opacity-10 text-success rounded-pill" style="font-size:0.75rem">
+                  <%= q.question_type == 2 ? (q.answer == 1 ? t('admin.ui.m005') : t("admin.error")) : "#{('A'.ord + q.answer).chr}" %>
+                </span>
+              </td>
+              <td class="text-center">
+                <div class="d-flex justify-content-center gap-1">
+                  <%= link_to admin_qb_review_path(q), class: "btn btn-sm btn-outline-info border-0 rounded-pill px-2", title: t('admin.ui.m499') do %>
+                    <i class="bi bi-eye"></i>
+                  <% end %>
+                  <% if q.pending? %>
+                    <%= button_to approve_admin_qb_review_path(q), method: :patch, form: { data: { turbo: false } },
+                        class: "btn btn-sm btn-outline-success border-0 rounded-pill px-2", title: t('admin.ui.m153') do %>
+                      <i class="bi bi-check-lg"></i>
+                    <% end %>
+                    <button class="btn btn-sm btn-outline-danger border-0 rounded-pill px-2 reject-single-btn" data-id="<%= q.id %>" title="<%= t('admin.reject') %>">
+                      <i class="bi bi-x-lg"></i>
+                    </button>
+                  <% elsif q.rejected? %>
+                    <button class="btn btn-sm btn-outline-success border-0 rounded-pill px-2 re-approve-btn" data-id="<%= q.id %>" title="<%= t('admin.ui.m110') %>">
+                      <i class="bi bi-arrow-counterclockwise"></i>
+                    </button>
+                  <% end %>
+                </div>
+              </td>
+            </tr>
+          <% end %>
+          <% if @qb_questions.empty? %>
+            <tr>
+              <td colspan="7" class="text-center text-muted py-4">
+                <small><%= @status == 'pending' ? t('admin.ui.m500') : t('admin.ui.m501') %></small>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- 分页 -->
+<% if @pagy.last > 1 %>
+<div class="d-flex justify-content-center mt-3">
+  <%== @pagy.series_nav(:bootstrap) %>
+</div>
+<% end %>
+
+<script>
+// 全选
+document.getElementById('selectAll').addEventListener('change', function() {
+  document.querySelectorAll('.question-checkbox').forEach(cb => cb.checked = this.checked);
+  updateBatchButtons();
+});
+document.addEventListener('change', function(e) {
+  if (e.target.classList.contains('question-checkbox')) updateBatchButtons();
+});
+
+function getSelectedIds() {
+  return Array.from(document.querySelectorAll('.question-checkbox:checked')).map(cb => cb.value);
+}
+
+function updateBatchButtons() {
+  var ids = getSelectedIds();
+  document.getElementById('batchApproveBtn').disabled = ids.length === 0;
+  document.getElementById('batchRejectBtn').disabled = ids.length === 0;
+}
+
+// <%= t('admin.ui.m180') %>
+document.getElementById('batchApproveBtn').addEventListener('click', function() {
+  var ids = getSelectedIds();
+  if (ids.length === 0) return;
+  if (!confirm('<%= t('admin.ui.m502') %> ' + ids.length + ' <%= t('admin.ui.m503') %>')) return;
+  document.getElementById('batchApproveIds').value = ids.join(',');
+  document.getElementById('batchApproveForm').submit();
+});
+
+// <%= t('admin.ui.m182') %>
+var rejectMode = 'batch';
+var rejectTargetId = null;
+
+document.getElementById('batchRejectBtn').addEventListener('click', function() {
+  rejectMode = 'batch';
+  document.getElementById('rejectReasonInput').value = '';
+  new bootstrap.Modal(document.getElementById('rejectModal')).show();
+});
+
+document.addEventListener('click', function(e) {
+  if (e.target.closest('.reject-single-btn')) {
+    rejectMode = 'single';
+    rejectTargetId = e.target.closest('.reject-single-btn').dataset.id;
+    document.getElementById('rejectReasonInput').value = '';
+    new bootstrap.Modal(document.getElementById('rejectModal')).show();
+  }
+  if (e.target.closest('.re-approve-btn')) {
+    var id = e.target.closest('.re-approve-btn').dataset.id;
+    if (confirm('<%= t('admin.ui.m504') %>')) {
+      var form = document.createElement('form');
+      form.method = 'POST';
+      form.action = '/admin/qb_reviews/' + id + '/approve';
+      var csrf = document.createElement('input');
+      csrf.type = 'hidden'; csrf.name = 'authenticity_token';
+      csrf.value = document.querySelector('meta[name="csrf-token"]').content;
+      var method = document.createElement('input');
+      method.type = 'hidden'; method.name = '_method'; method.value = 'patch';
+      form.appendChild(csrf); form.appendChild(method);
+      document.body.appendChild(form); form.submit();
+    }
+  }
+});
+
+document.getElementById('confirmRejectBtn').addEventListener('click', function() {
+  var reason = document.getElementById('rejectReasonInput').value.trim();
+  bootstrap.Modal.getInstance(document.getElementById('rejectModal')).hide();
+
+  if (rejectMode === 'batch') {
+    var ids = getSelectedIds();
+    if (ids.length === 0) return;
+    document.getElementById('batchRejectIds').value = ids.join(',');
+    document.getElementById('batchRejectReason').value = reason;
+    document.getElementById('batchRejectForm').submit();
+  } else {
+    var form = document.createElement('form');
+    form.method = 'POST';
+    form.action = '/admin/qb_reviews/' + rejectTargetId + '/reject';
+    var csrf = document.createElement('input');
+    csrf.type = 'hidden'; csrf.name = 'authenticity_token';
+    csrf.value = document.querySelector('meta[name="csrf-token"]').content;
+    var method = document.createElement('input');
+    method.type = 'hidden'; method.name = '_method'; method.value = 'patch';
+    var reasonInput = document.createElement('input');
+    reasonInput.type = 'hidden'; reasonInput.name = 'rejection_reason'; reasonInput.value = reason;
+    form.appendChild(csrf); form.appendChild(method); form.appendChild(reasonInput);
+    document.body.appendChild(form); form.submit();
+  }
+});
+</script>

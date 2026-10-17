@@ -1,0 +1,19 @@
+en:
+  admin:
+    roles:
+      title: Role Management
+      new: New Role
+      edit: Edit Role
+      name: Name
+      badge: Badge
+      level: Level
+      users_count: Users
+      actions: Actions
+      built_in: Built-in
+      delete_confirm: Delete role "%{name}"?
+      hint_html: "Roles are customizable. Level convention: <b>0-49</b> normal roles (badge display only); <b>50-99</b> operator level (admin content management); <b>100+</b> admin level (full admin console access). Built-in roles cannot be deleted, but their name, badge and level can be changed."
+    flash:
+      role_created: Role created
+      role_updated: Role updated
+      role_deleted: Role deleted
+      role_undeletable: Built-in roles or roles still assigned to users cannot be deleted

@@ -1,0 +1,105 @@
+<style>
+  .log-stat-chip {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: #fff; border: 1px solid #e4e7ec; border-radius: 999px;
+    padding: 6px 16px; font-size: .8rem; color: #475569;
+    box-shadow: 0 1px 2px rgba(16,24,40,.05);
+  }
+  .log-stat-chip i { font-size: .95rem; }
+  .log-stat-chip strong { color: #1f2937; font-variant-numeric: tabular-nums; }
+  .log-user-avatar {
+    width: 30px; height: 30px; border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    color: #fff; font-weight: 600; font-size: .75rem; flex-shrink: 0;
+  }
+  .log-ip {
+    font-family: var(--bs-font-monospace);
+    font-size: .78rem; color: #475569;
+    background: #f1f5f9; border-radius: 6px; padding: 2px 8px;
+  }
+  .log-device i { font-size: .85rem; color: #94a3b8; }
+  .log-time { font-size: .78rem; color: #94a3b8; white-space: nowrap; }
+  .log-empty { padding: 56px 20px; text-align: center; }
+  .log-empty i { font-size: 2rem; color: #cbd5e1; }
+  .card-admin .table { --bs-table-hover-bg: rgba(99,102,241,.04); }
+</style>
+
+<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+  <div>
+    <h4 class="mb-0 admin-page-title"><%= t('admin.ui.m778') %></h4>
+    <div class="admin-page-subtitle"><i class="bi bi-clock-history me-1"></i>追踪用户登录行为与来源设备</div>
+  </div>
+  <div class="d-flex gap-2 flex-wrap">
+    <span class="log-stat-chip"><i class="bi bi-collection text-primary"></i>总记录 <strong><%= @pagy.count %></strong></span>
+    <span class="log-stat-chip"><i class="bi bi-box-arrow-in-right text-success"></i>今日登录 <strong><%= @today_count %></strong></span>
+    <span class="log-stat-chip"><i class="bi bi-people text-info"></i>今日用户 <strong><%= @today_users %></strong></span>
+  </div>
+</div>
+
+<div class="card card-admin">
+  <div class="card-header d-flex justify-content-between align-items-center py-3">
+    <h6 class="mb-0 fw-bold"><i class="bi bi-clock-history me-2 text-info"></i><%= t('admin.ui.m779') %></h6>
+    <div class="text-muted small"><%= t('admin.ui.m013') %> <%= @pagy.count %> <%= t('admin.ui.m139') %></div>
+  </div>
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead>
+          <tr>
+            <th class="ps-3"><%= t('admin.user') %></th>
+            <th>IP<%= t('admin.ui.m012') %></th>
+            <th><%= t('admin.location') %></th>
+            <th>ISP</th>
+            <th>设备</th>
+            <th class="pe-3 text-end"><%= t('admin.ui.m780') %></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @login_logs.each do |log| %>
+            <tr>
+              <td class="ps-3">
+                <div class="d-flex align-items-center gap-2">
+                  <span class="log-user-avatar" style="background: <%= ['#6366f1','#0ea5e9','#10b981','#f59e0b','#ef4444'][log.user_id % 5] %>">
+                    <%= log.user.display_name[0].upcase %>
+                  </span>
+                  <span class="fw-medium"><%= log.user.display_name %></span>
+                </div>
+              </td>
+              <td><span class="log-ip"><%= log.ip_address %></span></td>
+              <td>
+                <small class="text-muted"><i class="bi bi-geo-alt me-1"></i><%= log.location_text.presence || "-" %></small>
+              </td>
+              <td><small class="text-muted"><%= log.isp.presence || "-" %></small></td>
+              <td class="log-device">
+                <% if log.browser.present? || log.os.present? %>
+                  <small class="text-secondary"><i class="bi bi-pc-display me-1"></i><%= [log.browser, log.os].compact_blank.join(" · ") %></small>
+                <% else %>
+                  <small class="text-muted">-</small>
+                <% end %>
+              </td>
+              <td class="pe-3 text-end log-time" title="<%= log.created_at.strftime("%Y-%m-%d %H:%M:%S") %>">
+                <i class="bi bi-clock me-1"></i><%= time_ago_in_words(log.created_at) %>前
+              </td>
+            </tr>
+          <% end %>
+          <% if @login_logs.empty? %>
+            <tr>
+              <td colspan="6">
+                <div class="log-empty">
+                  <i class="bi bi-clock-history d-block mb-2"></i>
+                  <div class="fw-semibold" style="color:#475569"><%= t('admin.ui.m781') %></div>
+                  <div class="text-muted small mt-1">用户登录后记录会出现在这里</div>
+                </div>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <% if @pagy.pages > 1 %>
+    <div class="card-footer d-flex justify-content-center py-2">
+      <%== @pagy.series_nav(:bootstrap) %>
+    </div>
+  <% end %>
+</div>

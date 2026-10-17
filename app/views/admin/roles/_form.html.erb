@@ -1,0 +1,63 @@
+<%= form_with model: @role, url: @role.persisted? ? admin_role_path(@role) : admin_roles_path, class: "row g-3" do |f| %>
+  <div class="col-md-6">
+    <%= f.label :key, "Key（角色标识）", class: "form-label fw-semibold small" %>
+    <%= f.text_field :key, class: "form-control form-control-sm font-monospace",
+          placeholder: "如 editor", maxlength: 30,
+          readonly: @role.persisted? && @role.built_in? %>
+    <div class="form-text"><%= @role.persisted? && @role.built_in? ? "内置角色 Key 不可修改" : "小写字母、数字、下划线，创建后不可修改" %></div>
+  </div>
+  <div class="col-md-6">
+    <%= f.label :name, "角色名称", class: "form-label fw-semibold small" %>
+    <%= f.text_field :name, class: "form-control form-control-sm", placeholder: "如 内容编辑", maxlength: 20 %>
+  </div>
+  <div class="col-md-6">
+    <%= f.label :badge_class, "徽章样式", class: "form-label fw-semibold small" %>
+    <%= f.select :badge_class,
+          Role::BADGE_PRESETS.map { |label, cls| [label, cls] },
+          {}, class: "form-select form-select-sm" %>
+    <div class="mt-2">
+      <span class="badge <%= @role.badge_class || "bg-secondary text-white" %> rounded-pill"><%= @role.name.presence || "预览" %></span>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <%= f.label :level, "权限等级", class: "form-label fw-semibold small" %>
+    <%= f.number_field :level, class: "form-control form-control-sm", min: 0, max: 100, step: 1 %>
+    <div class="form-text">0-49 普通角色；50-99 运营级（可进后台内容管理）；100 及以上为管理员级（后台全部权限）</div>
+  </div>
+  <div class="col-12">
+    <label class="form-label fw-semibold small">权限点</label>
+    <% if @role.persisted? && @role.all_permissions? %>
+      <div class="alert alert-warning py-2 small mb-2">
+        <i class="bi bi-asterisk me-1"></i>该角色拥有<b>全部权限</b>（通配符），无需单独勾选。
+      </div>
+      <input type="hidden" name="role[permissions][]" value="*">
+    <% else %>
+      <%# 未勾选任何权限点时确保提交空数组 %>
+      <input type="hidden" name="role[permissions][]" value="">
+      <div class="border rounded p-3" style="max-height: 320px; overflow-y: auto;">
+        <% Permission.grouped.each do |group, points| %>
+          <div class="mb-2">
+            <div class="fw-semibold small text-muted mb-1"><%= group %></div>
+            <div class="row g-1">
+              <% points.each do |p| %>
+                <div class="col-md-4 col-6">
+                  <label class="d-flex align-items-center gap-1 small">
+                    <%= check_box_tag "role[permissions][]", p[:key], @role.has_permission?(p[:key]) %>
+                    <span><%= p[:name] %></span>
+                    <code class="text-muted" style="font-size:0.65rem"><%= p[:key] %></code>
+                  </label>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+      <div class="form-text">插件注册的权限点会自动出现在对应分组中。代码中通过 <code>user.can?("权限点")</code> 检查。</div>
+    <% end %>
+  </div>
+  <div class="col-12">
+    <hr>
+    <%= f.submit "保存", class: "btn btn-primary" %>
+    <%= link_to "返回", admin_roles_path, class: "btn btn-outline-secondary" %>
+  </div>
+<% end %>

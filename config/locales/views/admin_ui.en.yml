@@ -1,0 +1,1154 @@
+en:
+  admin:
+    ui:
+      m001: star
+      m002: Save
+      m003: days
+      m004: Generate
+      m005: Correct
+      m006: characters
+      m007: Preview
+      m008: Edit
+      m009: Save draft
+      m010: All
+      m011: Generation request failed (
+      m012: Address
+      m013: 'Total '
+      m014: Estimated time
+      m015: items
+      m016: Generation failed
+      m017: Xiaohongshu
+      m018: Done
+      m019: Douyin
+      m020: Bilibili
+      m021: WeChat Official Account
+      m022: Enable
+      m023: KOL name
+      m024: Manage
+      m025: Add
+      m026: Col 1 | Col 2 | Col 3 |
+      m027: Uploading...)
+      m028: Administrator
+      m029: Post as a root comment (not a reply to a specific comment)
+      m030: Selected
+      m031: Quote
+      m032: Waiting for generation...
+      m033: Upload failed
+      m034: Publish topic
+      m035: Detection time
+      m036: Repost topics require the original link
+      m037: Source link
+      m038: Mark as repost
+      m039: Created at
+      m040: Enter a topic title, at least 4 characters
+      m041: Topic title
+      m042: Select a node
+      m043: Node
+      m044: Editing draft; it will be deleted automatically after publishing.
+      m045: Edit draft
+      m046: Edit Draft - Admin Console
+      m047: Creator
+      m048: Uploading...
+      m049: 'Common tags: free, paid, open source'
+      m050: Fill in at least 2 options
+      m051: Add chapter
+      m052: Add platform
+      m053: Media platforms
+      m054: " per article or negotiable"
+      m055: Free
+      m056: Code
+      m057: Enter article content in Markdown...
+      m058: Link
+      m059: Contact email
+      m060: Delete video
+      m061: KOL bio (max 80 chars)
+      m062: Avatar URL
+      m063: Back to users
+      m064: Plugins
+      m065: Use
+      m066: This email was sent automatically; reply directly if you have questions
+      m067: Upload plugin
+      m068: Installed at
+      m069: This cannot be undone.
+      m070: Hello!
+      m071: 'Dear '
+      m072: Visible to paid members only
+      m073: Visible to registered users only
+      m074: people
+      m075: 'Upload failed: '
+      m076: Add KOL
+      m077: Drafts
+      m078: Exhausted
+      m079: Renderer not loaded, try again later
+      m080: e.g. Data Structures, Algorithms, Software Engineering
+      m081: Knowledge category
+      m082: Item name
+      m083: Enter item name
+      m084: Item type
+      m085: Price (points)
+      m086: Item description
+      m087: Enter item description
+      m088: Icon class
+      m089: Stock (-1 = unlimited)
+      m090: Extra data (JSON)
+      m091: For this type you can set plan and domain
+      m092: Cancel
+      m093: Briefly describe the exam content and requirements...
+      m094: " optional)"
+      m095: Add item
+      m096: Add question
+      m097: Answer
+      m098: Enter answer explanation (optional)...
+      m099: Correct answer
+      m100: Rejection reason
+      m101: Option D
+      m102: Option C
+      m103: Option B
+      m104: Option A
+      m105: Options
+      m106: Enter question content...
+      m107: Submitter
+      m108: e.g. Data Structures
+      m109: Question type
+      m110: Re-approve
+      m111: people
+      m112: Delete "
+      m113: Subject description
+      m114: Homepage
+      m115: e.g. AI Tools
+      m116: Icon class, e.g. bi-robot, bi-code-slash
+      m117: Briefly describe the category's purpose...
+      m118: Add instructor
+      m119: Generation count
+      m120: e.g. ChatGPT
+      m121: Briefly describe the tool's features...
+      m122: Free/
+      m123: month
+      m124: Bootstrap icon shown when no image is uploaded
+      m125: Upload image
+      m126: External link
+      m127: Remove image
+      m128: Square icon recommended (200x200), JPG/PNG/GIF/WebP
+      m129: App
+      m130: Enter an external image URL; JPG/PNG/GIF/WebP/SVG supported
+      m131: Exam duration (minutes)
+      m132: Subjects with the same tag are grouped together
+      m133: e.g. Beginner / Basic / Accounting
+      m134: Group tag
+      m135: e.g. IT Certification, Accounting
+      m136: Exam type name
+      m137: Unique identifier, e.g. 1401, 2401, 3401
+      m138: e.g. 1401
+      m139: records
+      m140: Subject code
+      m141: e.g. Programmer
+      m142: Updated at
+      m143: 'Example: '
+      m144: e.g. Senior Developer
+      m145: Bio
+      m146: The instructor's bio...
+      m147: Square image recommended; initials shown if empty
+      m148: Brief node description...
+      m149: Uploaded image takes priority and is cropped square. JPG/PNG/GIF/WebP/SVG,
+        max 2MB.
+      m150: Topic deleted
+      m151: Published at
+      m152: Publishing account
+      m153: Approve
+      m154: Reply
+      m155: Root comment
+      m156: Post comment
+      m157: Available operational accounts
+      m158: 'Method 2: Icon image'
+      m159: Type or pick an emoji (max 10 chars). Shown when no image is uploaded.
+      m160: " button to pick"
+      m161: 'Click the '
+      m162: 'Method 1: Emoji icon'
+      m163: Emoji shown when no image is uploaded.
+      m164: " icon. Once an image is uploaded it becomes the node icon on the frontend"
+      m165: Icon image
+      m166: New chat group
+      m167: Date
+      m168: Interest nodes
+      m169: Loading...
+      m170: Add node
+      m171: When enabled, AI can search the internet for fresh info; generation takes
+        longer
+      m172: Enable web search
+      m173: Leave blank to use the prompt from system settings
+      m174: Delete node "
+      m175: Topics
+      m176: System nodes
+      m177: New node
+      m178: Shown below the tab bar when viewing this node's topic list
+      m179: Node notice shown at the top of the topic list (optional, HTML supported)
+      m180: Batch approve
+      m181: topics
+      m182: Batch reject
+      m183: Create operational account
+      m184: 'No operational accounts available, please '
+      m185: ". "
+      m186: Notice
+      m187: Publisher
+      m188: Risk tags
+      m189: History
+      m190: Sort position
+      m191: System settings
+      m192: 'Please configure in the '
+      m193: Lower comes first; system nodes support drag sorting
+      m194: Failed
+      m195: Today's tasks
+      m196: Today
+      m197: 'Failed: '
+      m198: 'Done: '
+      m199: 7-day trend
+      m200: Settings
+      m201: Callback now
+      m202: Re-enqueue all waiting historical tasks?
+      m203: Schedule now
+      m204: Schedule tasks for today now?
+      m205: Waiting
+      m206: Total tasks today
+      m207: Node icon
+      m208: Choose one
+      m209: 'Display priority: '
+      m210: Brief group description or notice...
+      m211: Notes
+      m212: Square image recommended (200x200)
+      m213: e.g. Tech Sharing
+      m214: Group Logo
+      m215: Current member count
+      m216: e.g. 500
+      m217: Member count
+      m218: e.g. AiBBS Tech Chat
+      m219: Group name
+      m220: Name shown to users
+      m221: Identifier
+      m222: e.g. tech-share
+      m223: ". Only lowercase letters, numbers, hyphens and underscores"
+      m224: Draft
+      m225: Publish
+      m226: Method
+      m227: Node type
+      m228: No history yet
+      m229: System nodes are built-in categories; interest nodes are user-defined
+        topics
+      m230: Add direction
+      m231: Direction name
+      m232: Courses
+      m233: Course title
+      m234: Start import
+      m235: e.g. Complete React 18 Guide
+      m236: Course intro
+      m237: Briefly describe the course content and highlights...
+      m238: Up to 1000 characters
+      m239: " real users"
+      m240: Student nickname
+      m241: Select a direction
+      m242: Lessons
+      m243: Total duration
+      m244: Learners
+      m245: Select an instructor
+      m246: Send email
+      m247: Cover image
+      m248: 'Re-enqueue '
+      m249: Generation timed out, try again later
+      m250: Generation request failed, check the network
+      m251: Please try again later
+      m252: 400x200 recommended; icon shown if empty
+      m253: Generating...
+      m254: chapters
+      m255: Email domain
+      m256: Installed
+      m257: Enabled
+      m258: Not installed
+      m259: suffix
+      m260: Scan local
+      m261: Scan the plugins/ directory and auto-install local plugins
+      m262: Unified password
+      m263: at least 6 characters
+      m264: Questions
+      m265: Details
+      m266: Export Excel
+      m267: Disable this plugin?
+      m268: Generate avatars (
+      m269: Enable this plugin?
+      m270: Uninstall this plugin? Its files will be deleted. Irreversible.
+      m271: Delete record
+      m272: " operational accounts without avatars?"
+      m273: 'No plugins yet, click '
+      m274: to install the first plugin
+      m275: Plugin name
+      m276: Copy email
+      m277: Copy password
+      m278: Not recorded
+      m279: Copy credentials
+      m280: Edit question
+      m281: Create subject
+      m282: New exam subject
+      m283: No subjects yet
+      m284: "? All its questions and practice records will be deleted."
+      m285: Delete subject "
+      m286: Manage questions
+      m287: min
+      m288: Duration
+      m289: Questions
+      m290: New subject
+      m291: Question banks
+      m292: 'Delete operational account '
+      m293: No operational accounts
+      m294: No avatar
+      m295: Password
+      m296: Installed plugins
+      m297: Batch-generate operational accounts?
+      m298: Avatar method
+      m299: Only .zip supported. Plugin info is read from plugin.json automatically.
+      m300: " optional) — defines hook handlers"
+      m301: Operational accounts
+      m302: Create node
+      m303: " optional) — defines plugin config shown on the admin settings page"
+      m304: " optional) — plugin documentation"
+      m305: Plugin code directory
+      m306: Plugin view directory
+      m307: Example
+      m308: My Plugin
+      m309: This is a sample plugin
+      m310: Developer
+      m311: Supported features
+      m312: Hook system
+      m313: Nodes
+      m314: Plugin package
+      m315: Error
+      m316: Runs plugin logic on events like topic creation, comments and registration
+      m317: Defines config items managed in the admin UI
+      m318: via config
+      m319: Config management
+      m320: Insert custom content at specific page positions
+      m321: Node order saved
+      m322: Drag to sort
+      m323: Nav injection
+      m324: Add custom menu items to the frontend/admin navbars
+      m325: No system nodes
+      m326: View injection
+      m327: Sort by topics
+      m328: No interest nodes
+      m329: 'Confirm for '
+      m330: Edit exam subject
+      m331: Documentation
+      m332: Unregistered hooks
+      m333: Registered hooks
+      m334: Save config
+      m335: Plugin config
+      m336: Uninstall
+      m337: Uninstall? Plugin files will be deleted!
+      m338: Switch method
+      m339: Enable?
+      m340: Plugin development guide
+      m341: Delete image
+      m342: Plugin package structure
+      m343: Disable
+      m344: 'The plugin is '
+      m345: Disable?
+      m346: Basic info
+      m347: Plugin Details -
+      m348: Install plugin
+      m349: " format. The package must contain:"
+      m350: Developer name
+      m351: Plugin description
+      m352: One-click avatar replacement
+      m353: " required) — plugin metadata (name, identifier, version, etc.)"
+      m354: " required) — plugin entry file, executed on load"
+      m355: lowercase letters, numbers, underscores (e.g. my
+      m356: e.g. 1.0.0
+      m357: accounts
+      m358: Version
+      m359: Auto-filled after upload
+      m360: Authorized courses
+      m361: Course name
+      m362: Authorized at
+      m363: lessons ·
+      m364: Beginner
+      m365: Intermediate
+      m366: Advanced
+      m367: Revoke this user's course access?
+      m368: Revoke
+      m369: This user has no course access yet
+      m370: Authorize course
+      m371: Select a course
+      m372: Grant access
+      m373: Authorized
+      m374: courses
+      m375: Admins and operators have access to all courses by default.
+      m376: Select recipients
+      m377: Search username or email...
+      m378: Edit email
+      m379: e.g. Welcome to our community
+      m380: Community notice
+      m381: A greeting from us
+      m382: Thank you for registering with our platform. We're glad to serve you.
+      m383: Here you can join tech discussions, share experiences and connect with
+        like-minded developers.
+      m384: If you have any questions, feel free to contact us.
+      m385: No operational topics
+      m386: Create now
+      m387: items
+      m388: 'Delete the selected '
+      m389: " topics? Irreversible."
+      m390: Create Operational Topic - Admin Console
+      m391: Create operational topic
+      m392: 'Topics are published via random operational accounts. Available now: '
+      m393: Points-gated
+      m394: Markdown supported; click Preview above to see the result...
+      m395: Generating topic content...
+      m396: Enter a title before saving the draft
+      m397: Saving...
+      m398: Saved
+      m399: Draft save failed
+      m400: Draft save failed, please retry
+      m401: The browser cannot read local files directly.
+      m402: 'You pasted: '
+      m403: Click OK to upload this file, or use the toolbar image button / drag the
+        image into the editor.
+      m404: Enter content visible to registered users only
+      m405: Enter content visible to paid members only
+      m406: 'Enter the points amount (positive integer): '
+      m407: Enter a valid positive integer
+      m408: Enter content that requires points to view
+      m409: Course access management
+      m410: "'s video access"
+      m411: Search username/email...
+      m412: Current role
+      m413: Current user
+      m414: No reason
+      m415: 'Banned by: '
+      m416: Banned (
+      m417: Normal
+      m418: "'s role changed to "
+      m419: Node members
+      m420: Operator
+      m421: Manage node access
+      m422: Node access
+      m423: Manage course access
+      m424: Course access
+      m425: Unban user
+      m426: 'Unban user '
+      m427: Unban
+      m428: Ban
+      m429: Ban user
+      m430: 'Ban user: '
+      m431: Ban duration
+      m432: Permanent ban
+      m433: Ban reason
+      m434: Enter a ban reason (optional)
+      m435: Ban this user? They won't be able to sign in.
+      m436: Confirm ban
+      m437: Visit the community
+      m438: Enjoy!
+      m439: 'replaces the username; '
+      m440: replaces the user email, auto-substituted on send
+      m441: Select at least one user
+      m442: Node member management
+      m443: "'s node access"
+      m444: Joined nodes
+      m445: Joined at
+      m446: Permanent
+      m447: Remove from
+      m448: " node?"
+      m449: Remove
+      m450: This user hasn't joined any node
+      m451: Select nodes
+      m452: Expires at (optional)
+      m453: Leave blank for permanent
+      m454: Leave blank for permanent access
+      m455: Notes (optional)
+      m456: Enter notes
+      m457: Joined
+      m458: nodes
+      m459: Users
+      m460: All users
+      m461: Banned
+      m462: Reject this question?
+      m463: Reject
+      m464: Edit item
+      m465: Points Shop - Items
+      m466: items
+      m467: Price
+      m468: Stock
+      m469: Sold
+      m470: Points
+      m471: Unlimited
+      m472: On shelf
+      m473: Off shelf
+      m474: Confirm delete "
+      m475: Themes
+      m476: Upload a custom theme package to change the site look
+      m477: Upload new theme
+      m478: Theme ZIP package
+      m479: Upload & install
+      m480: The package must contain theme.json, styles.css, screenshot.png. See the
+        theme development docs.
+      m481: Theme package structure
+      m482: 'Required: theme metadata'
+      m483: 'Required: preview screenshot (1200x800)'
+      m484: 'Required: CSS variable overrides'
+      m485: 'Optional: extra custom styles'
+      m486: 'Optional: dark mode variable overrides'
+      m487: 'Optional: static assets'
+      m488: questions
+      m489: Delete this question?
+      m490: No questions yet, use the button above to add
+      m491: Question review
+      m492: Enter a rejection reason (optional)...
+      m493: Confirm reject
+      m494: Pending
+      m495: Rejected
+      m496: Approved
+      m497: Subject
+      m498: 'Reason: '
+      m499: Details
+      m500: No pending questions
+      m501: No records
+      m502: 'Approve '
+      m503: " questions?"
+      m504: Re-approve this question?
+      m505: Question details
+      m506: 'Correct answer: '
+      m507: Submission info
+      m508: Added by admin
+      m509: Submitted at
+      m510: Reviewed at
+      m511: Review actions
+      m512: Approve
+      m513: Rejection reason (optional)...
+      m514: Tools
+      m515: Delete tool "
+      m516: No tools yet, use the button above to create
+      m517: Create tool
+      m518: Markdown supported...
+      m519: Publish this draft? It will be deleted after publishing.
+      m520: Topic Operations - Admin Console
+      m521: Topic operations
+      m522: Total operational topics
+      m523: Create new topic
+      m524: Create topic
+      m525: Keep editing & publish
+      m526: Publish directly
+      m527: Publish draft "
+      m528: Delete draft "
+      m529: Pinned
+      m530: Filter by node
+      m531: All nodes
+      m532: Search title/content...
+      m533: Operational topics
+      m534: 0 selected
+      m535: Batch delete
+      m536: Interactions
+      m537: Pin
+      m538: Delete topic "
+      m539: No matching topics
+      m540: Fresh Ocean Blue
+      m541: 'In use: '
+      m542: System default
+      m543: Default
+      m544: Native black & white, clean and minimal
+      m545: Built-in
+      m546: Restore the system default theme? The current theme will be deactivated
+      m547: No description
+      m548: Activate this theme to replace the current one?
+      m549: Deactivate
+      m550: Delete theme "
+      m551: No themes installed yet
+      m552: Upload a ZIP theme package to customize the site look
+      m553: Edit tool category
+      m554: Tool categories
+      m555: New category
+      m556: Tools
+      m557: Delete category "
+      m558: "? All tools in it will also be deleted."
+      m559: No categories yet, use the button above to create
+      m560: New tool category
+      m561: Create category
+      m562: Edit tool
+      m563: Tools
+      m564: New tool
+      m565: 'Filter by category: '
+      m566: Failed to get signature
+      m567: Enable ads
+      m568: Clicks
+      m569: All ads
+      m570: Clicked at
+      m571: No click records
+      m572: Dashboard
+      m573: Import demo data? Existing demo data will be skipped.
+      m574: Import demo data
+      m575: Clear all demo data? Irreversible!
+      m576: Clear demo data
+      m577: Total users
+      m578: Active today
+      m579: Online now
+      m580: Pending moderation
+      m581: " topics pending, "
+      m582: " comments pending"
+      m583: Review now
+      m584: Recent signups
+      m585: View all
+      m586: No users
+      m587: Nodes
+      m588: Topics
+      m589: No nodes
+      m590: Users by region
+      m591: World map
+      m592: China map
+      m593: Uploading
+      m594: Upload successful
+      m595: 'Upload init failed: '
+      m596: Check that the VOD SDK loaded (TcVod undefined means load failure).
+      m597: Request failed, check the network
+      m598: Delete the video file from Tencent Cloud VOD?
+      m599: Irreversible; proceed carefully.
+      m600: Deleting...
+      m601: Deleted
+      m602: 'Delete failed: '
+      m603: 'Request failed: '
+      m604: Renderer not loaded
+      m605: Courses
+      m606: New course
+      m607: Lessons
+      m608: Student reviews
+      m609: Delete course "
+      m610: No courses yet, use the button above to create
+      m611: e.g. 48
+      m612: e.g. 12 hours
+      m613: Class name, e.g. bi-book, bi-code-slash
+      m614: Create course
+      m615: Ad click tracking
+      m616: Total clicks
+      m617: Clicks today
+      m618: Ads
+      m619: Delete avatar
+      m620: Auto Comments - Admin Console
+      m621: Post operational comment
+      m622: 'Comments are posted via random operational accounts (never the topic
+        publisher''s). Available now: '
+      m623: Select a topic
+      m624: Search title or author...
+      m625: ago
+      m626: No topics
+      m627: 'Selected topic: '
+      m628: Clear
+      m629: 'Publisher: '
+      m630: Select a topic on the left first
+      m631: Reply to comment (optional)
+      m632: After selecting a topic you can pick a comment to reply to
+      m633: Enter comment content, Markdown supported, 2-2000 characters
+      m634: Generating comment content...
+      m635: Select a comment to reply to
+      m636: Load failed
+      m637: Select a topic first
+      m638: Course directions
+      m639: Manage direction categories on the frontend courses page
+      m640: New direction
+      m641: Directions
+      m642: directions
+      m643: Delete direction "
+      m644: No directions yet, add on the right
+      m645: e.g. Frontend
+      m646: Edit direction
+      m647: Auto comments
+      m648: No auto comment tasks today
+      m649: " to configure and enable auto comments"
+      m650: Manage in Comment Operations
+      m651: Auto Topics - Admin Console
+      m652: Auto topics
+      m653: No auto creation tasks today
+      m654: " to configure and enable auto creation"
+      m655: Manage in Topic Operations
+      m656: Edit chat group
+      m657: Delete logo
+      m658: Chat groups
+      m659: Chat groups
+      m660: Members
+      m661: Delete chat group "
+      m662: No chat groups yet, use the button above to create
+      m663: Create chat group
+      m664: Comment Operations - Admin Console
+      m665: Comment operations
+      m666: Total operational comments
+      m667: Post new comment
+      m668: Operational comments
+      m669: Delete this comment?
+      m670: No operational comments
+      m671: Publish now
+      m672: Post Operational Comment - Admin Console
+      m673: Student reviews
+      m674: Local server
+      m675: Tencent Cloud VOD FileID
+      m676: Upload video
+      m677: 'Uploaded: '
+      m678: Common video formats (MP4, WebM, MOV), max 500MB recommended
+      m679: 'No lessons yet, click '
+      m680: 'No chapters yet, click '
+      m681: Start
+      m682: 'Enter '
+      m683: " to continue: "
+      m684: Delete lesson "
+      m685: "? Irreversible."
+      m686: 'This lesson has a video file; deleting it will also '
+      m687: delete the video from Tencent Cloud VOD
+      m688: Confirm lesson deletion
+      m689: Delete chapter "
+      m690: " and all its lessons? Irreversible."
+      m691: 'This chapter has '
+      m692: " video lessons; deleting the chapter will "
+      m693: delete all videos from Tencent Cloud VOD
+      m694: Confirm chapter deletion
+      m695: Video must be under 10GB
+      m696: Checking configuration...
+      m697: Configure App ID, SecretId and SecretKey in "System Settings
+      m698: ' > Tencent Cloud VOD" first'
+      m699: Uploading, don't close the page...
+      m700: Back to course
+      m701: Add review
+      m702: e.g. Xiao Ming
+      m703: The student's review...
+      m704: Add review
+      m705: Student
+      m706: Delete this review?
+      m707: No reviews yet, use the form above to add
+      m708: Edit review
+      m709: Edit course
+      m710: Manage student reviews
+      m711: Class name
+      m712: Delete cover
+      m713: Curriculum
+      m714: chapters ·
+      m715: Chapter title
+      m716: 'e.g. Chapter 1: Getting Started'
+      m717: Delete chapter
+      m718: Lesson title
+      m719: e.g. 12:30
+      m720: Set video
+      m721: Edit content
+      m722: Delete lesson
+      m723: Delete VOD file
+      m724: Video storage
+      m725: Tencent Cloud VOD
+      m726: Used
+      m727: times
+      m728: Used by
+      m729: No users have used this code
+      m730: KOL Management
+      m731: KOL invitations
+      m732: List
+      m733: KOLs
+      m734: Download template
+      m735: Import
+      m736: None
+      m737: Negotiable
+      m738: No KOLs yet, use "Add KOL" above to add
+      m739: Select invitees
+      m740: No KOLs with an email set
+      m741: Add email addresses to KOLs in "KOL Management" first
+      m742: Edit invitation email
+      m743: e.g. Invitation to join our platform
+      m744: Partnership invitation
+      m745: We look forward to cooperating with you
+      m746: We admire your industry influence and quality content, and sincerely invite
+        you to partner with us.
+      m747: Our platform has an active community and rich content ecosystem. Cooperation
+        can bring you more exposure and business opportunities. We look forward to
+        exploring the possibilities together.
+      m748: If you're interested, reply to this email and we'll arrange a specialist
+        to discuss the details.
+      m749: 'Partnership highlights:'
+      m750: Quality community traffic and user base
+      m751: Flexible cooperation models and great rewards
+      m752: Instructors
+      m753: Manage course instructor info
+      m754: Instructors
+      m755: instructors
+      m756: Job title
+      m757: Delete instructor "
+      m758: Related courses will be unbound from the instructor.
+      m759: No instructors yet, add on the right
+      m760: Invitation codes
+      m761: codes
+      m762: Available
+      m763: Generate codes
+      m764: Max uses
+      m765: Leave blank for unlimited
+      m766: Leave blank to never expire
+      m767: Generate invitation codes?
+      m768: Invitation code
+      m769: Usage
+      m770: Click to copy
+      m771: " uses"
+      m772: Usage details
+      m773: 'Delete invitation code '
+      m774: No codes yet, generate first
+      m775: Back to invitation codes
+      m776: Invitation code details
+      m777: Full support from a professional operations team
+      m778: Recent logins
+      m779: Login logs
+      m780: Login time
+      m781: No login records
+      m782: Moderation - Admin Console
+      m783: Moderation
+      m784: Pending topics
+      m785: Pending comments
+      m786: Blocked topics
+      m787: Blocked comments
+      m788: 'Type: '
+      m789: 'Status: '
+      m790: Blocked
+      m791: Review list
+      m792: Unknown user
+      m793: Confidence
+      m794: 'Reject this '
+      m795: It will be hidden from users after rejection.
+      m796: View original
+      m797: No blocked records
+      m798: No pending content
+      m799: Select content first
+      m800: Batch approve the selected items?
+      m801: Batch reject the selected items? They will be hidden from users.
+      m802: Operation failed
+      m803: Edit node
+      m804: Looking forward to your reply!
+      m805: replaces the KOL name, auto-substituted on send
+      m806: Send invitation
+      m807: Add KOL
+      m808: e.g. Ruan Yifeng
+      m809: " square)"
+      m810: " optional, clickable)"
+      m811: 'e.g. '
+      m812: Import KOLs
+      m813: Select Excel file (.xlsx)
+      m814: 'Instructions: '
+      m815: 'First '
+      m816: download the template
+      m817: fill it in per the template format
+      m818: "\" column is required; others are optional"
+      m819: 'Media platform format: '
+      m820: platform|link
+      m821: separate multiple platforms with commas
+      m822: Imported data is appended; existing data is not overwritten
+      m823: Edit KOL -
+      m824: Select an Excel file to import first
+      m825: Importing...
+      m826: Import request failed, please retry
+      m827: Platform name
+      m828: Link (optional, clickable)
+      m829: Select at least one KOL
+      m830: links
+      m831: No friend links yet, add on the right
+      m832: e.g. Ruby China
+      m833: One-line description (optional)
+      m834: Add friend link
+      m835: Customize the footer text; the default is shown if left empty.
+      m836: e.g. AiBBS Community
+      m837: 'HTML supported, e.g. '
+      m838: Tags
+      m839: Show friend links section
+      m840: Save settings
+      m841: Edit friend link
+      m842: Honors
+      m843: Add honor
+      m844: Award image
+      m845: View full image
+      m846: Not uploaded
+      m847: Delete this honor record?
+      m848: No honor records yet, use "Add Honor" above to create
+      m849: Add honor record
+      m850: e.g. Active Contributor Award
+      m851: " aspect ratio 4:3)"
+      m852: Upload to COS and paste the URL, or enter an image URL directly
+      m853: Briefly describe the award reason (optional)
+      m854: Edit Honor -
+      m855: Edit instructor
+      m856: High
+      m857: Low
+      m858: Friend links
+      m859: China
+      m860: Turkey
+      m861: Brazil
+      m862: Argentina
+      m863: Mexico
+      m864: Colombia
+      m865: Chile
+      m866: Peru
+      m867: Canada
+      m868: Australia
+      m869: New Zealand
+      m870: Thailand
+      m871: Vietnam
+      m872: Malaysia
+      m873: Singapore
+      m874: Indonesia
+      m875: Philippines
+      m876: Myanmar
+      m877: Cambodia
+      m878: Pakistan
+      m879: Bangladesh
+      m880: Sri Lanka
+      m881: Nepal
+      m882: Iran
+      m883: Iraq
+      m884: Saudi Arabia
+      m885: UAE
+      m886: Israel
+      m887: Egypt
+      m888: South Africa
+      m889: Nigeria
+      m890: Kenya
+      m891: Morocco
+      m892: Tanzania
+      m893: USA
+      m894: Japan
+      m895: South Korea
+      m896: North Korea
+      m897: India
+      m898: Russia
+      m899: UK
+      m900: France
+      m901: Germany
+      m902: Italy
+      m903: Spain
+      m904: Portugal
+      m905: Netherlands
+      m906: Belgium
+      m907: Switzerland
+      m908: Austria
+      m909: Sweden
+      m910: Norway
+      m911: Denmark
+      m912: Finland
+      m913: Poland
+      m914: Czechia
+      m915: Hungary
+      m916: Romania
+      m917: Greece
+      m918: Ukraine
+      m919: Beijing
+      m920: Tianjin
+      m921: Shanghai
+      m922: Chongqing
+      m923: Hebei
+      m924: Shanxi
+      m925: Liaoning
+      m926: Jilin
+      m927: Heilongjiang
+      m928: Jiangsu
+      m929: Zhejiang
+      m930: Anhui
+      m931: Fujian
+      m932: Jiangxi
+      m933: Shandong
+      m934: Henan
+      m935: Hubei
+      m936: Hunan
+      m937: Guangdong
+      m938: Hainan
+      m939: Sichuan
+      m940: Guizhou
+      m941: Yunnan
+      m942: Shaanxi
+      m943: Gansu
+      m944: Qinghai
+      m945: Taiwan
+      m946: Inner Mongolia
+      m947: Guangxi
+      m948: Tibet
+      m949: Ningxia
+      m950: Xinjiang
+      m951: Hong Kong
+      m952: Macau
+      m953: Zhejiang
+      m954: Anhui
+      m955: Fujian
+      m956: Jiangxi
+      m957: Shandong
+      m958: Henan
+      m959: Hubei
+      m960: Hunan
+      m961: Guangdong
+      m962: Hainan
+      m963: Sichuan
+      m964: Guizhou
+      m965: Yunnan
+      m966: Jiangsu
+      m967: Shanxi
+      m968: Hebei
+      m969: Liaoning
+      m970: Jilin
+      m971: Heilongjiang
+      m972: Shaanxi
+      m973: Gansu
+      m974: Qinghai
+      m975: Taiwan
+      m976: Inner Mongolia
+      m977: Guangxi
+      m978: Tibet
+      m979: Ningxia
+      m980: Xinjiang
+      m981: Hong Kong
+      m982: Macau
+      m983: Beijing
+      m984: Tianjin
+      m985: Chongqing
+      m986: Plugin & Theme Center
+      m987: Search plugins by name, identifier or author...
+      m988: Search
+      m989: Plugin & Theme Center URL
+      m990: Save plugin & theme center URL
+      m991: Upgrade
+      m992: Upgrade this plugin? Local plugin files will be overwritten by the new version.
+      m993: Installed
+      m994: Install
+      m995: Cannot connect to the plugin & theme center. Check the URL or make sure the service is running.
+      m996: Invalid plugin & theme center URL
+      m997: Plugin & theme center URL saved
+      m998: This plugin is already up to date
+      m999: Plugin installed. You can enable it in Plugin management.
+      m1000: Install failed
+      m1001: Download and install this plugin from the plugin & theme center?
+      m1002: No plugins in the center yet
+      m1019: Access token
+      m1020: Get it from the plugin & theme center admin (Dashboard → Access info). Required for downloads/installs.
+      m1021: Edit Theme
+      m1022: Topic List Style
+      m1023: Article list (default)
+      m1024: Image & text list
+      m1025: In image & text mode, topics show a content excerpt, and topics with images also show an image preview below the title and excerpt
+      m1026: Back
+      m1009: Theme installed. You can activate it in Theme management.
+      m1010: This theme is already up to date
+      m1011: Theme install failed
+      m1012: Plugins
+      m1013: Themes
+      m1014: Search themes by name, identifier or author...
+      m1015: Upgrade this theme? Local theme files will be overwritten by the new version.
+      m1016: Install theme
+      m1017: Download and install this theme from the plugin & theme center?
+      m1018: No themes in the center yet
+      d001: Inject custom HTML at the bottom of pages for analytics (Google Analytics,
+        Baidu Statistics, CNZZ) or other third-party scripts.
+      d002: Configure the site name and basic SEO info. These appear in the navbar,
+        page titles, search results and social media share previews.
+      d003: e.g. https://example.com/og-image.png or /images/og.png
+      d004: is a free behavior analytics tool with heatmaps and session replay to
+        help you understand how users interact with your site.
+      d005: e.g. AiBBS is an open tech community sharing insights,
+        tech and startup experience...
+      d006: 'The frontend works normally, but admin settings require a valid License
+        Key. Please go to '
+      d007: When enabled, publishing or updating topics notifies Bing automatically
+        to speed up indexing.
+      d008: 'Get it from the Clarity console; once filled, the script is injected
+        into all frontend '
+      d009: Used for search result summaries and social share descriptions; 120-160
+        characters recommended
+      d010: e.g. tech community, coding, Ruby on Rails
+      d011: Add search engine verification codes to confirm site ownership and get
+        search data.
+      d012: Shown in search results and Open Graph tags
+      d013: Shown in the navbar brand text, page title suffix, email signature, etc.
+      d014: UUID format recommended; a verification file is generated automatically
+        on save
+      d015: Cover image for social shares, recommended size 1200
+      d016: px. Use an absolute URL or a path starting with /
+      d017: The homepage title shown in browser tabs and search results
+      d018: meta verification code (content attribute value)
+      d019: e.g. a1b2c3d4e5f6
+      d020: e.g. AiBBS - AI Community
+      d021: 'enabled, Project ID: '
+      d022: e.g. xxxxxxxxxxxx
+      d023: e.g. wnnb78aean
+      d024: Separate keywords with commas
+      d025: About IndexNow
+      d026: Enable IndexNow
+      d027: About Clarity
+      d028: e.g. AiBBS
+      d029: Footer custom code
+      d030: Search engine verification
+      d031: 'File generated: '
+      d032: Share cover image
+      d033: Save settings
+      d034: Baidu Webmaster
+      d035: Site description
+      d036: Homepage title
+      d037: Site name
+      d038: Basic info
+      d039: System settings
+      d040: Keywords
+      d041: " configuration."
+      d042: not verified
+      d043: Settings
+      d044: ''
+      d045: Update sort numbers and home badge
+      d046: Drag-sort navbar modules
+      d047: Navbar live preview
+      d048: Reset default order
+      d049: Add placeholder styles with delay
+      d050: px; PNG / JPG / SVG, max 2MB
+      d051: PNG / SVG / ICO, max 1MB
+      d052: Add home badge to the first enabled module
+      d053: Remove old home badge
+      d054: 'Drag to reorder the top navbar modules. '
+      d055: The first enabled module becomes the site homepage
+      d056: Choose how the navbar logo is displayed
+      d057: Reflects the sort order live (enabled modules only)
+      d058: 'Shown on browser tabs; use a '
+      d059: Show uploaded logo image only
+      d060: Customize the site icon and logo
+      d061: Site icon (Favicon)
+      d062: 'Shown on the left of the navbar, recommended size '
+      d063: Show image and site name together
+      d064: Delete current logo
+      d065: No logo uploaded
+      d066: Show site name text only
+      d067: Site logo
+      d068: " image (e.g. 64"
+      d069: No enabled modules
+      d070: Navbar module order
+      d071: Restore default order
+      d072: No icon uploaded
+      d073: Delete current icon
+      d074: " or 512"
+      d075: Navbar preview
+      d076: Hide preview
+      d077: Always show
+      d078: Preview
+      d079: Display style
+      d080: Appearance
+      d081: square
+      d082: Disabled
+      d083: Enabled
+      d084: Text only
+      d085: License not verified
+      d086: 'frontend pages are '
+      d087: " to access, but the admin "
+      d088: " requires a valid License Key."
+      d089: 'Please go to '
+      d090: System Settings
+      d091: " page"
+      d092: Appearance
+      d093: icon
+      d094: title
+      d095: image
+      d096: description
+      d097: characters
+      d098: cover
+      d099: tag
+      d100: site
+      d101: features
+      d102: Enable
+      d103: Disable
+      d104: Upload
+      d105: Delete
+      d106: Save
+      d107: closed
+      d108: 'When enabled, '
+      d109: Enable
+      d110: analytics

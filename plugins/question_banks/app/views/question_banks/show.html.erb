@@ -1,0 +1,235 @@
+<% content_for :title, "#{@qb_exam.name} - 选择模式 - 题库 - #{site_name}" %>
+
+<div class="container-lg py-4">
+  <!-- 顶部 -->
+  <div class="d-flex align-items-center gap-2 mb-4">
+    <a href="<%= question_banks_path %>" class="qb-back-btn">
+      <i class="bi bi-arrow-left"></i>
+    </a>
+    <div>
+      <h4 class="fw-bold mb-0" style="font-size:1.1rem">
+        <span class="qb-exam-type-badge" style="background-color: <%= @qb_exam.color %>15; color: <%= @qb_exam.color %>"><%= @qb_exam.type_name %></span>
+        <%= @qb_exam.name %>
+      </h4>
+      <span class="text-muted" style="font-size:0.78rem"><%= @qb_exam.description %></span>
+    </div>
+    <% if current_user %>
+      <a href="<%= new_question_bank_question_path(@qb_exam) %>" class="btn btn-primary rounded-pill px-3 ms-auto" style="font-size:0.85rem">
+        <i class="bi bi-plus-lg me-1"></i>贡献题目
+      </a>
+    <% end %>
+  </div>
+
+  <!-- 模式选择 -->
+  <div class="qb-mode-section">
+    <h5 class="fw-bold mb-3" style="font-size:0.95rem"><i class="bi bi-collection me-1" style="color:#6366f1"></i>选择练习模式</h5>
+    <div class="row g-3">
+      <!-- 每日一练 -->
+      <div class="col-6 col-lg-3">
+        <a href="<%= @daily_done ? '#' : practice_question_bank_path(id: @qb_exam.code, mode: 'daily') %>" class="text-decoration-none <%= 'pointer-events-none' if @daily_done %>">
+          <div class="qb-mode-card <%= 'qb-mode-disabled' if @daily_done %>">
+            <div class="d-flex justify-content-between align-items-start">
+              <div class="qb-mode-icon" style="background: linear-gradient(135deg, #10b981, #059669)">
+                <i class="bi bi-calendar-check"></i>
+              </div>
+              <% if @daily_done %>
+                <span class="qb-mode-done-badge"><i class="bi bi-check-lg me-1"></i>已完成</span>
+              <% end %>
+            </div>
+            <h6 class="qb-mode-title">每日一练</h6>
+            <p class="qb-mode-desc">每天精选 5 道题，利用碎片时间高效刷题</p>
+            <div class="qb-mode-meta">
+              <span><i class="bi bi-collection me-1"></i>5 题</span>
+              <span><i class="bi bi-clock me-1"></i>不限时</span>
+            </div>
+            <div class="qb-mode-action">
+              <% if @daily_done %>
+                明天再来 <i class="bi bi-arrow-right"></i>
+              <% else %>
+                开始练习 <i class="bi bi-arrow-right"></i>
+              <% end %>
+            </div>
+          </div>
+        </a>
+      </div>
+
+      <!-- 章节练习 -->
+      <div class="col-6 col-lg-3">
+        <div class="qb-mode-card" style="cursor:default">
+          <div class="qb-mode-icon" style="background: linear-gradient(135deg, #6366f1, #4f46e5)">
+            <i class="bi bi-book"></i>
+          </div>
+          <h6 class="qb-mode-title">章节练习</h6>
+          <p class="qb-mode-desc">选择对应章节专项练习，针对性攻克薄弱知识点</p>
+          <div class="qb-mode-meta">
+            <span><i class="bi bi-collection me-1"></i><%= @qb_exam.question_count %> 题</span>
+            <span><i class="bi bi-clock me-1"></i>不限时</span>
+          </div>
+          <div class="qb-mode-action" style="color: var(--bs-secondary-color)">
+            请在下方选择章节 <i class="bi bi-arrow-down"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- 试卷模式 -->
+      <div class="col-6 col-lg-3">
+        <a href="<%= practice_question_bank_path(id: @qb_exam.code, mode: 'exam') %>" class="text-decoration-none">
+          <div class="qb-mode-card">
+            <div class="qb-mode-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706)">
+              <i class="bi bi-file-earmark-text"></i>
+            </div>
+            <h6 class="qb-mode-title">试卷模式</h6>
+            <p class="qb-mode-desc">模拟真实考试环境，限时答题</p>
+            <div class="qb-mode-meta">
+              <span><i class="bi bi-collection me-1"></i><%= @qb_exam.question_count %> 题</span>
+              <span><i class="bi bi-clock me-1"></i><%= @qb_exam.duration %> 分钟</span>
+            </div>
+            <div class="qb-mode-action">
+              开始练习 <i class="bi bi-arrow-right"></i>
+            </div>
+          </div>
+        </a>
+      </div>
+
+      <!-- 错题本 -->
+      <div class="col-6 col-lg-3">
+        <% if current_user && @wrong_count.to_i > 0 %>
+          <a href="<%= wrong_question_bank_path(id: @qb_exam.code) %>" class="text-decoration-none">
+            <div class="qb-mode-card">
+              <div class="d-flex justify-content-between align-items-start">
+                <div class="qb-mode-icon" style="background: linear-gradient(135deg, #ef4444, #dc2626)">
+                  <i class="bi bi-x-circle"></i>
+                </div>
+                <span class="badge rounded-pill" style="background-color: #ef444420; color: #ef4444; font-size: 0.75rem"><%= @wrong_count %> 题</span>
+              </div>
+              <h6 class="qb-mode-title">错题本</h6>
+              <p class="qb-mode-desc">回顾做错的题目，查漏补缺</p>
+              <div class="qb-mode-meta">
+                <span><i class="bi bi-x-circle me-1"></i><%= @wrong_count %> 道错题</span>
+                <span><i class="bi bi-clock me-1"></i>不限时</span>
+              </div>
+              <div class="qb-mode-action">
+                开始复习 <i class="bi bi-arrow-right"></i>
+              </div>
+            </div>
+          </a>
+        <% else %>
+          <div class="qb-mode-card qb-mode-disabled">
+            <div class="qb-mode-icon" style="background: linear-gradient(135deg, #d1d5db, #9ca3af)">
+              <i class="bi bi-x-circle"></i>
+            </div>
+            <h6 class="qb-mode-title">错题本</h6>
+            <p class="qb-mode-desc">回顾做错的题目，查漏补缺</p>
+            <div class="qb-mode-meta">
+              <span><i class="bi bi-check-circle me-1"></i><%= current_user ? '暂无错题' : '请先登录' %></span>
+            </div>
+            <div class="qb-mode-action" style="color: var(--bs-secondary-color)">
+              <%= current_user ? '表现优秀' : '登录后可用' %> <i class="bi bi-arrow-right"></i>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <!-- 章节列表 -->
+  <% if @chapter_list.any? %>
+  <div class="qb-chapter-section mt-4">
+    <h5 class="fw-bold mb-3" style="font-size:0.95rem"><i class="bi bi-book me-1" style="color:#6366f1"></i>选择章节</h5>
+    <div class="row g-2">
+      <% @chapter_list.each do |cat| %>
+        <div class="col-6 col-md-4 col-lg-3">
+          <a href="<%= practice_question_bank_path(id: @qb_exam.code, mode: 'chapter', category: cat) %>" class="text-decoration-none">
+            <div class="qb-chapter-item">
+              <div class="d-flex align-items-center justify-content-between">
+                <span class="qb-chapter-name"><%= cat %></span>
+                <span class="qb-chapter-count"><%= @chapter_counts[cat] || 0 %> 题</span>
+              </div>
+            </div>
+          </a>
+        </div>
+      <% end %>
+    </div>
+  </div>
+  <% end %>
+
+  <!-- 练习记录 -->
+  <% if @recent_practices.any? %>
+    <div class="qb-history-section mt-4">
+      <h5 class="fw-bold mb-3" style="font-size:0.95rem"><i class="bi bi-clock-history me-1" style="color:#6366f1"></i>练习记录</h5>
+      <div class="qb-history-card">
+        <div class="table-responsive">
+          <table class="table table-sm mb-0" style="font-size:0.85rem">
+            <thead>
+              <tr class="border-bottom">
+                <th>模式</th>
+                <th>正确率</th>
+                <th>用时</th>
+                <th>时间</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @recent_practices.each do |p| %>
+                <tr>
+                  <td>
+                    <span class="qb-history-mode"><%= p.mode_label %></span>
+                  </td>
+                  <td>
+                    <span class="qb-history-accuracy <%= p.accuracy >= 60 ? 'text-success' : 'text-danger' %>">
+                      <%= p.accuracy %>%
+                    </span>
+                    <span class="text-muted ms-1" style="font-size:0.78rem">
+                      (<%= p.correct_count %>/<%= p.total_count %>)
+                    </span>
+                  </td>
+                  <td class="text-muted"><%= format_time_spent(p.time_spent) %></td>
+                  <td class="text-muted"><%= p.created_at.strftime('%m-%d %H:%M') %></td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+  <!-- 科目信息 -->
+  <div class="qb-mode-info-section mt-4">
+    <h5 class="fw-bold mb-3" style="font-size:0.95rem"><i class="bi bi-info-circle me-1" style="color:#6366f1"></i>科目信息</h5>
+    <div class="row g-3">
+      <div class="col-md-6">
+        <div class="qb-mode-info-card">
+          <div class="d-flex align-items-center gap-3 mb-3">
+            <span class="qb-exam-type-badge" style="background-color: <%= @qb_exam.color %>15; color: <%= @qb_exam.color %>; padding: 6px 12px; font-size: 0.85rem;"><%= @qb_exam.type_name %></span>
+            <span class="fw-bold" style="font-size:1rem"><%= @qb_exam.name %></span>
+          </div>
+          <p class="text-muted mb-3" style="font-size:0.85rem"><%= @qb_exam.description %></p>
+          <div class="d-flex gap-3">
+            <div class="qb-mode-info-stat">
+              <div class="qb-mode-info-stat-num"><%= @qb_exam.total_count %></div>
+              <div class="qb-mode-info-stat-label">题目总数</div>
+            </div>
+            <div class="qb-mode-info-stat">
+              <div class="qb-mode-info-stat-num"><%= @qb_exam.duration %></div>
+              <div class="qb-mode-info-stat-label">考试时长(分)</div>
+            </div>
+            <div class="qb-mode-info-stat">
+              <div class="qb-mode-info-stat-num"><%= (@qb_exam.categories || []).length %></div>
+              <div class="qb-mode-info-stat-label">知识分类</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="qb-mode-info-card">
+          <h6 class="fw-bold mb-3" style="font-size:0.88rem"><i class="bi bi-tags me-1"></i>知识点分类</h6>
+          <div class="d-flex flex-wrap gap-2">
+            <% (@qb_exam.categories || []).each do |cat| %>
+              <span class="qb-mode-tag"><%= cat %></span>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

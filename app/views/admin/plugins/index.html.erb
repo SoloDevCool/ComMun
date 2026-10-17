@@ -1,0 +1,129 @@
+<% content_for :title, t('admin.ui.m064') %>
+
+<h5 class="mb-3"><%= t('admin.ui.m064') %></h5>
+
+<div class="card-admin card mb-4">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <span><%= t('admin.ui.m296') %></span>
+    <%= link_to new_admin_plugin_path, class: "btn btn-sm btn-primary" do %>
+      <i class="bi bi-cloud-upload me-1"></i><%= t('admin.ui.m067') %>
+    <% end %>
+    <%= button_to scan_local_admin_plugins_path, method: :post, class: "btn btn-sm btn-outline-secondary", title: t('admin.ui.m261') do %>
+      <i class="bi bi-folder-scan me-1"></i><%= t('admin.ui.m260') %>
+    <% end %>
+  </div>
+  <div class="card-body p-0">
+    <% if @plugins.any? %>
+      <table class="table table-hover mb-0">
+        <thead>
+          <tr>
+            <th><%= t('admin.name') %></th>
+            <th><%= t('admin.identifier') %></th>
+            <th><%= t('admin.version') %></th>
+            <th><%= t('admin.author') %></th>
+            <th><%= t('admin.status') %></th>
+            <th><%= t('admin.ui.m068') %></th>
+            <th style="width: 180px;"><%= t('admin.actions') %></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @plugins.each do |plugin| %>
+            <tr>
+              <td>
+                <strong><%= plugin.name %></strong>
+                <% if plugin.description.present? %>
+                  <br><small class="text-muted"><%= truncate(plugin.description, length: 50) %></small>
+                <% end %>
+              </td>
+              <td><code><%= plugin.identifier %></code></td>
+              <td><%= plugin.version %></td>
+              <td><%= plugin.author.presence || "-" %></td>
+              <td>
+                <% case plugin.status %>
+                <% when 'enabled' %>
+                  <span class="badge bg-success"><%= t('admin.ui.m257') %></span>
+                <% when 'installed' %>
+                  <span class="badge bg-secondary"><%= t('admin.ui.m256') %></span>
+                <% when 'disabled' %>
+                  <span class="badge bg-warning text-dark"><%= t('admin.disabled_badge') %></span>
+                <% when 'uninstalled' %>
+                  <span class="badge bg-light text-dark"><%= t('admin.ui.m258') %></span>
+                <% end %>
+              </td>
+              <td><small><%= plugin.created_at&.strftime('%Y-%m-%d %H:%M') || '-' %></small></td>
+              <td>
+                <div class="d-flex gap-1">
+                  <%= link_to admin_plugin_path(plugin), class: "btn btn-sm btn-outline-primary btn-action", title: t('admin.ui.m265') do %>
+                    <i class="bi bi-eye"></i>
+                  <% end %>
+
+                  <% if plugin.enabled? %>
+                    <%= button_to disable_admin_plugin_path(plugin), method: :post, class: "btn btn-sm btn-outline-warning btn-action", title: t("admin.disable"), data: { confirm: t('admin.ui.m267') } do %>
+                      <i class="bi bi-pause-circle"></i>
+                    <% end %>
+                  <% elsif plugin.installed? %>
+                    <%= button_to enable_admin_plugin_path(plugin), method: :post, class: "btn btn-sm btn-outline-success btn-action", title: t("admin.enable"), data: { confirm: t('admin.ui.m269') } do %>
+                      <i class="bi bi-play-circle"></i>
+                    <% end %>
+                  <% end %>
+
+                  <% if plugin.installed? %>
+                    <%= button_to uninstall_admin_plugin_path(plugin), method: :delete, class: "btn btn-sm btn-outline-danger btn-action", title: t("admin.uninstall"), data: { confirm: t('admin.ui.m270') } do %>
+                      <i class="bi bi-trash"></i>
+                    <% end %>
+                  <% else %>
+                    <%= button_to uninstall_admin_plugin_path(plugin), method: :delete, class: "btn btn-sm btn-outline-danger btn-action", title: t('admin.ui.m271') do %>
+                      <i class="bi bi-trash"></i>
+                    <% end %>
+                  <% end %>
+                </div>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    <% else %>
+      <div class="text-center text-muted py-5">
+        <i class="bi bi-box-seam d-block fs-1 mb-2"></i>
+        <p><%= t('admin.ui.m273') %>"<%= t('admin.upload_plugin') %>"<%= t('admin.ui.m274') %></p>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<div class="card-admin card mb-4">
+  <div class="card-header">
+    <i class="bi bi-info-circle me-2"></i><%= t('admin.ui.m340') %>
+  </div>
+  <div class="card-body">
+    <h6><%= t('admin.ui.m342') %></h6>
+    <p class="mb-2"><%= t('admin.ui.m344') %> <code>.zip</code> <%= t('admin.ui.m349') %></p>
+    <ul class="mb-3">
+      <li><strong>plugin.json</strong>（<%= t('admin.ui.m353') %></li>
+      <li><strong>init.rb</strong>（<%= t('admin.ui.m354') %></li>
+      <li><strong>hooks.json</strong>（<%= t('admin.ui.m300') %></li>
+      <li><strong>config_schema.json</strong>（<%= t('admin.ui.m303') %></li>
+      <li><strong>README.md</strong>（<%= t('admin.ui.m304') %></li>
+      <li><strong>lib/</strong> — <%= t('admin.ui.m305') %></li>
+      <li><strong>views/</strong> — <%= t('admin.ui.m306') %></li>
+    </ul>
+
+    <h6>plugin.json <%= t('admin.ui.m307') %></h6>
+    <pre class="bg-light p-3 rounded mb-3" style="font-size: 0.85rem;"><code>{
+  "identifier": "my_plugin",
+  "name": "<%= t('admin.ui.m308') %>",
+  "version": "1.0.0",
+  "description": "<%= t('admin.ui.m309') %>",
+  "author": "<%= t('admin.ui.m310') %>",
+  "homepage": "https://example.com"
+}</code></pre>
+
+    <h6><%= t('admin.ui.m311') %></h6>
+    <ul>
+      <li><strong><%= t('admin.ui.m312') %></strong> — <%= t('admin.ui.m316') %></li>
+      <li><strong><%= t('admin.ui.m323') %></strong> — <%= t('admin.ui.m324') %></li>
+      <li><strong><%= t('admin.ui.m326') %></strong> — <%= t('admin.ui.m320') %></li>
+      <li><strong><%= t('admin.ui.m319') %></strong> — <%= t('admin.ui.m318') %>_schema.json <%= t('admin.ui.m317') %></li>
+    </ul>
+  </div>
+</div>

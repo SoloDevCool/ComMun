@@ -1,0 +1,190 @@
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h4 class="text-dark fw-bold mb-0"><%= t('admin.ui.m301') %></h4>
+  <div class="d-flex gap-2 align-items-center">
+    <span class="badge bg-primary rounded-pill px-3 py-2"><%= User.where(is_operational: true).count %> <%= t('admin.ui.m357') %></span>
+    <% op_total = User.where(is_operational: true).count %>
+    <% if op_total > 0 %>
+      <div class="btn-group" role="group">
+        <button type="button" class="btn btn-sm btn-outline-info rounded-pill rounded-end-0 px-3" disabled>
+          <i class="bi bi-arrow-repeat me-1"></i><%= t('admin.ui.m352') %>
+        </button>
+        <button type="button" class="btn btn-sm btn-outline-info rounded-pill rounded-start-0 dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+          <span class="visually-hidden"><%= t('admin.ui.m338') %></span>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <% BatchAccountGeneratorService::AVATAR_METHODS.each do |method| %>
+            <li>
+              <%= button_to batch_replace_avatars_admin_operational_accounts_path,
+                  method: :post,
+                  params: { avatar_method: method },
+                  class: "dropdown-item" do %>
+                <i class="bi bi-<%= method == 'multiavatar' ? 'palette' : 'globe' %> me-2"></i><%= BatchAccountGeneratorService.avatar_method_label(method) %>
+              <% end %>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+    <% missing_avatar_count = User.operational.where(avatar_data: [nil, ""]).count %>
+    <% if missing_avatar_count > 0 %>
+      <%= button_to batch_generate_avatars_admin_operational_accounts_path,
+          method: :post,
+          class: "btn btn-sm btn-outline-warning rounded-pill px-3",
+          data: { confirm: "确定要为 #{missing_avatar_count} 个无头像运营账号批量生成头像吗？" } do %>
+        <i class="bi bi-image me-1"></i><%= t('admin.ui.m268') %><%= missing_avatar_count %>)
+      <% end %>
+    <% end %>
+    <%= link_to export_admin_operational_accounts_path(format: :xlsx), class: "btn btn-sm btn-outline-success rounded-pill px-3" do %>
+      <i class="bi bi-file-earmark-excel me-1"></i><%= t('admin.ui.m266') %>
+    <% end %>
+  </div>
+</div>
+
+<!-- 批量<%= t('admin.ui.m004') %> -->
+<div class="card card-admin mb-4">
+  <div class="card-body">
+    <form id="batchForm" class="row g-2 align-items-end">
+      <div class="col-auto">
+        <label class="form-label fw-semibold small mb-1"><%= t('admin.ui.m119') %></label>
+        <input type="number" name="count" value="10" min="1" max="100" class="form-control form-control-sm" required>
+      </div>
+      <div class="col-auto">
+        <label class="form-label fw-semibold small mb-1"><%= t('admin.ui.m255') %></label>
+        <div class="input-group input-group-sm">
+          <input type="text" name="email_domain" value="aibbs.cool" class="form-control" placeholder="example.com" required>
+          <span class="input-group-text">@<%= t('admin.ui.m259') %></span>
+        </div>
+      </div>
+      <div class="col-auto">
+        <label class="form-label fw-semibold small mb-1"><%= t('admin.ui.m262') %></label>
+        <input type="text" name="password" value="123456" class="form-control form-control-sm" placeholder="<%= t('admin.ui.m263') %>" required>
+      </div>
+      <div class="col-auto">
+        <label class="form-label fw-semibold small mb-1"><%= t('admin.ui.m298') %></label>
+        <select name="avatar_method" class="form-select form-select-sm">
+          <% BatchAccountGeneratorService::AVATAR_METHODS.each do |method| %>
+            <option value="<%= method %>" <%= "selected" if BatchAccountGeneratorService.avatar_method == method %>>
+              <%= BatchAccountGeneratorService.avatar_method_label(method) %>
+            </option>
+          <% end %>
+        </select>
+      </div>
+      <div class="col-auto">
+        <button type="submit" class="btn btn-primary btn-sm rounded-pill" data-confirm="<%= t('admin.ui.m297') %>">
+          <i class="bi bi-plus-lg me-1"></i><%= t('admin.ui.m004') %>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- 账号<%= t('admin.ui.m732') %> -->
+<div class="card card-admin">
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-hover mb-0">
+        <thead>
+          <tr>
+            <th class="ps-3">#</th>
+            <th><%= t('admin.username') %></th>
+            <th><%= t('admin.email') %></th>
+            <th><%= t('admin.ui.m295') %></th>
+            <th class="d-none d-md-table-cell"><%= t('admin.role') %></th>
+            <th class="d-none d-lg-table-cell"><%= t('admin.ui.m039') %></th>
+            <th class="pe-3 text-end"><%= t('admin.actions') %></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @users.each_with_index do |user, index| %>
+            <tr id="op-account-<%= user.id %>">
+              <td class="ps-3 text-muted"><%= @pagy.offset + index + 1 %></td>
+              <td>
+                <div class="d-flex align-items-center">
+                  <% if user.has_avatar? %>
+                    <img src="<%= user.avatar_data_url %>" class="rounded-3 me-2 flex-shrink-0" style="width:32px;height:32px;object-fit:cover" alt="">
+                  <% else %>
+                    <div class="rounded-3 bg-warning bg-opacity-10 text-warning d-flex align-items-center justify-content-center me-2 flex-shrink-0" style="width:32px;height:32px;font-size:0.85rem" title="<%= t('admin.ui.m294') %>">
+                      <i class="bi bi-person-fill"></i>
+                    </div>
+                  <% end %>
+                  <span><%= user.username %></span>
+                </div>
+              </td>
+              <td>
+                <code class="small bg-light rounded px-1"><%= user.email %></code>
+                <button class="btn btn-link btn-sm p-0 ms-1 text-decoration-none" onclick="copyText('<%= user.email %>', this)" title="<%= t('admin.ui.m276') %>">
+                  <i class="bi bi-clipboard small"></i>
+                </button>
+              </td>
+              <td>
+                <% if user.plaintext_password.present? %>
+                  <code class="small bg-light rounded px-1"><%= user.plaintext_password %></code>
+                  <button class="btn btn-link btn-sm p-0 ms-1 text-decoration-none" onclick="copyText('<%= user.plaintext_password %>', this)" title="<%= t('admin.ui.m277') %>">
+                    <i class="bi bi-clipboard small"></i>
+                  </button>
+                <% else %>
+                  <span class="text-muted small"><%= t('admin.ui.m278') %></span>
+                <% end %>
+              </td>
+              <td class="d-none d-md-table-cell">
+                <span class="badge <%= user.role_badge_class %> rounded-pill"><%= user.role_label %></span>
+              </td>
+              <td class="d-none d-lg-table-cell text-muted"><small><%= user.created_at.strftime("%Y-%m-%d %H:%M") %></small></td>
+              <td class="pe-3 text-end">
+                <button class="btn btn-link btn-sm p-0 text-decoration-none" onclick="copyAccount('<%= user.email %>', '<%= user.plaintext_password %>', this)" title="<%= t('admin.ui.m279') %>">
+                  <i class="bi bi-clipboard-data small text-primary"></i>
+                </button>
+                <%= button_to admin_operational_account_path(user), method: :delete,
+                    class: "btn btn-link btn-sm p-0 text-decoration-none",
+                    data: { confirm: "确定要删除运营账号 #{user.email} 吗？" } do %>
+                  <i class="bi bi-trash small text-danger"></i>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+          <% if @users.empty? %>
+            <tr>
+              <td colspan="7" class="text-center text-muted py-5"><%= t('admin.ui.m293') %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<% if @pagy.last > 1 %>
+  <div class="mt-3 d-flex justify-content-center">
+    <%== @pagy.series_nav(:bootstrap) %>
+  </div>
+<% end %>
+
+<script>
+  document.getElementById('batchForm').action = '<%= batch_generate_admin_operational_accounts_path %>';
+  document.getElementById('batchForm').method = 'post';
+  // Rails UJS token
+  var token = document.querySelector('meta[name="csrf-token"]');
+  if (token) {
+    var input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'authenticity_token';
+    input.value = token.getAttribute('content');
+    document.getElementById('batchForm').appendChild(input);
+  }
+
+  function copyText(text, btn) {
+    navigator.clipboard.writeText(text).then(function() {
+      var icon = btn.querySelector('i');
+      icon.className = 'bi bi-check-lg small text-success';
+      setTimeout(function() { icon.className = 'bi bi-clipboard small'; }, 1500);
+    });
+  }
+
+  function copyAccount(email, password, btn) {
+    navigator.clipboard.writeText(email + ' ' + password).then(function() {
+      var icon = btn.querySelector('i');
+      icon.className = 'bi bi-check-lg small text-success';
+      setTimeout(function() { icon.className = 'bi bi-clipboard-data small text-primary'; }, 1500);
+    });
+  }
+</script>

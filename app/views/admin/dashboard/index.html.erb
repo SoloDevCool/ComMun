@@ -1,0 +1,374 @@
+<style>
+.moderation-banner {
+  background: linear-gradient(135deg, rgba(255,193,7,.08), rgba(255,193,7,.14));
+  border: 1px solid rgba(255,193,7,.35);
+  border-radius: 14px;
+  padding: 14px 20px;
+  transition: box-shadow .18s;
+}
+.moderation-banner:hover { box-shadow: 0 4px 14px rgba(255,193,7,.15); }
+.moderation-banner-title { color: #997404; }
+.moderation-pulse-dot {
+  width: 12px; height: 12px; border-radius: 50%;
+  background: #f59e0b; flex-shrink: 0;
+  box-shadow: 0 0 0 rgba(245,158,11,.5);
+  animation: moderation-pulse 1.8s infinite;
+}
+@keyframes moderation-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(245,158,11,.45); }
+  70% { box-shadow: 0 0 0 10px rgba(245,158,11,0); }
+  100% { box-shadow: 0 0 0 0 rgba(245,158,11,0); }
+}
+</style>
+
+<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+  <div>
+    <h4 class="mb-0 admin-page-title"><%= t('admin.ui.m572') %></h4>
+    <div class="admin-page-subtitle"><i class="bi bi-activity me-1"></i><%= t('admin.ui.m578') %>: <%= @today_login_count %> · <%= t('admin.ui.m579') %>: <%= @online_count %></div>
+  </div>
+  <div class="d-flex gap-2">
+    <%= button_to admin_demo_data_import_path, method: :post,
+          class: "btn btn-sm btn-outline-primary rounded-pill px-3",
+          form: { data: { turbo_confirm: t('admin.ui.m573') } } do %>
+      <i class="bi bi-cloud-arrow-down me-1"></i><%= t('admin.ui.m574') %>
+    <% end %>
+    <%= button_to admin_demo_data_clear_path, method: :post,
+          class: "btn btn-sm btn-outline-danger rounded-pill px-3",
+          form: { data: { turbo_confirm: t('admin.ui.m575') } } do %>
+      <i class="bi bi-trash3 me-1"></i><%= t('admin.ui.m576') %>
+    <% end %>
+  </div>
+</div>
+
+<!-- Stats Cards -->
+<div class="row g-3 mb-4">
+  <div class="col-6 col-lg-3">
+    <div class="card stat-card border-0 shadow-sm">
+      <div class="card-body d-flex align-items-center">
+        <div class="stat-icon bg-primary bg-opacity-10 text-primary me-3">
+          <i class="bi bi-people-fill"></i>
+        </div>
+        <div>
+          <div class="text-muted stat-label"><%= t('admin.ui.m577') %></div>
+          <div class="stat-value"><%= @total_users %></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="card stat-card border-0 shadow-sm">
+      <div class="card-body d-flex align-items-center">
+        <div class="stat-icon bg-warning bg-opacity-10 text-warning me-3">
+          <i class="bi bi-shield-fill-check"></i>
+        </div>
+        <div>
+          <div class="text-muted stat-label"><%= t('admin.ui.m028') %></div>
+          <div class="stat-value"><%= @admin_count %></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="card stat-card border-0 shadow-sm">
+      <div class="card-body d-flex align-items-center">
+        <div class="stat-icon bg-danger bg-opacity-10 text-danger me-3">
+          <i class="bi bi-gem"></i>
+        </div>
+        <div>
+          <div class="text-muted stat-label"><%= t('admin.paid_member') %></div>
+          <div class="stat-value"><%= @vip_count %></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="card stat-card border-0 shadow-sm">
+      <div class="card-body d-flex align-items-center">
+        <div class="stat-icon bg-info bg-opacity-10 text-info me-3">
+          <i class="bi bi-person-fill"></i>
+        </div>
+        <div>
+          <div class="text-muted stat-label"><%= t('admin.regular_user') %></div>
+          <div class="stat-value"><%= @regular_count %></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="card stat-card border-0 shadow-sm">
+      <div class="card-body d-flex align-items-center">
+        <div class="stat-icon bg-success bg-opacity-10 text-success me-3">
+          <i class="bi bi-box-arrow-in-right"></i>
+        </div>
+        <div>
+          <div class="text-muted stat-label"><%= t('admin.ui.m578') %></div>
+          <div class="stat-value"><%= @today_login_count %></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="card stat-card border-0 shadow-sm">
+      <div class="card-body d-flex align-items-center">
+        <div class="stat-icon bg-success bg-opacity-10 text-success me-3">
+          <i class="bi bi-broadcast-pin"></i>
+        </div>
+        <div>
+          <div class="text-muted stat-label"><%= t('admin.ui.m579') %></div>
+          <div class="stat-value"><%= @online_count %></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<% if @pending_topic_count > 0 || @pending_comment_count > 0 %>
+<div class="moderation-banner mb-4">
+  <div class="d-flex align-items-center">
+    <span class="moderation-pulse-dot me-3"></span>
+    <div class="flex-grow-1">
+      <div class="fw-semibold moderation-banner-title"><%= t('admin.ui.m580') %></div>
+      <div class="text-muted small">
+        <%= @pending_topic_count %> <%= t('admin.ui.m581') %><%= @pending_comment_count %> <%= t('admin.ui.m582') %>
+      </div>
+    </div>
+    <%= link_to admin_moderations_path, class: "btn btn-warning text-dark rounded-pill px-3 flex-shrink-0" do %>
+      <i class="bi bi-arrow-right me-1"></i><%= t('admin.ui.m583') %>
+    <% end %>
+  </div>
+</div>
+<% end %>
+
+<div class="row g-4">
+  <!-- Recent Users -->
+  <div class="col-lg-7">
+    <div class="card card-admin">
+      <div class="card-header d-flex justify-content-between align-items-center py-3">
+        <h6 class="mb-0 fw-bold"><i class="bi bi-people me-2 text-primary"></i><%= t('admin.ui.m584') %></h6>
+        <%= link_to admin_users_path, class: "btn btn-sm btn-outline-primary rounded-pill px-3" do %>
+          <%= t('admin.ui.m585') %><i class="bi bi-arrow-right ms-1"></i>
+        <% end %>
+      </div>
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-hover mb-0">
+            <thead>
+              <tr>
+                <th class="ps-3"><%= t('admin.email') %></th>
+                <th><%= t('admin.role') %></th>
+                <th class="pe-3 text-end"><%= t('admin.registered_at') %></th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @recent_users.each do |user| %>
+                <tr>
+                  <td class="ps-3">
+                    <div class="d-flex align-items-center">
+                      <div class="user-avatar-dot me-2" style="background: <%= ['#6366f1','#0ea5e9','#10b981','#f59e0b','#ef4444'][user.id % 5] %>">
+                        <%= user.email[0].upcase %>
+                      </div>
+                      <%= user.email %>
+                    </div>
+                  </td>
+                  <td>
+                    <span class="badge <%= user.role_badge_class %> rounded-pill">
+                      <%= user.role_label %>
+                    </span>
+                  </td>
+                  <td class="pe-3 text-end text-muted"><small><%= user.created_at.strftime("%m-%d %H:%M") %></small></td>
+                </tr>
+              <% end %>
+              <% if @recent_users.empty? %>
+                <tr><td colspan="3" class="text-center text-muted py-4"><%= t('admin.ui.m586') %></td></tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Nodes List -->
+  <div class="col-lg-5">
+    <div class="card card-admin">
+      <div class="card-header d-flex justify-content-between align-items-center py-3">
+        <h6 class="mb-0 fw-bold"><i class="bi bi-diagram-3 me-2 text-success"></i><%= t('admin.ui.m587') %></h6>
+        <%= link_to admin_nodes_path, class: "btn btn-sm btn-outline-success rounded-pill px-3" do %>
+          <%= t('admin.ui.m024') %><i class="bi bi-arrow-right ms-1"></i>
+        <% end %>
+      </div>
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-hover mb-0">
+            <thead>
+              <tr>
+                <th class="ps-3"><%= t('admin.node') %></th>
+                <th class="text-center"><%= t('admin.ui.m588') %></th>
+                <th class="pe-3 text-end"><%= t('admin.actions') %></th>
+              </tr>
+            </thead>
+            <tbody>
+              <% Node.order(id: :asc).limit(8).each do |node| %>
+                <tr>
+                  <td class="ps-3">
+                    <div class="d-flex align-items-center">
+                      <span class="me-2" style="font-size:1.2rem"><%= node_icon(node, size: "1.2rem") %></span>
+                      <div>
+                        <div class="fw-semibold"><%= node.name %></div>
+                        <small class="text-muted"><%= node.slug %></small>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="text-center">
+                    <span class="count-pill"><%= node.topics_count %></span>
+                  </td>
+                  <td class="pe-3 text-end">
+                    <%= link_to edit_admin_node_path(node), class: "btn-action btn btn-sm btn-outline-primary border-0" do %>
+                      <i class="bi bi-pencil"></i>
+                    <% end %>
+                  </td>
+                </tr>
+              <% end %>
+              <% if Node.count == 0 %>
+                <tr><td colspan="3" class="text-center text-muted py-4"><%= t('admin.ui.m589') %></td></tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Geo Distribution Map -->
+<div class="row g-4 mt-1">
+  <div class="col-lg-12">
+    <div class="card card-admin">
+      <div class="card-header d-flex justify-content-between align-items-center py-3">
+        <h6 class="mb-0 fw-bold"><i class="bi bi-geo-alt me-2 text-danger"></i><%= t('admin.ui.m590') %></h6>
+        <div class="seg-control" role="group">
+          <button type="button" class="btn" id="mapBtnWorld"><%= t('admin.ui.m591') %></button>
+          <button type="button" class="btn active" id="mapBtnChina"><%= t('admin.ui.m592') %></button>
+        </div>
+      </div>
+      <div class="card-body p-0">
+        <div id="geoMapChart" style="width: 100%; height: 420px;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  var chinaRaw = <%= raw @province_distribution.to_h.to_json %>;
+  var worldRaw = <%= raw @country_distribution.to_h.to_json %>;
+
+  var countryNameMap = {
+    "<%= t('admin.ui.m859') %>":"China","<%= t('admin.ui.m893') %>":"United States of America","<%= t('admin.ui.m894') %>":"Japan","<%= t('admin.ui.m895') %>":"Korea",
+    "<%= t('admin.ui.m896') %>":"Dem. Rep. Korea","<%= t('admin.ui.m897') %>":"India","<%= t('admin.ui.m898') %>":"Russia","<%= t('admin.ui.m899') %>":"United Kingdom",
+    "<%= t('admin.ui.m900') %>":"France","<%= t('admin.ui.m901') %>":"Germany","<%= t('admin.ui.m902') %>":"Italy","<%= t('admin.ui.m903') %>":"Spain",
+    "<%= t('admin.ui.m904') %>":"Portugal","<%= t('admin.ui.m905') %>":"Netherlands","<%= t('admin.ui.m906') %>":"Belgium","<%= t('admin.ui.m907') %>":"Switzerland",
+    "<%= t('admin.ui.m908') %>":"Austria","<%= t('admin.ui.m909') %>":"Sweden","<%= t('admin.ui.m910') %>":"Norway","<%= t('admin.ui.m911') %>":"Denmark",
+    "<%= t('admin.ui.m912') %>":"Finland","<%= t('admin.ui.m913') %>":"Poland","<%= t('admin.ui.m914') %>":"Czech Rep.","<%= t('admin.ui.m915') %>":"Hungary",
+    "<%= t('admin.ui.m916') %>":"Romania","<%= t('admin.ui.m917') %>":"Greece","<%= t('admin.ui.m918') %>":"Ukraine","<%= t('admin.ui.m860') %>":"Turkey",
+    "<%= t('admin.ui.m861') %>":"Brazil","<%= t('admin.ui.m862') %>":"Argentina","<%= t('admin.ui.m863') %>":"Mexico","<%= t('admin.ui.m864') %>":"Colombia",
+    "<%= t('admin.ui.m865') %>":"Chile","<%= t('admin.ui.m866') %>":"Peru","<%= t('admin.ui.m867') %>":"Canada","<%= t('admin.ui.m868') %>":"Australia",
+    "<%= t('admin.ui.m869') %>":"New Zealand","<%= t('admin.ui.m870') %>":"Thailand","<%= t('admin.ui.m871') %>":"Vietnam","<%= t('admin.ui.m872') %>":"Malaysia",
+    "<%= t('admin.ui.m873') %>":"Singapore","<%= t('admin.ui.m874') %>":"Indonesia","<%= t('admin.ui.m875') %>":"Philippines",
+    "<%= t('admin.ui.m876') %>":"Myanmar","<%= t('admin.ui.m877') %>":"Cambodia","<%= t('admin.ui.m878') %>":"Pakistan","<%= t('admin.ui.m879') %>":"Bangladesh",
+    "<%= t('admin.ui.m880') %>":"Sri Lanka","<%= t('admin.ui.m881') %>":"Nepal","<%= t('admin.ui.m882') %>":"Iran","<%= t('admin.ui.m883') %>":"Iraq",
+    "<%= t('admin.ui.m884') %>":"Saudi Arabia","<%= t('admin.ui.m885') %>":"United Arab Emirates","<%= t('admin.ui.m886') %>":"Israel",
+    "<%= t('admin.ui.m887') %>":"Egypt","<%= t('admin.ui.m888') %>":"South Africa","<%= t('admin.ui.m889') %>":"Nigeria","<%= t('admin.ui.m890') %>":"Kenya",
+    "<%= t('admin.ui.m891') %>":"Morocco","<%= t('admin.ui.m892') %>":"Tanzania",
+    "United States":"United States of America","US":"United States of America",
+    "UK":"United Kingdom","South Korea":"Korea","North Korea":"Dem. Rep. Korea",
+    "Czech Republic":"Czech Rep.","Bosnia and Herzegovina":"Bosnia and Herz.",
+    "Dominican Republic":"Dominican Rep.","Central African Republic":"Central African Rep.",
+    "Republic of the Congo":"Congo","Democratic Republic of the Congo":"Dem. Rep. Congo",
+    "Equatorial Guinea":"Eq. Guinea","Solomon Islands":"Solomon Is.",
+    "Western Sahara":"W. Sahara","Somalia":"Somaliland"
+  };
+
+  var provinceNameMap = {
+    "<%= t('admin.ui.m983') %>":"<%= t('admin.ui.m919') %>","<%= t('admin.ui.m984') %>":"<%= t('admin.ui.m920') %>","上海":"<%= t('admin.ui.m921') %>","<%= t('admin.ui.m985') %>":"<%= t('admin.ui.m922') %>",
+    "<%= t('admin.ui.m968') %>":"<%= t('admin.ui.m923') %>","<%= t('admin.ui.m967') %>":"<%= t('admin.ui.m924') %>","<%= t('admin.ui.m969') %>":"<%= t('admin.ui.m925') %>","<%= t('admin.ui.m970') %>":"<%= t('admin.ui.m926') %>",
+    "<%= t('admin.ui.m971') %>":"<%= t('admin.ui.m927') %>","<%= t('admin.ui.m966') %>":"<%= t('admin.ui.m928') %>","<%= t('admin.ui.m953') %>":"<%= t('admin.ui.m929') %>","<%= t('admin.ui.m954') %>":"<%= t('admin.ui.m930') %>",
+    "<%= t('admin.ui.m955') %>":"<%= t('admin.ui.m931') %>","<%= t('admin.ui.m956') %>":"<%= t('admin.ui.m932') %>","<%= t('admin.ui.m957') %>":"<%= t('admin.ui.m933') %>","<%= t('admin.ui.m958') %>":"<%= t('admin.ui.m934') %>",
+    "<%= t('admin.ui.m959') %>":"<%= t('admin.ui.m935') %>","<%= t('admin.ui.m960') %>":"<%= t('admin.ui.m936') %>","<%= t('admin.ui.m961') %>":"<%= t('admin.ui.m937') %>","<%= t('admin.ui.m962') %>":"<%= t('admin.ui.m938') %>",
+    "<%= t('admin.ui.m963') %>":"<%= t('admin.ui.m939') %>","<%= t('admin.ui.m964') %>":"<%= t('admin.ui.m940') %>","<%= t('admin.ui.m965') %>":"<%= t('admin.ui.m941') %>","<%= t('admin.ui.m972') %>":"<%= t('admin.ui.m942') %>",
+    "<%= t('admin.ui.m973') %>":"<%= t('admin.ui.m943') %>","<%= t('admin.ui.m974') %>":"<%= t('admin.ui.m944') %>","<%= t('admin.ui.m975') %>":"<%= t('admin.ui.m945') %>",
+    "<%= t('admin.ui.m976') %>":"<%= t('admin.ui.m946') %>","<%= t('admin.ui.m977') %>":"<%= t('admin.ui.m947') %>","<%= t('admin.ui.m978') %>":"<%= t('admin.ui.m948') %>",
+    "<%= t('admin.ui.m979') %>":"<%= t('admin.ui.m949') %>","<%= t('admin.ui.m980') %>":"<%= t('admin.ui.m950') %>",
+    "<%= t('admin.ui.m981') %>":"<%= t('admin.ui.m951') %>","<%= t('admin.ui.m982') %>":"<%= t('admin.ui.m952') %>"
+  };
+
+  var worldData = {};
+  Object.keys(worldRaw).forEach(function(k) { worldData[countryNameMap[k] || k] = worldRaw[k]; });
+
+  var chinaData = {};
+  Object.keys(chinaRaw).forEach(function(k) { chinaData[provinceNameMap[k] || k] = chinaRaw[k]; });
+
+  function toDataArr(obj) {
+    return Object.keys(obj).map(function(k) { return { name: k, value: obj[k] }; });
+  }
+
+  var chinaDataArr = toDataArr(chinaData);
+  var worldDataArr = toDataArr(worldData);
+  var currentMap = 'china';
+  var charts = {};
+
+  var chartDom = document.getElementById('geoMapChart');
+  var myChart = echarts.init(chartDom);
+  myChart.showLoading({ text: '<%= t('admin.ui.m169') %>' });
+
+  Promise.all([
+    fetch('/world.json').then(function(r) { return r.json(); }),
+    fetch('/china.json').then(function(r) { return r.json(); })
+  ]).then(function(results) {
+    myChart.hideLoading();
+    echarts.registerMap('world', results[0]);
+    echarts.registerMap('china', results[1]);
+    renderMap('china');
+  });
+
+  function renderMap(type) {
+    var isChina = type === 'china';
+    var data = isChina ? chinaDataArr : worldDataArr;
+    var maxVal = data.length > 0 ? Math.max.apply(null, data.map(function(d) { return d.value; })) : 1;
+
+    myChart.setOption({
+      tooltip: { trigger: 'item', formatter: function(p) { return p.name + '：' + (p.value || 0) + ' <%= t('admin.ui.m111') %>'; } },
+      visualMap: {
+        min: 0, max: maxVal,
+        left: 20, bottom: 20, text: ['<%= t('admin.ui.m856') %>', '<%= t('admin.ui.m857') %>'],
+        inRange: { color: ['#e0f2fe', '#0284c7'] },
+        calculable: true, itemWidth: 12, itemHeight: 100
+      },
+      series: [{
+        type: 'map', map: type, roam: true,
+        label: { show: isChina, fontSize: 9 },
+        emphasis: { label: { show: true }, itemStyle: { areaColor: '#fbbf24' } },
+        itemStyle: { borderColor: '#fff', borderWidth: 0.5 },
+        data: data
+      }]
+    }, true);
+  }
+
+  document.getElementById('mapBtnWorld').addEventListener('click', function() {
+    if (currentMap === 'world') return;
+    currentMap = 'world';
+    this.classList.add('active');
+    document.getElementById('mapBtnChina').classList.remove('active');
+    renderMap('world');
+  });
+  document.getElementById('mapBtnChina').addEventListener('click', function() {
+    if (currentMap === 'china') return;
+    currentMap = 'china';
+    this.classList.add('active');
+    document.getElementById('mapBtnWorld').classList.remove('active');
+    renderMap('china');
+  });
+
+  window.addEventListener('resize', function() { myChart.resize(); });
+})();
+</script>

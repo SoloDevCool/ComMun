@@ -1,0 +1,99 @@
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h4 class="text-dark fw-bold mb-0">
+    <i class="bi bi-journal-bookmark me-2 text-primary"></i><%= t('admin.ui.m291') %>
+  </h4>
+  <%= link_to new_admin_qb_exam_path, class: "btn btn-primary rounded-pill px-3" do %>
+    <i class="bi bi-plus-lg me-1"></i><%= t('admin.ui.m290') %>
+  <% end %>
+</div>
+
+<%# 动态按 level 分组 %>
+<% grouped_exams = @qb_exams.group_by(&:level) %>
+<% grouped_exams.each do |level, exams| %>
+  <% representative = exams.first %>
+  <div class="card card-admin mb-4">
+    <div class="card-header bg-white">
+      <div class="d-flex align-items-center gap-2">
+        <i class="bi bi-bookmark" style="color:<%= representative.color %>"></i>
+        <h6 class="mb-0 fw-semibold" style="color:<%= representative.color %>"><%= level %></h6>
+        <span class="badge rounded-pill" style="background:<%= representative.color %>15;color:<%= representative.color %>"><%= exams.count %></span>
+        <% if representative.type_name.present? %>
+          <small class="text-muted ms-auto"><%= representative.type_name %></small>
+        <% end %>
+      </div>
+    </div>
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover mb-0">
+          <thead>
+            <tr>
+              <th class="ps-3"><%= t('admin.subject_name') %></th>
+              <th class="d-none d-md-table-cell"><%= t('admin.ui.m056') %></th>
+              <th class="text-center"><%= t('admin.ui.m289') %></th>
+              <th class="d-none d-md-table-cell text-center"><%= t('admin.ui.m288') %></th>
+              <th class="d-none d-lg-table-cell"><%= t('admin.category') %></th>
+              <th class="pe-3 text-end"><%= t('admin.actions') %></th>
+            </tr>
+          </thead>
+          <tbody>
+            <% exams.each do |exam| %>
+              <tr>
+                <td class="ps-3">
+                  <div class="d-flex align-items-center">
+                    <div style="width:8px;height:8px;border-radius:50%;background:<%= exam.color %>" class="me-2 flex-shrink-0"></div>
+                    <div>
+                      <div class="fw-semibold"><%= exam.name %></div>
+                      <small class="text-muted"><%= exam.type_name %></small>
+                    </div>
+                  </div>
+                </td>
+                <td class="d-none d-md-table-cell">
+                  <code class="text-muted"><%= exam.code %></code>
+                </td>
+                <td class="text-center">
+                  <span class="badge bg-light text-dark rounded-pill"><%= exam.question_count %></span>
+                </td>
+                <td class="d-none d-md-table-cell text-center text-muted">
+                  <small><%= exam.duration %><%= t('admin.ui.m287') %></small>
+                </td>
+                <td class="d-none d-lg-table-cell">
+                  <div class="d-flex flex-wrap gap-1">
+                    <% exam.categories&.first(3)&.each do |cat| %>
+                      <span class="badge bg-light text-muted rounded-pill" style="font-size:0.7rem;padding:2px 8px"><%= cat %></span>
+                    <% end %>
+                    <% if (exam.categories&.size || 0) > 3 %>
+                      <span class="badge bg-light text-muted rounded-pill" style="font-size:0.7rem;padding:2px 8px">+<%= exam.categories.size - 3 %></span>
+                    <% end %>
+                  </div>
+                </td>
+                <td class="pe-3 text-end">
+                  <div class="d-flex justify-content-end gap-1">
+                    <%= link_to admin_qb_exam_qb_questions_path(exam), class: "btn-action btn btn-sm btn-outline-info border-0", title: t('admin.ui.m286') do %>
+                      <i class="bi bi-list-ul"></i>
+                    <% end %>
+                    <%= link_to edit_admin_qb_exam_path(exam), class: "btn-action btn btn-sm btn-outline-primary border-0", title: t("admin.edit") do %>
+                      <i class="bi bi-pencil"></i>
+                    <% end %>
+                    <%= button_to admin_qb_exam_path(exam), method: :delete,
+                        class: "btn-action btn btn-sm btn-outline-danger border-0",
+                        title: t("admin.delete"),
+                        data: { confirm: "确定删除科目「#{exam.name}」吗？该科目下所有题目和练习记录都将被删除。" } do %>
+                      <i class="bi bi-trash"></i>
+                    <% end %>
+                  </div>
+                </td>
+              </tr>
+            <% end %>
+            <% if exams.empty? %>
+              <tr>
+                <td colspan="6" class="text-center text-muted py-4">
+                  <small><%= t('admin.ui.m283') %></small>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+<% end %>

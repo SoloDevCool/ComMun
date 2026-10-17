@@ -1,0 +1,20 @@
+{
+  "show_in_nav": {
+    "type": "boolean",
+    "label": "在导航栏显示",
+    "default": true,
+    "description": "是否在前台顶部导航栏显示KOL达人入口"
+  },
+  "nav_name": {
+    "type": "string",
+    "label": "导航栏名称",
+    "default": "KOL达人",
+    "description": "导航栏中显示的名称"
+  },
+  "nav_icon": {
+    "type": "string",
+    "label": "导航栏图标",
+    "default": "bi-stars",
+    "description": "Bootstrap Icons 图标类名"
+  }
+}

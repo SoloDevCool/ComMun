@@ -1,0 +1,19 @@
+zh-CN:
+  admin:
+    roles:
+      title: 角色管理
+      new: 新建角色
+      edit: 编辑角色
+      name: 角色名称
+      badge: 徽章
+      level: 权限等级
+      users_count: 用户数
+      actions: 操作
+      built_in: 内置
+      delete_confirm: 确定删除角色「%{name}」吗？
+      hint_html: 角色支持自定义。权限等级约定：<b>0-49</b> 普通角色（仅徽章展示）；<b>50-99</b> 运营级（可进入后台进行内容管理）；<b>100 及以上</b> 管理员级（后台全部权限）。内置角色不可删除，但可修改名称、徽章与权限等级。
+    flash:
+      role_created: 角色创建成功
+      role_updated: 角色更新成功
+      role_deleted: 角色已删除
+      role_undeletable: 该角色为内置角色或仍有用户使用，无法删除

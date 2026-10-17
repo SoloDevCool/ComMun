@@ -1,0 +1,69 @@
+zh-CN:
+  devise:
+    shared:
+      links:
+        sign_in: "登录"
+        sign_up: "注册"
+        forgot_your_password: "忘记密码?"
+        didn_t_receive_confirmation_instructions: "未收到确认邮件?"
+        didn_t_receive_unlock_instructions: "未收到解锁邮件?"
+      mailer:
+        send_code: "发送验证码"
+        sending: "发送中..."
+        resend_in: "%{seconds}s 后重发"
+        invalid_email: "请输入有效的邮箱地址"
+        network_error: "网络请求失败，请稍后重试"
+        verification_code: "邮箱验证码"
+        verification_code_placeholder: "请输入6位验证码"
+    sessions:
+      new:
+        title: "登录"
+        email_or_username: "用户名 / 邮箱"
+        email_or_username_placeholder: "请输入用户名或邮箱"
+        password: "密码"
+        password_placeholder: "请输入密码"
+        remember_me: "记住我"
+        submit: "登录"
+        or: "或"
+        sign_in_with_provider: "使用 %{provider} 登录"
+    registrations:
+      min_characters: "（至少 %{count} 个字符）"
+      new:
+        title: "注册"
+        sign_up_with_username: "用户名注册"
+        sign_up_with_email: "邮箱注册"
+        username: "用户名"
+        username_placeholder: "2-20位，支持字母、数字、下划线和中文"
+        email: "邮箱"
+        email_placeholder: "请输入邮箱"
+        verification_code: "邮箱验证码"
+        invitation_code: "邀请码"
+        invitation_code_placeholder: "请输入邀请码"
+        invitation_code_default_hint: "注册需要邀请码，请向已有用户索取"
+        password: "密码"
+        password_placeholder: "请输入密码"
+        password_confirmation: "确认密码"
+        password_confirmation_placeholder: "请再次输入密码"
+        submit: "注册"
+    passwords:
+      new:
+        title: "忘记密码"
+        description: "输入注册邮箱，通过验证后即可重置密码"
+        email: "邮箱"
+        email_placeholder: "请输入注册邮箱"
+        submit: "提交验证并重置密码"
+      edit:
+        title: "重置密码"
+        description: "请输入您的新密码"
+        new_password: "新密码"
+        new_password_placeholder: "请输入新密码"
+        confirm_new_password: "确认新密码"
+        confirm_new_password_placeholder: "请再次输入新密码"
+        submit: "重置密码"
+    mailer:
+      reset_password_instructions:
+        greeting: "%{email}，您好！"
+        intro: "我们收到了您的密码重置请求。请通过以下链接设置新密码："
+        reset_link: "重置密码"
+        valid_for: "此链接在 6 小时内有效。"
+        ignore: "如果您没有发起此请求，请忽略此邮件，您的密码不会被更改。"

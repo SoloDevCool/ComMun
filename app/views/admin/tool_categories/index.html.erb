@@ -1,0 +1,81 @@
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h4 class="text-dark fw-bold mb-0"><%= t('admin.ui.m554') %></h4>
+  <div class="d-flex gap-2 align-items-center">
+    <%= link_to new_admin_tool_category_path, class: "btn btn-primary rounded-pill px-3" do %>
+      <i class="bi bi-plus-lg me-1"></i><%= t('admin.ui.m555') %>
+    <% end %>
+  </div>
+</div>
+
+<div class="card card-admin">
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-hover mb-0">
+        <thead>
+          <tr>
+            <th class="ps-3"><%= t('admin.category_name') %></th>
+            <th class="text-center d-none d-sm-table-cell"><%= t('admin.icon') %></th>
+            <th class="text-center"><%= t('admin.ui.m556') %></th>
+            <th class="text-center d-none d-sm-table-cell"><%= t('admin.status') %></th>
+            <th class="text-center d-none d-md-table-cell"><%= t('admin.sort_order') %></th>
+            <th class="pe-3 text-end"><%= t('admin.actions') %></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @tool_categories.each do |category| %>
+            <tr>
+              <td class="ps-3">
+                <div class="d-flex align-items-center">
+                  <span class="rounded-2 me-2 flex-shrink-0 d-flex align-items-center justify-content-center" style="width:36px;height:36px;background:<%= category.color %>15;color:<%= category.color %>">
+                    <i class="bi <%= category.icon.presence || 'bi-folder' %>" style="font-size:0.9rem"></i>
+                  </span>
+                  <div>
+                    <div class="fw-semibold"><%= category.name %></div>
+                    <% if category.description.present? %>
+                      <small class="text-muted"><%= truncate(category.description, length: 30) %></small>
+                    <% end %>
+                  </div>
+                </div>
+              </td>
+              <td class="text-center d-none d-sm-table-cell">
+                <span class="text-muted" style="font-size:0.85rem"><%= category.icon.presence || '-' %></span>
+              </td>
+              <td class="text-center">
+                <span class="badge bg-light text-dark rounded-pill"><%= category.tools_count %></span>
+              </td>
+              <td class="text-center d-none d-sm-table-cell">
+                <span class="badge <%= category.is_active? ? 'bg-success' : 'bg-secondary' %> rounded-pill" style="font-size:0.75rem">
+                  <%= category.is_active? ? t("admin.show") : t("admin.hide") %>
+                </span>
+              </td>
+              <td class="text-center d-none d-md-table-cell">
+                <span class="text-muted"><%= category.sort_order %></span>
+              </td>
+              <td class="pe-3 text-end">
+                <div class="d-flex justify-content-end gap-1">
+                  <%= link_to edit_admin_tool_category_path(category), class: "btn-action btn btn-sm btn-outline-primary border-0" do %>
+                    <i class="bi bi-pencil"></i>
+                  <% end %>
+                  <%= button_to admin_tool_category_path(category), method: :delete,
+                      class: "btn-action btn btn-sm btn-outline-danger border-0",
+                      data: { confirm: "确定删除分类「#{category.name}」吗？该分类下的所有工具也将被删除。" } do %>
+                    <i class="bi bi-trash"></i>
+                  <% end %>
+                </div>
+              </td>
+            </tr>
+          <% end %>
+          <% if @tool_categories.empty? %>
+            <tr>
+              <td colspan="6" class="text-center text-muted py-5">
+                <i class="bi bi-inbox d-block mb-2" style="font-size:2rem"></i>
+                <%= t('admin.ui.m559') %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+

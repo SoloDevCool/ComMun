@@ -1,0 +1,314 @@
+<% content_for :title, t('admin.ui.m520') %>
+
+<h4 class="text-dark fw-bold mb-4"><%= t('admin.ui.m521') %></h4>
+
+<!-- 统计卡片 -->
+<div class="row g-3 mb-4">
+  <div class="col-md-3">
+    <div class="card card-admin">
+      <div class="card-body d-flex align-items-center">
+        <div class="stat-icon bg-primary bg-opacity-10 text-primary me-3">
+          <i class="bi bi-chat-square-text"></i>
+        </div>
+        <div>
+          <div class="text-muted small"><%= t('admin.ui.m522') %></div>
+          <div class="fs-5 fw-bold"><%= Topic.where(published_by_operational: true).count %></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card card-admin">
+      <div class="card-body d-flex align-items-center">
+        <div class="stat-icon bg-success bg-opacity-10 text-success me-3">
+          <i class="bi bi-person-badge"></i>
+        </div>
+        <div>
+          <div class="text-muted small"><%= t('admin.ui.m157') %></div>
+          <div class="fs-5 fw-bold"><%= @operational_count %></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card card-admin">
+      <div class="card-body d-flex align-items-center">
+        <div class="stat-icon bg-warning bg-opacity-10 text-warning me-3">
+          <i class="bi bi-file-earmark-text"></i>
+        </div>
+        <div>
+          <div class="text-muted small"><%= t('admin.ui.m077') %></div>
+          <div class="fs-5 fw-bold"><%= TopicDraft.count %></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card card-admin">
+      <div class="card-body d-flex align-items-center justify-content-between">
+        <div>
+          <div class="text-muted small"><%= t('admin.ui.m523') %></div>
+        </div>
+        <%= link_to new_admin_topic_operation_path, class: "btn btn-primary rounded-pill px-3" do %>
+          <i class="bi bi-plus-lg me-1"></i><%= t('admin.ui.m524') %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- <%= t('admin.ui.m224') %><%= t('admin.ui.m732') %> -->
+<% if @drafts.any? %>
+<div class="card card-admin mb-4">
+  <div class="card-header d-flex align-items-center">
+    <span class="fw-semibold"><i class="bi bi-file-earmark-text me-2 text-warning"></i><%= t('admin.ui.m077') %></span>
+    <span class="badge bg-secondary bg-opacity-10 text-secondary ms-2" style="font-size:0.7rem"><%= @drafts.size %> <%= t('admin.ui.m015') %></span>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-hover mb-0">
+      <thead>
+        <tr>
+          <th style="width:40%"><%= t('admin.title') %></th>
+          <th><%= t('admin.node') %></th>
+          <th><%= t('admin.author') %></th>
+          <th><%= t('admin.ui.m142') %></th>
+          <th style="width:150px"><%= t('admin.actions') %></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @drafts.each do |draft| %>
+          <tr>
+            <td>
+              <span class="fw-medium text-dark"><%= draft.title.truncate(40) %></span>
+              <% if draft.is_repost? %>
+                <span class="badge bg-info bg-opacity-10 text-info ms-1" style="font-size:0.7rem"><%= t('admin.forward') %></span>
+              <% end %>
+            </td>
+            <td>
+              <span class="badge bg-light text-secondary">
+                <%= draft.node&.icon %> <%= draft.node&.name %>
+              </span>
+            </td>
+            <td>
+              <span class="text-muted" style="font-size:0.85rem"><%= draft.user&.display_name %></span>
+            </td>
+            <td class="text-muted small"><%= time_ago_in_words(draft.updated_at) %><%= t('admin.ago_suffix') %></td>
+            <td>
+              <div class="d-flex gap-1">
+                <%= link_to new_admin_topic_operation_path(draft_id: draft.id), class: "btn btn-sm btn-outline-primary btn-action", title: t('admin.ui.m525') do %>
+                  <i class="bi bi-pencil"></i>
+                <% end %>
+                <%= button_to publish_admin_topic_draft_path(draft), method: :post, class: "btn btn-sm btn-outline-success btn-action", title: t('admin.ui.m526'), data: { confirm: "确定直接发布草稿「#{draft.title}」？" } do %>
+                  <i class="bi bi-send"></i>
+                <% end %>
+                <%= button_to admin_topic_draft_path(draft), method: :delete, class: "btn btn-sm btn-outline-danger btn-action", title: t("admin.delete"), data: { confirm: "确定删除草稿「#{draft.title}」？" } do %>
+                  <i class="bi bi-trash3"></i>
+                <% end %>
+              </div>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>
+<% end %>
+
+<!-- 筛选<%= t('admin.ui.m838') %> + 搜索 -->
+<div class="card card-admin mb-4">
+  <div class="card-body py-2">
+    <div class="d-flex gap-2 flex-wrap align-items-center">
+      <% [ ["all", t('admin.ui.m010')], ["pinned", t('admin.ui.m529')], ["repost", t("admin.forward")] ].each do |value, label| %>
+        <%= link_to admin_topic_operations_path(scope: value, q: @q, node_id: @node_id), class: "btn btn-sm rounded-pill #{'btn-primary' if @scope == value}" do %>
+          <%= label %>
+        <% end %>
+      <% end %>
+      <div class="d-flex align-items-center ms-2">
+        <select name="node_id" class="form-select form-select-sm" style="width:auto;min-width:140px" onchange="location.href=this.value" aria-label="<%= t('admin.ui.m530') %>">
+          <option value="<%= admin_topic_operations_path(scope: @scope, q: @q) %>"><%= t('admin.ui.m531') %></option>
+          <optgroup label="<%= t('admin.ui.m176') %>">
+            <% @nodes.select { |n| n.system? }.each do |node| %>
+              <option value="<%= admin_topic_operations_path(scope: @scope, q: @q, node_id: node.id) %>" <%= 'selected' if @node_id == node.id.to_s %>>
+                <%= node.icon.present? ? "#{node.icon} " : "" %><%= node.name %>
+              </option>
+            <% end %>
+          </optgroup>
+          <optgroup label="<%= t('admin.ui.m168') %>">
+            <% @nodes.select { |n| n.interest? }.each do |node| %>
+              <option value="<%= admin_topic_operations_path(scope: @scope, q: @q, node_id: node.id) %>" <%= 'selected' if @node_id == node.id.to_s %>>
+                <%= node.name %>
+              </option>
+            <% end %>
+          </optgroup>
+        </select>
+      </div>
+      <form class="ms-auto d-flex" method="get" action="<%= admin_topic_operations_path %>" style="width:220px">
+        <input type="hidden" name="scope" value="<%= @scope %>">
+        <input type="hidden" name="node_id" value="<%= @node_id %>">
+        <div class="input-group input-group-sm">
+          <input type="text" name="q" value="<%= @q %>" class="form-control" placeholder="<%= t('admin.ui.m532') %>">
+          <% if @q.present? %>
+            <%= link_to admin_topic_operations_path(scope: @scope, node_id: @node_id), class: "btn btn-outline-secondary", title: t("admin.clear_search") do %>
+              <i class="bi bi-x"></i>
+            <% end %>
+          <% end %>
+          <button type="submit" class="btn btn-outline-secondary"><i class="bi bi-search"></i></button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- 话<%= t('admin.ui.m488') %><%= t('admin.ui.m732') %> -->
+<div class="card card-admin">
+  <div class="card-header d-flex align-items-center">
+    <span class="fw-semibold"><%= t('admin.ui.m533') %></span>
+    <span id="batchActions" class="ms-auto d-none">
+      <span id="selectedCount" class="text-muted small me-2"><%= t('admin.ui.m534') %></span>
+      <button type="button" class="btn btn-sm btn-outline-danger rounded-pill" onclick="batchDeleteTopics()">
+        <i class="bi bi-trash3 me-1"></i><%= t('admin.ui.m535') %>
+      </button>
+    </span>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-hover mb-0">
+      <thead>
+        <tr>
+          <th style="width:40px"><input type="checkbox" class="form-check-input" id="selectAll" onchange="toggleSelectAll(this)"></th>
+          <th style="width:35%"><%= t('admin.title') %></th>
+          <th><%= t('admin.node') %></th>
+          <th><%= t('admin.ui.m152') %></th>
+          <th><%= t('admin.status') %></th>
+          <th><%= t('admin.ui.m536') %></th>
+          <th><%= t('admin.ui.m151') %></th>
+          <th style="width:80px"><%= t('admin.actions') %></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if @topics.any? %>
+          <% @topics.each do |topic| %>
+            <tr>
+              <td><input type="checkbox" class="form-check-input topic-checkbox" value="<%= topic.id %>" onchange="updateBatchUI()"></td>
+              <td>
+                <div class="d-flex align-items-center">
+                  <%= link_to topic_path(topic), target: "_blank", class: "text-decoration-none" do %>
+                    <span class="fw-medium text-dark"><%= topic.title.truncate(40) %></span>
+                  <% end %>
+                  <% if topic.pinned? %>
+                    <span class="badge bg-danger bg-opacity-10 text-danger ms-2" style="font-size:0.7rem"><%= t('admin.ui.m537') %></span>
+                  <% end %>
+                  <% if topic.is_repost? %>
+                    <span class="badge bg-info bg-opacity-10 text-info ms-1" style="font-size:0.7rem"><%= t('admin.forward') %></span>
+                  <% end %>
+                </div>
+              </td>
+              <td>
+                <span class="badge bg-light text-secondary">
+                  <%= topic.node&.icon %> <%= topic.node&.name %>
+                </span>
+              </td>
+              <td>
+                <span class="text-muted" style="font-size:0.85rem"><%= topic.user&.display_name %></span>
+              </td>
+              <td>
+                <% if topic.pinned? %>
+                  <span class="text-success"><i class="bi bi-pin-angle-fill"></i></span>
+                <% else %>
+                  <span class="text-muted"><i class="bi bi-pin-angle"></i></span>
+                <% end %>
+              </td>
+              <td>
+                <span class="text-muted small">
+                  <i class="bi bi-hand-thumbs-up"></i> <%= topic.cools_count %>
+                  <i class="bi bi-chat ms-1"></i> <%= topic.comments.size %>
+                  <i class="bi bi-eye ms-1"></i> <%= topic.views_count %>
+                </span>
+              </td>
+              <td class="text-muted small"><%= time_ago_in_words(topic.created_at) %><%= t('admin.ago_suffix') %></td>
+              <td>
+                <div class="d-flex gap-1">
+                  <%= link_to topic_path(topic), target: "_blank", class: "btn btn-sm btn-outline-secondary btn-action", title: t("admin.view") do %>
+                    <i class="bi bi-box-arrow-up-right"></i>
+                  <% end %>
+                  <%= button_to admin_topic_operation_path(topic), method: :delete, class: "btn btn-sm btn-outline-danger btn-action", title: t("admin.delete"), data: { confirm: "确定删除话题「#{topic.title}」？" } do %>
+                    <i class="bi bi-trash3"></i>
+                  <% end %>
+                </div>
+              </td>
+            </tr>
+          <% end %>
+        <% else %>
+          <tr>
+            <td colspan="8" class="text-center text-muted py-5">
+              <i class="bi bi-chat-square-text" style="font-size:2rem"></i>
+              <div class="mt-2"><%= @q.present? ? t('admin.ui.m539') : t('admin.ui.m385') %></div>
+              <% if @q.present? %>
+                <%= link_to t("admin.clear_search"), admin_topic_operations_path(scope: @scope), class: "btn btn-outline-secondary rounded-pill px-3 mt-2" %>
+              <% else %>
+                <%= link_to t('admin.ui.m386'), new_admin_topic_operation_path, class: "btn btn-primary rounded-pill px-3 mt-2" %>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- 分页 -->
+<% if @pagy.pages > 1 %>
+  <div class="mt-3 d-flex justify-content-center">
+    <%== @pagy.series_nav(:bootstrap) %>
+  </div>
+<% end %>
+
+<script>
+function toggleSelectAll(checkbox) {
+  document.querySelectorAll('.topic-checkbox').forEach(function(cb) { cb.checked = checkbox.checked; });
+  updateBatchUI();
+}
+
+function updateBatchUI() {
+  var checkboxes = document.querySelectorAll('.topic-checkbox');
+  var checked = document.querySelectorAll('.topic-checkbox:checked');
+  var selectAll = document.getElementById('selectAll');
+  var batchActions = document.getElementById('batchActions');
+  var selectedCount = document.getElementById('selectedCount');
+
+  selectAll.checked = checkboxes.length > 0 && checked.length === checkboxes.length;
+  selectAll.indeterminate = checked.length > 0 && checked.length < checkboxes.length;
+
+  if (checked.length > 0) {
+    batchActions.classList.remove('d-none');
+    selectedCount.textContent = '<%= t('admin.ui.m030') %> ' + checked.length + ' <%= t('admin.ui.m387') %>';
+  } else {
+    batchActions.classList.add('d-none');
+  }
+}
+
+function batchDeleteTopics() {
+  var ids = Array.from(document.querySelectorAll('.topic-checkbox:checked')).map(function(cb) { return cb.value; });
+  if (ids.length === 0) return;
+
+  if (!confirm('<%= t('admin.ui.m388') %> ' + ids.length + ' <%= t('admin.ui.m389') %>')) return;
+
+  var form = document.createElement('form');
+  form.method = 'POST';
+  form.action = '<%= batch_destroy_admin_topic_operations_path %>';
+  var token = document.querySelector('meta[name="csrf-token"]');
+  if (token) {
+    var input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'authenticity_token';
+    input.value = token.content;
+    form.appendChild(input);
+  }
+  var idsInput = document.createElement('input');
+  idsInput.type = 'hidden';
+  idsInput.name = 'ids';
+  idsInput.value = ids.join(',');
+  form.appendChild(idsInput);
+  document.body.appendChild(form);
+  form.submit();
+}
+</script>

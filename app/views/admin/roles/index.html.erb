@@ -1,0 +1,57 @@
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h4 class="fw-bold mb-0"><i class="bi bi-person-gear me-2"></i><%= t('admin.roles.title') %></h4>
+  <%= link_to new_admin_role_path, class: "btn btn-primary btn-sm" do %>
+    <i class="bi bi-plus-lg me-1"></i><%= t('admin.roles.new') %>
+  <% end %>
+</div>
+
+<div class="card-admin card">
+  <div class="card-body">
+    <p class="text-muted small mb-3">
+      <i class="bi bi-info-circle me-1"></i><%= t('admin.roles.hint_html').html_safe %>
+    </p>
+    <div class="table-responsive">
+      <table class="table table-hover align-middle">
+        <thead>
+          <tr>
+            <th><%= t('admin.roles.name') %></th>
+            <th>Key</th>
+            <th><%= t('admin.roles.badge') %></th>
+            <th><%= t('admin.roles.level') %></th>
+            <th><%= t('admin.roles.users_count') %></th>
+            <th class="text-end"><%= t('admin.roles.actions') %></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @roles.each do |role| %>
+            <tr>
+              <td>
+                <%= role.name %>
+                <% if role.built_in? %>
+                  <span class="badge bg-light text-dark border ms-1"><%= t('admin.roles.built_in') %></span>
+                <% end %>
+              </td>
+              <td><code><%= role.key %></code></td>
+              <td><span class="badge <%= role.badge_class %> rounded-pill"><%= role.name %></span></td>
+              <td><%= role.level %></td>
+              <td><%= role.in_use? ? User.where(role: role.key).count : 0 %></td>
+              <td class="text-end">
+                <%= link_to edit_admin_role_path(role), class: "btn btn-sm btn-outline-primary" do %>
+                  <i class="bi bi-pencil"></i>
+                <% end %>
+                <% unless role.built_in? %>
+                  <%= button_to admin_role_path(role), method: :delete,
+                        class: "btn btn-sm btn-outline-danger",
+                        form: { style: "display:inline-block" },
+                        data: { turbo_confirm: t('admin.roles.delete_confirm', name: role.name) } do %>
+                    <i class="bi bi-trash"></i>
+                  <% end %>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

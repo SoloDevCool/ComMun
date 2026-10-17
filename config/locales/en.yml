@@ -1,0 +1,164 @@
+en:
+  activerecord:
+    attributes:
+      topic:
+        title: "Title"
+        content: "Content"
+      topic_draft:
+        title: "Title"
+        content: "Content"
+      node:
+        name: "Name"
+        slug: "Slug"
+      user:
+        username: "Username"
+        email: "Email"
+        password: "Password"
+        current_password: "Current password"
+      course:
+        title: "Course title"
+      course_review:
+        content: "Review content"
+      comment:
+        content: "Comment content"
+    errors:
+      format: "%{message}"
+      models:
+        topic:
+          attributes:
+            title:
+              blank: "Title can't be blank"
+              too_short: "Title is too short (minimum is %{count} characters)"
+              too_long: "Title is too long (maximum is %{count} characters)"
+            content:
+              blank: "Content can't be blank"
+              too_short: "Content is too short (minimum is %{count} characters)"
+            node:
+              blank: "Please select a node"
+        topic_draft:
+          attributes:
+            title:
+              blank: "Title can't be blank"
+              too_short: "Title is too short (minimum is %{count} characters)"
+              too_long: "Title is too long (maximum is %{count} characters)"
+            content:
+              blank: "Content can't be blank"
+              too_short: "Content is too short (minimum is %{count} characters)"
+            node:
+              blank: "Please select a node"
+        node:
+          attributes:
+            name:
+              blank: "Name can't be blank"
+            slug:
+              blank: "Slug can't be blank"
+              invalid: "Slug can only contain lowercase letters, numbers and hyphens"
+        user:
+          attributes:
+            username:
+              blank: "Username can't be blank"
+              too_short: "Username is too short (minimum is %{count} characters)"
+              too_long: "Username is too long (maximum is %{count} characters)"
+              taken: "This username has already been taken"
+            email:
+              blank: "Email can't be blank"
+              taken: "This email has already been registered"
+            password:
+              blank: "Password can't be blank"
+              too_short: "Password is too short (minimum is %{count} characters)"
+            current_password:
+              invalid: "Current password is incorrect"
+        course:
+          attributes:
+            title:
+              blank: "Course title can't be blank"
+        course_review:
+          attributes:
+            content:
+              blank: "Review content can't be blank"
+        comment:
+          attributes:
+            content:
+              blank: "Comment content can't be blank"
+              too_short: "Comment content is too short (minimum is %{count} characters)"
+      messages:
+        record_invalid: "Validation failed: %{errors}"
+        taken: "has already been taken"
+        record_not_unique: "Record already exists"
+      template:
+        header:
+          one: "1 error prohibited this from being saved"
+          other: "%{count} errors prohibited this from being saved"
+        body: "There were problems with the following fields:"
+
+  datetime:
+    distance_in_words:
+      half_a_minute: "half a minute"
+      less_than_x_seconds:
+        one: "less than 1 second"
+        other: "less than %{count} seconds"
+      x_seconds:
+        one: "1 second"
+        other: "%{count} seconds"
+      less_than_x_minutes:
+        one: "less than a minute"
+        other: "less than %{count} minutes"
+      x_minutes:
+        one: "1 minute"
+        other: "%{count} minutes"
+      about_x_hours:
+        one: "about 1 hour"
+        other: "about %{count} hours"
+      x_days:
+        one: "1 day"
+        other: "%{count} days"
+      about_x_months:
+        one: "about 1 month"
+        other: "about %{count} months"
+      x_months:
+        one: "1 month"
+        other: "%{count} months"
+      almost_x_years:
+        one: "almost 1 year"
+        other: "almost %{count} years"
+      about_x_years:
+        one: "about 1 year"
+        other: "about %{count} years"
+      over_x_years:
+        one: "over 1 year"
+        other: "over %{count} years"
+      prompts:
+        second: "Second"
+        minute: "Minute"
+        hour: "Hour"
+        day: "Day"
+        month: "Month"
+        year: "Year"
+
+  devise:
+    failure:
+      already_authenticated: "You are already signed in"
+      unauthenticated: "You need to sign in or sign up before continuing"
+      invalid: "Invalid email or password"
+      not_found_in_database: "Invalid email or password"
+      locked: "Your account is locked. Please try again later"
+      last_attempt: "You have one more attempt before your account is locked"
+    sessions:
+      signed_in: "Signed in successfully"
+      signed_out: "Signed out successfully"
+    registrations:
+      signed_up: "Signed up successfully. Welcome!"
+      signed_up_but_inactive: "Signed up successfully, but your account is not activated yet"
+      updated: "Your account has been updated successfully"
+      update_needs_confirmation: "Your account has been updated successfully, but we need to verify your new email address"
+      destroyed: "Your account has been successfully cancelled"
+    passwords:
+      send_instructions: "You will receive an email with instructions on how to reset your password"
+      updated: "Your password has been changed successfully"
+    omniauth_callbacks:
+      success: "Successfully authenticated"
+    errors:
+      messages:
+        not_saved:
+          one: "1 error prohibited this from being saved"
+          other: "%{count} errors prohibited this from being saved"

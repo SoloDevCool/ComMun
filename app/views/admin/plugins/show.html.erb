@@ -1,0 +1,150 @@
+<% content_for :title, "插件详情 - #{@plugin.name}" %>
+
+<h5 class="mb-3">
+  <a href="<%= admin_plugins_path %>" class="text-decoration-none text-muted me-2"><i class="bi bi-arrow-left"></i></a>
+  <%= @plugin.name %>
+  <span class="badge <%= @plugin.enabled? ? 'bg-success' : 'bg-secondary' %> ms-2"><%= @plugin.status_text %></span>
+</h5>
+
+<div class="row">
+  <div class="col-lg-8">
+    <!-- <%= t('admin.ui.m346') %> -->
+    <div class="card-admin card mb-4">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <span><i class="bi bi-info-circle me-2"></i><%= t('admin.ui.m346') %></span>
+        <div class="d-flex gap-2">
+          <% if @plugin.enabled? %>
+            <%= button_to disable_admin_plugin_path(@plugin), method: :post, class: "btn btn-sm btn-warning", data: { confirm: t('admin.ui.m345') } do %>
+              <i class="bi bi-pause-circle me-1"></i><%= t('admin.ui.m343') %>
+            <% end %>
+          <% elsif @plugin.installed? %>
+            <%= button_to enable_admin_plugin_path(@plugin), method: :post, class: "btn btn-sm btn-success", data: { confirm: t('admin.ui.m339') } do %>
+              <i class="bi bi-play-circle me-1"></i><%= t('admin.ui.m022') %>
+            <% end %>
+          <% end %>
+          <% if @plugin.installed? %>
+            <%= button_to uninstall_admin_plugin_path(@plugin), method: :delete, class: "btn btn-sm btn-outline-danger", data: { confirm: t('admin.ui.m337') } do %>
+              <i class="bi bi-trash me-1"></i><%= t('admin.ui.m336') %>
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+      <div class="card-body">
+        <table class="table table-borderless mb-0">
+          <tr>
+            <td class="text-muted" style="width: 120px;"><%= t('admin.identifier') %></td>
+            <td><code><%= @plugin.identifier %></code></td>
+          </tr>
+          <tr>
+            <td class="text-muted"><%= t('admin.version') %></td>
+            <td><%= @plugin.version %></td>
+          </tr>
+          <tr>
+            <td class="text-muted"><%= t('admin.status') %></td>
+            <td><span class="badge <%= status_badge_class(@plugin.status) %>"><%= @plugin.status %></span></td>
+          </tr>
+          <tr>
+            <td class="text-muted"><%= t('admin.description') %></td>
+            <td><%= @plugin.description.presence || '-' %></td>
+          </tr>
+          <tr>
+            <td class="text-muted"><%= t('admin.author') %></td>
+            <td><%= @plugin.author.presence || '-' %></td>
+          </tr>
+          <tr>
+            <td class="text-muted"><%= t('admin.ui.m114') %></td>
+            <td><%= @plugin.homepage.present? ? link_to(@plugin.homepage, @plugin.homepage, target: "_blank") : '-' %></td>
+          </tr>
+          <tr>
+            <td class="text-muted"><%= t('admin.ui.m068') %></td>
+            <td><%= @plugin.created_at&.strftime('%Y-%m-%d %H:%M:%S') || '-' %></td>
+          </tr>
+          <tr>
+            <td class="text-muted"><%= t('admin.ui.m142') %></td>
+            <td><%= @plugin.updated_at&.strftime('%Y-%m-%d %H:%M:%S') || '-' %></td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- <%= t('admin.ui.m319') %> -->
+    <% if @config_schema.present? %>
+      <div class="card-admin card mb-4">
+        <div class="card-header">
+          <i class="bi bi-gear me-2"></i><%= t('admin.ui.m335') %>
+        </div>
+        <div class="card-body">
+          <%= form_with url: update_config_admin_plugin_path(@plugin), method: :patch, local: true, html: { id: "plugin_config_form" } do |f| %>
+            <% @config_schema.each do |key, schema| %>
+              <div class="mb-3">
+                <label class="form-label">
+                  <%= schema['label'] || key %>
+                  <% if schema['required'] %><span class="text-danger">*</span><% end %>
+                </label>
+                <% value = @config_values[key.to_s] || schema['default'] %>
+
+                <% case schema['type'] %>
+                <% when 'boolean' %>
+                  <div class="form-check form-switch">
+                    <%= check_box "plugin_config", key, { checked: value.to_s == 'true', class: "form-check-input" }, 'true', 'false' %>
+                  </div>
+                <% when 'integer' %>
+                  <%= number_field "plugin_config", key, value: value, class: "form-control", min: schema['min'], max: schema['max'], step: 1 %>
+                <% when 'text' %>
+                  <%= text_area "plugin_config", key, value: value, class: "form-control", rows: 4 %>
+                <% else %>
+                  <%= text_field "plugin_config", key, value: value, class: "form-control" %>
+                <% end %>
+
+                <% if schema['description'] %>
+                  <div class="form-text"><%= schema['description'] %></div>
+                <% end %>
+              </div>
+            <% end %>
+
+            <%= submit_tag t('admin.ui.m334'), class: "btn btn-primary" %>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="col-lg-4">
+    <!-- 钩子信息 -->
+    <div class="card-admin card mb-4">
+      <div class="card-header">
+        <i class="bi bi-link-45deg me-2"></i><%= t('admin.ui.m333') %>
+      </div>
+      <div class="card-body">
+        <% if @plugin.hooks.present? %>
+          <% @plugin.hooks.each do |hook_name, handlers| %>
+            <div class="mb-2">
+              <small class="text-muted"><%= hook_name %></small>
+              <div class="ms-3">
+                <% Array(handlers).each do |h| %>
+                  <span class="badge bg-light text-dark"><%= h.is_a?(Hash) ? h['file'] : h %></span>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+        <% else %>
+          <p class="text-muted mb-0"><%= t('admin.ui.m332') %></p>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- README -->
+    <% if @readme.present? %>
+      <div class="card-admin card mb-4">
+        <div class="card-header">
+          <i class="bi bi-file-earmark-text me-2"></i><%= t('admin.ui.m331') %>
+        </div>
+        <div class="card-body">
+          <div class="bg-light p-3 rounded" style="max-height: 400px; overflow-y: auto;">
+            <pre class="mb-0" style="white-space: pre-wrap; font-size: 0.85rem;"><%= @readme %></pre>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

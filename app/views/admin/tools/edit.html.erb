@@ -1,0 +1,319 @@
+<h4 class="text-dark fw-bold mb-4"><%= t('admin.ui.m562') %></h4>
+
+<div class="card card-admin" style="max-width:760px">
+  <div class="card-body p-4">
+    <%= form_with model: [:admin, @tool], local: true do |f| %>
+      <% if @tool.errors.any? %>
+        <div class="alert alert-danger rounded-3 py-2">
+          <i class="bi bi-exclamation-circle me-1"></i>
+          <ul class="mb-0 ms-3">
+            <% @tool.errors.full_messages.each do |msg| %>
+              <li><%= msg %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <div class="row g-3 mb-3">
+        <div class="col-md-6">
+          <%= f.label :tool_category_id, t("admin.own_category"), class: "form-label fw-semibold small text-muted" %>
+          <%= f.collection_select :tool_category_id, @tool_categories, :id, :name, { prompt: t("admin.select_category") }, class: "form-select form-select-lg rounded-3" %>
+        </div>
+        <div class="col-md-6">
+          <%= f.label :name, t("admin.tool_name"), class: "form-label fw-semibold small text-muted" %>
+          <%= f.text_field :name, class: "form-control form-control-lg rounded-3", placeholder: t('admin.ui.m120') %>
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <%= f.label :description, t("admin.tool_description"), class: "form-label fw-semibold small text-muted" %>
+        <%= f.text_area :description, class: "form-control rounded-3", rows: 3, placeholder: t('admin.ui.m121') %>
+        <div class="form-text"><%= t('admin.max_500_chars') %></div>
+      </div>
+
+      <div class="row g-3 mb-3">
+        <div class="col-md-8">
+          <%= f.label :url, t("admin.website_url"), class: "form-label fw-semibold small text-muted" %>
+          <%= f.url_field :url, class: "form-control form-control-lg rounded-3", placeholder: "https://example.com" %>
+        </div>
+        <div class="col-md-4">
+          <%= f.label :pricing, t("admin.pricing"), class: "form-label fw-semibold small text-muted" %>
+          <%= f.text_field :pricing, class: "form-control form-control-lg rounded-3", placeholder: "免费/$20/月" %>
+        </div>
+      </div>
+
+      <div class="row g-3 mb-3">
+        <div class="col-md-6">
+          <%= f.label :icon, t("admin.default_icon"), class: "form-label fw-semibold small text-muted" %>
+          <div class="input-group">
+            <span class="input-group-text rounded-start-3"><i class="bi <%= @tool.icon.presence || 'bi-box' %>"></i></span>
+            <%= f.text_field :icon, class: "form-control form-control-lg rounded-end-3", placeholder: "bi-chat-dots" %>
+          </div>
+          <div class="form-text"><%= t('admin.ui.m124') %></div>
+        </div>
+        <div class="col-md-6">
+          <%= f.label :color, t("admin.theme_color"), class: "form-label fw-semibold small text-muted" %>
+          <div class="input-group">
+            <input type="color" id="tool_color_preview" value="<%= @tool.color || '#6366f1' %>" class="form-control form-control-color rounded-start-3" style="width:46px">
+            <%= f.text_field :color, class: "form-control form-control-lg rounded-end-3", placeholder: "#6366f1" %>
+          </div>
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <%= f.label :icon_url, t("admin.icon_image"), class: "form-label fw-semibold small text-muted" %>
+        <%= f.hidden_field :icon_url, id: "tool_icon_url_value", value: @tool.icon_url %>
+        <div class="d-flex align-items-center gap-2 mb-2">
+          <div class="btn-group btn-group-sm" role="group">
+            <button type="button" class="btn btn-outline-secondary active" id="icon-mode-upload-btn" onclick="switchIconMode('upload')">
+              <i class="bi bi-cloud-upload me-1"></i><%= t('admin.ui.m125') %>
+            </button>
+            <button type="button" class="btn btn-outline-secondary" id="icon-mode-url-btn" onclick="switchIconMode('url')">
+              <i class="bi bi-link-45deg me-1"></i><%= t('admin.ui.m126') %>
+            </button>
+          </div>
+        </div>
+        <div id="icon-mode-upload">
+          <div id="icon-upload-area" class="border border-dashed rounded-3 p-3 text-center" style="cursor:pointer;max-width:300px">
+            <div id="icon-upload-placeholder" class="<%= @tool.icon_url.present? ? 'd-none' : '' %>">
+              <i class="bi bi-cloud-upload d-block mb-1" style="font-size:1.5rem;color:#9ca3af"></i>
+              <span class="text-muted" style="font-size:0.85rem"><%= t('admin.icon_drop_hint') %></span>
+            </div>
+            <div id="icon-upload-preview" class="<%= @tool.icon_url.blank? ? 'd-none' : '' %>">
+              <img id="icon-preview-img" src="<%= @tool.icon_url %>" alt="<%= t('admin.icon_preview') %>" style="max-width:80px;max-height:80px;object-fit:contain;border-radius:12px">
+              <div class="mt-2">
+                <button type="button" class="btn btn-sm btn-outline-danger rounded-pill px-3" id="remove-icon-btn">
+                  <i class="bi bi-trash me-1"></i><%= t('admin.ui.m127') %>
+                </button>
+              </div>
+            </div>
+          </div>
+          <input type="file" id="icon-file-input" accept="image/*" class="d-none">
+          <div class="form-text"><%= t('admin.ui.m128') %></div>
+        </div>
+        <div id="icon-mode-url" class="d-none">
+          <div class="input-group" style="max-width:500px">
+            <span class="input-group-text rounded-start-3"><i class="bi bi-link-45deg"></i></span>
+            <input type="url" id="icon-url-input" class="form-control form-control-lg rounded-end-3" placeholder="https://example.com/icon.png" value="<%= @tool.icon_url %>">
+            <button type="button" class="btn btn-primary rounded-pill px-3" id="apply-icon-url-btn"><%= t('admin.ui.m129') %></button>
+          </div>
+          <div class="form-text"><%= t('admin.ui.m130') %></div>
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <%= f.label :tags, t("admin.tags"), class: "form-label fw-semibold small text-muted" %>
+        <div class="d-flex flex-wrap gap-2 mb-2" id="tags-preview"></div>
+        <div class="input-group">
+          <span class="input-group-text rounded-start-3"><i class="bi bi-tags"></i></span>
+          <input type="text" id="tag-input" class="form-control form-control-lg rounded-end-3" placeholder="<%= t('admin.tags_input_hint') %>">
+        </div>
+        <%= f.hidden_field :tags, id: "tool_tags_value", value: "" %>
+        <div class="form-text"><%= t('admin.ui.m049') %></div>
+      </div>
+
+      <div class="row g-3 mb-4">
+        <div class="col-md-6">
+          <%= f.label :sort_order, t("admin.sort_order"), class: "form-label fw-semibold small text-muted" %>
+          <%= f.number_field :sort_order, class: "form-control form-control-lg rounded-3", min: 0 %>
+          <div class="form-text"><%= t('admin.lower_is_first') %></div>
+        </div>
+        <div class="col-md-6">
+          <%= f.label :is_active, t("admin.status"), class: "form-label fw-semibold small text-muted" %>
+          <div class="form-check form-switch mt-2">
+            <%= f.check_box :is_active, class: "form-check-input", style: "width:2.5em;height:1.5em" %>
+            <label class="form-check-label" for="tool_is_active"><%= t('admin.show_on_frontend') %></label>
+          </div>
+        </div>
+      </div>
+
+      <div class="d-flex gap-2">
+        <%= f.submit t("admin.save_changes"), class: "btn btn-primary rounded-pill px-4" %>
+        <%= link_to t("admin.cancel"), admin_tools_path, class: "btn btn-outline-secondary rounded-pill px-4" %>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<script>
+function switchIconMode(mode) {
+  var uploadSection = document.getElementById('icon-mode-upload');
+  var urlSection = document.getElementById('icon-mode-url');
+  var uploadBtn = document.getElementById('icon-mode-upload-btn');
+  var urlBtn = document.getElementById('icon-mode-url-btn');
+  if (mode === 'upload') {
+    uploadSection.classList.remove('d-none');
+    urlSection.classList.add('d-none');
+    uploadBtn.classList.add('active');
+    urlBtn.classList.remove('active');
+  } else {
+    uploadSection.classList.add('d-none');
+    urlSection.classList.remove('d-none');
+    uploadBtn.classList.remove('active');
+    urlBtn.classList.add('active');
+  }
+}
+
+(function() {
+  var tagsInput = document.getElementById('tag-input');
+  var tagsValue = document.getElementById('tool_tags_value');
+  var tagsPreview = document.getElementById('tags-preview');
+  var currentTags = <%= raw @tool.tags.to_json %>;
+
+  function renderTags() {
+    tagsPreview.innerHTML = '';
+    currentTags.forEach(function(tag, index) {
+      var badge = document.createElement('span');
+      badge.className = 'badge bg-light text-dark rounded-pill d-flex align-items-center gap-1';
+      badge.style.fontSize = '0.82rem';
+      badge.style.padding = '5px 10px';
+      badge.innerHTML = tag + ' <button type="button" class="btn-close btn-close-sm" style="font-size:0.55rem" data-index="' + index + '"></button>';
+      tagsPreview.appendChild(badge);
+    });
+    tagsValue.value = JSON.stringify(currentTags);
+  }
+
+  renderTags();
+
+  tagsInput.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      var val = this.value.trim();
+      if (val && currentTags.indexOf(val) === -1) {
+        currentTags.push(val);
+        renderTags();
+      }
+      this.value = '';
+    }
+  });
+
+  tagsPreview.addEventListener('click', function(e) {
+    if (e.target.classList.contains('btn-close')) {
+      var idx = parseInt(e.target.dataset.index);
+      currentTags.splice(idx, 1);
+      renderTags();
+    }
+  });
+
+  // Color picker sync
+  var colorPicker = document.getElementById('tool_color_preview');
+  var colorInput = document.querySelector('#tool_color');
+  if (colorPicker && colorInput) {
+    colorPicker.addEventListener('input', function() { colorInput.value = this.value; });
+    colorInput.addEventListener('input', function() {
+      if (/^#[0-9a-fA-F]{6}$/.test(this.value)) colorPicker.value = this.value;
+    });
+  }
+
+  // Icon image upload
+  var uploadArea = document.getElementById('icon-upload-area');
+  var fileInput = document.getElementById('icon-file-input');
+  var iconUrlValue = document.getElementById('tool_icon_url_value');
+  var placeholder = document.getElementById('icon-upload-placeholder');
+  var preview = document.getElementById('icon-upload-preview');
+  var previewImg = document.getElementById('icon-preview-img');
+  var removeBtn = document.getElementById('remove-icon-btn');
+
+  function showPreview(url) {
+    previewImg.src = url;
+    iconUrlValue.value = url;
+    placeholder.classList.add('d-none');
+    preview.classList.remove('d-none');
+  }
+
+  function clearPreview() {
+    previewImg.src = '';
+    iconUrlValue.value = '';
+    placeholder.classList.remove('d-none');
+    preview.classList.add('d-none');
+    fileInput.value = '';
+  }
+
+  uploadArea.addEventListener('click', function() { fileInput.click(); });
+  uploadArea.addEventListener('dragover', function(e) { e.preventDefault(); this.style.borderColor = '#6366f1'; });
+  uploadArea.addEventListener('dragleave', function() { this.style.borderColor = ''; });
+  uploadArea.addEventListener('drop', function(e) {
+    e.preventDefault();
+    this.style.borderColor = '';
+    var files = e.dataTransfer.files;
+    if (files.length > 0) {
+      fileInput.files = files;
+      uploadIcon(files[0]);
+    }
+  });
+
+  removeBtn.addEventListener('click', function(e) {
+    e.stopPropagation();
+    clearPreview();
+  });
+
+  fileInput.addEventListener('change', function() {
+    if (this.files.length > 0) uploadIcon(this.files[0]);
+  });
+
+  function uploadIcon(file) {
+    if (!file.type.startsWith('image/')) { alert("<%= t('admin.upload_image_file') %>"); return; }
+    if (file.size > 5 * 1024 * 1024) { alert("<%= t('admin.image_max_5mb') %>"); return; }
+
+    uploadArea.style.opacity = '0.6';
+    uploadArea.style.pointerEvents = 'none';
+    placeholder.innerHTML = '<div class="spinner-border spinner-border-sm me-1"></div><span class="text-muted" style="font-size:0.85rem"><%= t('admin.ui.m048') %></span>';
+
+    var formData = new FormData();
+    formData.append('image', file);
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', '<%= upload_image_path %>');
+    xhr.setRequestHeader('X-CSRF-Token', document.querySelector('meta[name="csrf-token"]').content);
+    xhr.onload = function() {
+      uploadArea.style.opacity = '';
+      uploadArea.style.pointerEvents = '';
+      if (xhr.status >= 200 && xhr.status < 300) {
+        var res = JSON.parse(xhr.responseText);
+        if (res.url) {
+          showPreview(res.url);
+        } else {
+          alert("<%= t('admin.upload_failed_retry') %>");
+          clearPreview();
+        }
+      } else {
+        alert("<%= t('admin.upload_failed_retry') %>");
+        clearPreview();
+      }
+    };
+    xhr.onerror = function() {
+      uploadArea.style.opacity = '';
+      uploadArea.style.pointerEvents = '';
+      alert("<%= t('admin.upload_failed_retry') %>");
+      clearPreview();
+    };
+    xhr.send(formData);
+  }
+
+  // Icon URL input
+  var iconUrlInput = document.getElementById('icon-url-input');
+  var applyUrlBtn = document.getElementById('apply-icon-url-btn');
+
+  applyUrlBtn.addEventListener('click', function() {
+    var url = iconUrlInput.value.trim();
+    if (!url) {
+      iconUrlValue.value = '';
+      return;
+    }
+    try {
+      new URL(url);
+      iconUrlValue.value = url;
+      showPreview(url);
+      switchIconMode('upload');
+    } catch(e) {
+      alert("<%= t('admin.invalid_url') %>");
+    }
+  });
+
+  iconUrlInput.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      applyUrlBtn.click();
+    }
+  });
+})();
+</script>

@@ -1,0 +1,179 @@
+<% content_for :title, t('admin.ui.m986') %>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h5 class="mb-0"><%= t('admin.ui.m986') %></h5>
+  <% if @tab == "themes" %>
+    <%= link_to admin_themes_path, class: "btn btn-sm btn-outline-secondary" do %>
+      <i class="bi bi-palette me-1"></i><%= t('admin.ui.m475') %>
+    <% end %>
+  <% else %>
+    <%= link_to admin_plugins_path, class: "btn btn-sm btn-outline-secondary" do %>
+      <i class="bi bi-box-seam me-1"></i><%= t('admin.ui.m064') %>
+    <% end %>
+  <% end %>
+</div>
+
+<ul class="nav nav-pills mb-3">
+  <li class="nav-item">
+    <%= link_to admin_plugin_center_path(tab: "plugins", keyword: @keyword.presence), class: "nav-link #{@tab == 'plugins' ? 'active' : ''}" do %>
+      <i class="bi bi-box-seam me-1"></i><%= t('admin.ui.m1012') %>
+    <% end %>
+  </li>
+  <li class="nav-item">
+    <%= link_to admin_plugin_center_path(tab: "themes", keyword: @keyword.presence), class: "nav-link #{@tab == 'themes' ? 'active' : ''}" do %>
+      <i class="bi bi-palette me-1"></i><%= t('admin.ui.m1013') %>
+    <% end %>
+  </li>
+</ul>
+
+<% unless @center_available %>
+  <div class="alert alert-warning d-flex align-items-center">
+    <i class="bi bi-plug me-2"></i>
+    <span><%= @error.presence || t('admin.ui.m995') %></span>
+  </div>
+<% end %>
+
+<div class="card-admin card mb-4">
+  <div class="card-body">
+    <div class="row g-2 align-items-center">
+      <div class="col-md-8">
+        <form method="get" action="<%= admin_plugin_center_path %>" class="d-flex gap-2">
+          <input type="hidden" name="tab" value="<%= @tab %>">
+          <input type="text" name="keyword" class="form-control form-control-sm"
+                 value="<%= @keyword %>" placeholder="<%= @tab == 'themes' ? t('admin.ui.m1014') : t('admin.ui.m987') %>">
+          <button type="submit" class="btn btn-sm btn-primary"><i class="bi bi-search"></i> <%= t('admin.ui.m988') %></button>
+          <% if @keyword.present? %>
+            <%= link_to t('admin.ui.m471'), admin_plugin_center_path(tab: @tab), class: "btn btn-sm btn-outline-secondary" %>
+          <% end %>
+        </form>
+      </div>
+      <div class="col-md-4">
+        <form method="post" action="<%= admin_plugin_center_path %>" class="d-flex gap-2">
+          <input type="hidden" name="_method" value="patch">
+          <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
+          <input type="hidden" name="tab" value="<%= @tab %>">
+          <input type="text" name="center_url" class="form-control form-control-sm"
+                 value="<%= @center_url %>" placeholder="<%= t('admin.ui.m989') %>">
+          <input type="text" name="center_token" class="form-control form-control-sm"
+                 value="<%= @center_token %>" placeholder="<%= t('admin.ui.m1019') %>" title="<%= t('admin.ui.m1020') %>">
+          <button type="submit" class="btn btn-sm btn-outline-primary" title="<%= t('admin.ui.m990') %>">
+            <i class="bi bi-gear"></i>
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3">
+  <% if @tab == "plugins" %>
+    <% @plugins.each do |market_plugin| %>
+      <% local = @local_plugins[market_plugin["identifier"]] %>
+      <% installed = local&.installed? %>
+      <% upgradable = installed && local.version != market_plugin["version"].to_s %>
+      <div class="col-md-6 col-xl-4">
+        <div class="card-admin card h-100">
+          <div class="card-body d-flex flex-column">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+              <strong><%= market_plugin["name"] %></strong>
+              <span class="badge bg-primary-subtle text-primary">v<%= market_plugin["version"] %></span>
+            </div>
+            <div class="text-muted small mb-2">
+              <code><%= market_plugin["identifier"] %></code>
+              <% if market_plugin["author"].present? %> · <%= market_plugin["author"] %><% end %>
+            </div>
+            <p class="text-muted small flex-grow-1"><%= truncate(market_plugin["description"].to_s, length: 120) %></p>
+            <div class="d-flex justify-content-between align-items-center mt-2">
+              <small class="text-muted">
+                <i class="bi bi-download me-1"></i><%= market_plugin["downloads"].to_i %>
+              </small>
+              <% if upgradable %>
+                <%= button_to admin_plugin_center_install_path(market_plugin["identifier"]), method: :post,
+                      params: { version: market_plugin["version"] },
+                      class: "btn btn-sm btn-warning", title: t('admin.ui.m991'),
+                      data: { confirm: t('admin.ui.m992') } do %>
+                  <i class="bi bi-arrow-repeat me-1"></i><%= t('admin.ui.m991') %>
+                <% end %>
+              <% elsif installed %>
+                <span class="badge bg-success"><%= t('admin.ui.m993') %> v<%= local.version %></span>
+              <% else %>
+                <%= button_to admin_plugin_center_install_path(market_plugin["identifier"]), method: :post,
+                      params: { version: market_plugin["version"] },
+                      class: "btn btn-sm btn-primary", title: t('admin.ui.m994'),
+                      data: { confirm: t('admin.ui.m1001') } do %>
+                  <i class="bi bi-download me-1"></i><%= t('admin.ui.m994') %>
+                <% end %>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% end %>
+
+    <% if @center_available && @plugins.empty? %>
+      <div class="col-12">
+        <div class="text-center text-muted py-5">
+          <i class="bi bi-box-seam d-block fs-1 mb-2"></i>
+          <p><%= t('admin.ui.m1002') %></p>
+        </div>
+      </div>
+    <% end %>
+  <% else %>
+    <% @themes.each do |market_theme| %>
+      <% local = @local_themes[market_theme["identifier"]] %>
+      <% installed = local.present? && local.identifier != Theme::BUILTIN_IDENTIFIER %>
+      <% upgradable = installed && local.version != market_theme["version"].to_s %>
+      <div class="col-md-6 col-xl-4">
+        <div class="card-admin card h-100">
+          <div class="card-body d-flex flex-column">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+              <strong class="d-flex align-items-center gap-2">
+                <% if market_theme["preview_color"].present? %>
+                  <span style="display:inline-block;width:14px;height:14px;border-radius:4px;background:<%= market_theme["preview_color"] %>;border:1px solid rgba(0,0,0,.1);"></span>
+                <% end %>
+                <%= market_theme["name"] %>
+              </strong>
+              <span class="badge bg-primary-subtle text-primary">v<%= market_theme["version"] %></span>
+            </div>
+            <div class="text-muted small mb-2">
+              <code><%= market_theme["identifier"] %></code>
+              <% if market_theme["author"].present? %> · <%= market_theme["author"] %><% end %>
+            </div>
+            <p class="text-muted small flex-grow-1"><%= truncate(market_theme["description"].to_s, length: 120) %></p>
+            <div class="d-flex justify-content-between align-items-center mt-2">
+              <small class="text-muted">
+                <i class="bi bi-download me-1"></i><%= market_theme["downloads"].to_i %>
+              </small>
+              <% if upgradable %>
+                <%= button_to admin_plugin_center_install_theme_path(market_theme["identifier"]), method: :post,
+                      params: { version: market_theme["version"] },
+                      class: "btn btn-sm btn-warning", title: t('admin.ui.m991'),
+                      data: { confirm: t('admin.ui.m1015') } do %>
+                  <i class="bi bi-arrow-repeat me-1"></i><%= t('admin.ui.m991') %>
+                <% end %>
+              <% elsif installed %>
+                <span class="badge bg-success"><%= t('admin.ui.m993') %> v<%= local.version %></span>
+              <% else %>
+                <%= button_to admin_plugin_center_install_theme_path(market_theme["identifier"]), method: :post,
+                      params: { version: market_theme["version"] },
+                      class: "btn btn-sm btn-primary", title: t('admin.ui.m1016'),
+                      data: { confirm: t('admin.ui.m1017') } do %>
+                  <i class="bi bi-download me-1"></i><%= t('admin.ui.m1016') %>
+                <% end %>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% end %>
+
+    <% if @center_available && @themes.empty? %>
+      <div class="col-12">
+        <div class="text-center text-muted py-5">
+          <i class="bi bi-palette d-block fs-1 mb-2"></i>
+          <p><%= t('admin.ui.m1018') %></p>
+        </div>
+      </div>
+    <% end %>
+  <% end %>
+</div>

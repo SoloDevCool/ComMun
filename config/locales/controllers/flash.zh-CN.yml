@@ -1,0 +1,99 @@
+zh-CN:
+  flash:
+    join_comma: "，"
+    deleted: "已删除"
+    forbidden: "无权操作"
+    chat_groups:
+      disabled: "交流群功能未开启"
+    comments:
+      no_permission: "没有权限在该版块评论"
+      reply_success: "回复成功"
+      created: "评论成功"
+      blank: "内容不能为空或过短"
+      login_only_enabled: "已设为仅登录可见"
+      login_only_disabled: "已取消仅登录可见"
+    license_verification:
+      not_verified: "License 未验证，无法修改此设置。请先前往系统设置页面粘贴有效的许可证文件完成离线激活。"
+    courses:
+      not_found: "课程不存在或已下架"
+      no_permission: "您没有观看该课程的权限，请联系管理员获取授权"
+      login_required: "请先登录后再观看课程视频"
+      no_lessons: "该课程暂无课时内容"
+      disabled: "课程功能已关闭"
+    honors:
+      disabled: "荣誉榜功能已关闭"
+    kols:
+      disabled: "KOL达人功能已关闭"
+    polls:
+      created: "投票创建成功"
+      failed: "投票创建失败：%{errors}"
+      closed: "投票已关闭"
+      reopened: "投票已重新开启"
+      deleted: "投票已删除"
+    profiles:
+      avatar_failed: "头像上传失败，请重试"
+      avatar_updated: "头像更新成功"
+      avatar_required: "请选择头像文件"
+      demo_username: "演示站模式下，管理员账号不支持修改用户名"
+      username_updated: "用户名修改成功"
+      demo_password: "演示站模式下，管理员账号不支持修改密码"
+      password_updated: "密码修改成功"
+      privacy_updated: "隐私设置已更新"
+    qb_user_questions:
+      submitted: "题目提交成功，等待管理员审核"
+    question_banks:
+      invalid_mode: "无效的练习模式"
+      daily_limit: "今日已练过，明天再来吧！"
+      chapter_empty: "该章节暂无题目"
+      login_required: "请先登录后查看错题本"
+      no_wrong_questions: "暂无错题，继续保持！"
+      disabled: "题库功能已关闭"
+      subject_not_found: "未找到该考试科目"
+    shop:
+      item_not_found: "商品不存在"
+      item_unavailable: "商品已下架或售罄"
+      domain_required: "请填写域名"
+      insufficient_points: "酷能量不足，需要 %{price} 酷能量，当前余额 %{balance}"
+      purchase_failed: "购买失败：%{message}"
+      purchased: "购买成功！已消耗 %{price} 酷能量"
+      disabled: "能量商城功能已关闭"
+    tools:
+      disabled: "工具集功能已关闭"
+    topics:
+      no_post_permission: "您没有发帖权限，请联系管理员开通"
+      created: "主题发布成功"
+      updated: "主题更新成功"
+      deleted: "主题已删除"
+      delete_failed: "删除失败"
+      keyword_required: "请输入搜索关键词"
+      pinned: "已置顶"
+      unpinned: "已取消置顶"
+      invalid_points: "请输入有效的酷能量数量"
+      cannot_unlock_own: "不能解锁自己的内容"
+      unlocked: "解锁成功"
+    omniauth:
+      failed: "第三方登录失败"
+      expired: "登录信息已过期，请重新登录"
+      invitation_required: "请输入邀请码"
+      invitation_invalid: "邀请码无效或已过期"
+      invitation_limit: "邀请码已达到使用上限"
+      sign_in_failed: "%{kind} 登录失败，请重试"
+    passwords:
+      verified: "验证成功，请设置新密码"
+    users:
+      profile_private: "该用户主页未公开"
+    blocks:
+      created: "已屏蔽该用户"
+      removed: "已取消屏蔽"
+    favorites:
+      created: "已收藏"
+      removed: "已取消收藏"
+      not_found: "未收藏"
+    follows:
+      created: "关注成功"
+      removed: "已取消关注"
+    node_follows:
+      created: "已关注 %{name}"
+      removed: "已取消关注 %{name}"
+    notifications:
+      marked_all_as_read: "已全部标记为已读"

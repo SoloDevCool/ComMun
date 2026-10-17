@@ -1,0 +1,8 @@
+{
+  "identifier": "kols",
+  "name": "KOL达人",
+  "version": "1.0.0",
+  "description": "KOL达人展示与管理功能，支持达人卡片展示、Excel批量导入、邮件邀约等",
+  "author": "AIBBS",
+  "homepage": ""
+}

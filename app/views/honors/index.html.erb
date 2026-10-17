@@ -1,0 +1,125 @@
+<% content_for :title, "荣誉榜 - #{site_name}" %>
+<% content_for :head do %>
+  <%= seo_meta_tags(title: "荣誉榜 - #{site_name}", description: "表彰社区杰出贡献者，每一份付出都值得被看见，每一次贡献都值得被铭记。") %>
+  <style>
+    .honor-card{background:var(--bg-card);border-radius:.75rem;border:1px solid var(--border-color);transition:all .25s ease;overflow:hidden}
+    .honor-card:hover{border-color:var(--border-node-card-hover);background:var(--bg-card-hover);box-shadow:0 8px 24px var(--shadow-card);transform:translateY(-3px)}
+    [data-bs-theme="dark"] .honor-card:hover{border-color:rgba(255,255,255,.15);box-shadow:0 8px 24px rgba(0,0,0,.4)}
+    .honor-card-body{padding:1.25rem}
+    .honor-card-footer{padding:1rem 1.25rem;border-top:1px solid var(--border-color)}
+    .honor-user-info{display:flex;align-items:center;gap:.75rem;margin-bottom:1rem}
+    .honor-user-avatar-wrap{width:48px;height:48px;flex-shrink:0;border-radius:8px;padding:2.5px;background:linear-gradient(135deg,#f59e0b,#f97316,#ef4444)}
+    .honor-user-avatar-wrap img,.honor-user-avatar-wrap div{width:100%;height:100%;border-radius:8px;object-fit:cover}
+    .honor-user-name{font-size:.95rem;font-weight:700;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .honor-date{font-size:.78rem;color:var(--text-muted)}
+    .honor-certificate-link{display:block;text-decoration:none;border-radius:.6rem;overflow:hidden;transition:opacity .2s;cursor:zoom-in}
+    .honor-certificate-link:hover{opacity:.9}
+    .honor-certificate-img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:.6rem;border:1px solid var(--border-color)}
+    .honor-certificate-placeholder{width:100%;aspect-ratio:4/3;border-radius:.6rem;background:var(--bg-input);border:2px dashed var(--border-color-stronger);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:var(--text-faint);font-size:.82rem}
+    .honor-certificate-placeholder i{font-size:1.5rem;opacity:.5}
+    .honor-title{font-size:.92rem;font-weight:700;color:var(--text-primary)}
+    .honor-desc{font-size:.8rem;color:var(--text-muted);line-height:1.55;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  </style>
+<% end %>
+
+<div class="container-lg py-4">
+  <!-- 页头 -->
+  <div class="d-flex align-items-center justify-content-between mb-2">
+    <h4 class="fw-bold mb-0" style="font-size:1.15rem">
+      <i class="bi bi-trophy me-1" style="color:#f59e0b"></i>荣誉榜
+    </h4>
+    <span class="text-muted" style="font-size:0.82rem">表彰社区杰出贡献者</span>
+  </div>
+  <p class="text-muted mb-4" style="font-size:0.85rem">
+    每一份付出都值得被看见，每一次贡献都值得被铭记。以下是为社区做出突出贡献的用户，他们用热情和才华点亮了社区。
+  </p>
+
+  <% if @honors.any? %>
+    <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4">
+      <% @honors.each do |honor| %>
+        <div class="col">
+          <div class="honor-card h-100 d-flex flex-column">
+            <div class="honor-card-body flex-grow-1">
+              <!-- 用户信息 -->
+              <div class="honor-user-info">
+                <% if honor.avatar_url.present? %>
+                  <div class="honor-user-avatar-wrap">
+                    <img src="<%= honor.avatar_url %>" alt="<%= honor.display_name %>" loading="lazy">
+                  </div>
+                <% else %>
+                  <div class="honor-user-avatar-wrap">
+                    <div class="d-flex align-items-center justify-content-center text-white fw-bold" style="background:#f59e0b">
+                      <%= honor.display_name[0] %>
+                    </div>
+                  </div>
+                <% end %>
+                <div style="flex:1;min-width:0">
+                  <h6 class="honor-user-name mb-0"><%= honor.display_name %></h6>
+                  <% if honor.awarded_at.present? %>
+                    <span class="honor-date"><i class="bi bi-calendar3 me-1"></i><%= honor.awarded_at.strftime('%Y年%m月') %></span>
+                  <% end %>
+                </div>
+              </div>
+
+              <!-- 奖状图片 -->
+              <% if honor.certificate_image.present? %>
+                <a href="<%= honor.certificate_image %>" target="_blank" rel="noopener noreferrer" class="honor-certificate-link" title="点击查看大图">
+                  <img src="<%= honor.certificate_image %>" alt="<%= honor.title %>" class="honor-certificate-img" loading="lazy">
+                </a>
+              <% else %>
+                <div class="honor-certificate-placeholder">
+                  <i class="bi bi-image"></i>
+                  <span>暂无奖状图片</span>
+                </div>
+              <% end %>
+            </div>
+
+            <!-- 奖项信息 -->
+            <div class="honor-card-footer">
+              <h5 class="honor-title mb-1">
+                <i class="bi bi-award-fill text-warning me-1"></i><%= honor.title %>
+              </h5>
+              <% if honor.description.present? %>
+                <p class="honor-desc mb-0"><%= honor.description %></p>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="text-center text-muted py-5">
+      <i class="bi bi-trophy d-block" style="font-size:2.5rem;margin-bottom:0.5rem;opacity:0.5"></i>
+      <p>暂无荣誉记录，敬请期待</p>
+    </div>
+  <% end %>
+</div>
+
+<!-- Lightbox 放大查看 -->
+<div class="modal fade" id="honorLightbox" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered">
+    <div class="modal-content bg-transparent border-0 shadow-none">
+      <div class="modal-body p-2 text-center position-relative">
+        <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-2 z-3" data-bs-dismiss="modal" aria-label="Close"
+          style="filter:drop-shadow(0 1px 3px rgba(0,0,0,0.5))"></button>
+        <img id="honorLightboxImg" src="" alt="" class="img-fluid rounded" style="max-height:85vh;object-fit:contain;">
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  var lightbox = document.getElementById('honorLightbox');
+  if (!lightbox) return;
+  var lightboxImg = document.getElementById('honorLightboxImg');
+
+  document.querySelectorAll('.honor-certificate-link').forEach(function(link) {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      lightboxImg.src = this.href || this.querySelector('img').src;
+      new bootstrap.Modal(lightbox).show();
+    });
+  });
+})();
+</script>

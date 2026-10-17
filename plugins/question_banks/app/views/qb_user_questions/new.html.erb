@@ -1,0 +1,138 @@
+<% content_for :title, "贡献题目 - #{@qb_exam.name} - 题库 - #{site_name}" %>
+
+<div class="container-lg py-4">
+  <div class="d-flex align-items-center gap-2 mb-4">
+    <a href="<%= question_bank_path(@qb_exam) %>" class="qb-back-btn">
+      <i class="bi bi-arrow-left"></i>
+    </a>
+    <h4 class="fw-bold mb-0" style="font-size:1.1rem">
+      贡献题目
+      <span class="text-muted fw-normal" style="font-size:0.85rem">- <%= @qb_exam.name %></span>
+    </h4>
+  </div>
+
+  <div class="alert alert-info rounded-3 py-3 mb-4 d-flex align-items-center">
+    <i class="bi bi-info-circle-fill me-2 fs-5 flex-shrink-0 text-primary"></i>
+    <div>
+      <div class="fw-bold mb-1">题目贡献说明</div>
+      <div class="text-muted" style="font-size:0.85rem">提交的题目需要管理员审核通过后才会收录到题库中，请确保题目内容准确、答案正确。</div>
+    </div>
+  </div>
+
+  <div style="max-width:760px">
+    <div class="card border-0 shadow-sm rounded-3">
+      <div class="card-body p-4">
+        <%= form_with model: [@qb_exam, @qb_question], url: question_bank_questions_path(@qb_exam), local: true do |f| %>
+          <% if @qb_question.errors.any? %>
+            <div class="alert alert-danger rounded-3 py-2 mb-3">
+              <i class="bi bi-exclamation-circle me-1"></i>
+              <ul class="mb-0 ms-3">
+                <% @qb_question.errors.full_messages.each do |msg| %>
+                  <li><%= msg %></li>
+                <% end %>
+              </ul>
+            </div>
+          <% end %>
+
+          <div class="row g-3 mb-3">
+            <div class="col-md-4">
+              <%= f.label :question_type, "题型", class: "form-label fw-semibold small text-muted" %>
+              <%= f.select :question_type, QbQuestion::QUESTION_TYPE_LABELS.invert.to_a, {}, class: "form-select rounded-3", onchange: "toggleOptions()" %>
+            </div>
+            <div class="col-md-8">
+              <%= f.label :category, "分类/章节", class: "form-label fw-semibold small text-muted" %>
+              <div class="d-flex gap-2">
+                <%= f.text_field :category, class: "form-control rounded-3", placeholder: "例如：数据结构", list: "category-list" %>
+                <datalist id="category-list">
+                  <% @qb_exam.qb_questions.approved.pluck(:category).uniq.compact.each do |cat| %>
+                    <option value="<%= cat %>">
+                  <% end %>
+                </datalist>
+              </div>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <%= f.label :content, "题目内容", class: "form-label fw-semibold small text-muted" %>
+            <%= f.text_area :content, class: "form-control rounded-3", rows: 4, placeholder: "输入题目内容..." %>
+          </div>
+
+          <div class="mb-3" id="options-section">
+            <%= f.label :options, "选项", class: "form-label fw-semibold small text-muted" %>
+            <div class="row g-2 mb-2" id="options-inputs">
+              <div class="col-md-6"><div class="input-group"><span class="input-group-text rounded-start-3 fw-bold">A</span><input type="text" name="options_a" class="form-control rounded-end-3" placeholder="选项 A"></div></div>
+              <div class="col-md-6"><div class="input-group"><span class="input-group-text rounded-start-3 fw-bold">B</span><input type="text" name="options_b" class="form-control rounded-end-3" placeholder="选项 B"></div></div>
+              <div class="col-md-6"><div class="input-group"><span class="input-group-text rounded-start-3 fw-bold">C</span><input type="text" name="options_c" class="form-control rounded-end-3" placeholder="选项 C"></div></div>
+              <div class="col-md-6"><div class="input-group"><span class="input-group-text rounded-start-3 fw-bold">D</span><input type="text" name="options_d" class="form-control rounded-end-3" placeholder="选项 D"></div></div>
+            </div>
+            <input type="hidden" name="qb_question[options]" id="question_options_value" value="[]">
+          </div>
+
+          <div class="row g-3 mb-3">
+            <div class="col-md-6">
+              <%= f.label :answer, "正确答案", class: "form-label fw-semibold small text-muted" %>
+              <div id="answer-choice-section">
+                <%= f.select :answer, [["A", 0], ["B", 1], ["C", 2], ["D", 3]], {}, class: "form-select rounded-3" %>
+              </div>
+              <div id="answer-judge-section" class="d-none">
+                <%= f.select :answer, [["正确", 1], ["错误", 0]], {}, class: "form-select rounded-3" %>
+              </div>
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <%= f.label :explanation, "答案解析（可选）", class: "form-label fw-semibold small text-muted" %>
+            <%= f.text_area :explanation, class: "form-control rounded-3", rows: 2, placeholder: "输入答案解析..." %>
+          </div>
+
+          <div class="d-flex gap-2">
+            <%= f.submit "提交题目", class: "btn btn-primary rounded-pill px-4" %>
+            <%= link_to "取消", question_bank_path(@qb_exam), class: "btn btn-outline-secondary rounded-pill px-4" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function toggleOptions() {
+  var type = document.querySelector('#qb_question_question_type').value;
+  var optSection = document.getElementById('options-section');
+  var choiceAnswer = document.getElementById('answer-choice-section');
+  var judgeAnswer = document.getElementById('answer-judge-section');
+  if (type === '2') {
+    optSection.classList.add('d-none');
+    choiceAnswer.classList.add('d-none');
+    choiceAnswer.querySelector('select').disabled = true;
+    judgeAnswer.classList.remove('d-none');
+    judgeAnswer.querySelector('select').disabled = false;
+  } else {
+    optSection.classList.remove('d-none');
+    choiceAnswer.classList.remove('d-none');
+    choiceAnswer.querySelector('select').disabled = false;
+    judgeAnswer.classList.add('d-none');
+    judgeAnswer.querySelector('select').disabled = true;
+  }
+}
+toggleOptions();
+
+document.querySelector('form').addEventListener('submit', function(e) {
+  var type = document.querySelector('#qb_question_question_type').value;
+  var optValue = document.getElementById('question_options_value');
+  if (type !== '2') {
+    var inputs = document.querySelectorAll('#options-inputs input[type="text"]');
+    var options = [];
+    inputs.forEach(function(input) {
+      if (input.value.trim()) options.push(input.value.trim());
+    });
+    optValue.value = JSON.stringify(options);
+    if (options.length < 2) {
+      e.preventDefault();
+      alert('请至少填写 2 个选项');
+    }
+  } else {
+    optValue.value = JSON.stringify([]);
+  }
+});
+</script>

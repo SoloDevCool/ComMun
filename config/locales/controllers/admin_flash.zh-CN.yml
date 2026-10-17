@@ -1,0 +1,320 @@
+zh-CN:
+  admin:
+    flash:
+      m003: KOL 创建成功
+      m004: KOL 删除成功
+      m005: KOL 更新成功
+      m006: KOL达人插件未启用，请在插件管理中启用
+      m007: License 未验证，无法修改设置
+      m008: License 未验证，无法修改设置。请先前往系统设置页面配置有效的 License Key。
+      m009: 不能对自己进行此操作
+      m010: 不能封禁自己
+      m011: 主题「%{name}」已激活
+      m012: 主题「%{name}」已删除
+      m013: 主题「%{name}」安装成功
+      m015: '主题安装失败: %{message}'
+      m016: 交流群「%{name}」创建成功
+      m017: 交流群「%{name}」已删除
+      m018: 交流群「%{name}」更新成功
+      m019: 仅支持 .xlsx 格式的 Excel 文件
+      m020: '今日已调度 %{count} 条任务，已达上限'
+      m021: 任务已重新加入执行队列
+      m023: 内置默认主题不可删除
+      m024: 分类「%{name}」创建成功
+      m025: 分类「%{name}」更新成功
+      m026: 分类「%{name}」已删除
+      m029: 删除失败
+      m031: 加入失败：该用户已是该版块的学员
+      m033: 友链创建成功
+      m034: 友链删除成功
+      m035: 友链更新成功
+      m037: 商品创建成功
+      m038: 商品已删除
+      m039: 商品更新成功
+      m040: 外观设置已保存
+      m041: 学员评价已删除
+      m042: 学员评价已更新
+      m043: 学员评价已添加
+      m045: 导入失败：Excel 模板缺少「名称」列，请使用正确的导入模板
+      m046: 工具「%{name}」创建成功
+      m047: 工具「%{name}」更新成功
+      m048: 工具「%{name}」已删除
+      m049: 已停用主题，恢复默认样式
+      m050: '已删除 %{count} 个话题'
+      m051: '已删除运营账号 %{email}'
+      m052: '已封禁用户 %{email}'
+      m053: '已将 %{name} 加入 %{node_name} 版块'
+      m054: '已将 %{name} 移出 %{node_name} 版块'
+      m055: '已将 %{email} 的角色修改为%{role}'
+      m056: '已将 %{count} 条等待中的任务重新加入执行队列'
+      m057: '已将 %{replaced}/%{total} 个运营账号头像替换为 %{method}'
+      m058: 已恢复默认主题
+      m059: '已批量拒绝 %{count} 道题目'
+      m060: '已批量拒绝 %{count} 条内容'
+      m061: '已批量通过 %{count} 道题目'
+      m062: '已批量通过 %{count} 条内容'
+      m063: '已授权 %{name} 观看 %{title}'
+      m064: '已撤销 %{name} 观看 %{title} 的权限'
+      m066: '已解封用户 %{email}'
+      m067: '成功为 %{generated}/%{missing_count} 个运营账号生成头像'
+      m069: '成功生成 %{count} 个邀请码'
+      m070: 所有运营账号均已拥有头像，无需生成
+      m071: 授权失败：%{message}
+      m072: 插件「%{name}」安装成功
+      m073: 插件「%{name}」已启用
+      m074: 插件「%{name}」已禁用
+      m075: 插件「%{name}」已卸载
+      m076: 撤销失败
+      m077: 操作失败
+      m078: '方向「%{name}」下还有 %{count} 门课程，请先迁移或删除相关课程'
+      m079: 方向「%{name}」创建成功
+      m080: 方向「%{name}」已删除
+      m081: 方向「%{name}」更新成功
+      m082: 无效的封禁时长
+      m083: 无效的排序数据
+      m084: 无效的角色
+      m085: 无权访问此页面
+      m086: 无权访问管理控制台
+      m087: 无法从 theme.json 读取主题标识
+      m088: 暂无运营账号
+      m091: '检测异常: %{message}'
+      m092: 没有等待中的任务
+      m093: 没有需要替换的 COS 图片链接
+      m094: '测试数据导入失败: %{message}'
+      m095: '测试数据导入完成: %{summary}'
+      m097: 版块「%{name}」创建成功
+      m098: 版块「%{name}」已删除
+      m099: 版块「%{name}」更新成功
+      m101: 移除失败
+      m102: 章节「%{title}」创建成功
+      m103: 章节「%{title}」已删除
+      m104: 章节「%{title}」更新成功
+      m105: 考试科目「%{name}」创建成功
+      m106: 考试科目「%{name}」已删除
+      m107: 考试科目「%{name}」更新成功
+      m108: 自动创建话题功能未启用，请先在系统设置中配置
+      m109: 自动评论功能未启用，请先在系统设置中配置
+      m110: 草稿「%{title}」已删除
+      m111: 草稿「%{title}」已更新
+      m112: 草稿已保存
+      m113: 荣誉榜插件未启用
+      m114: 荣誉记录创建成功
+      m115: 荣誉记录已删除
+      m116: 荣誉记录更新成功
+      m117: 讲师「%{name}」创建成功
+      m118: 讲师「%{name}」已删除
+      m119: 讲师「%{name}」更新成功
+      m120: 设置保存成功
+      m121: 设置已保存
+      m122: 评论已删除
+      m123: 话题「%{title}」已删除
+      m124: 话题「%{topic_title}」已通过运营账号「%{user_name}」发布
+      m125: 该用户已有该课程的授权
+      m126: 请先配置并启用 COS 存储
+      m127: 请先配置腾讯云 TMS 的 SecretId 和 SecretKey
+      m128: 请至少选择一个话题
+      m129: 请至少选择一位 KOL 达人
+      m130: 请至少选择一位用户
+      m131: 请至少选择一条内容
+      m132: 请输入 License Key
+      m133: 请输入测试文本
+      m134: 请选择要上传的主题 ZIP 文件
+      m135: 请选择要导入的 Excel 文件
+      m136: 请选择要操作的题目
+      m137: 课时「%{title}」创建成功
+      m138: 课时「%{title}」已删除
+      m139: 课时「%{title}」更新成功
+      m140: 课程「%{title}」创建成功
+      m141: 课程「%{title}」已删除
+      m142: 课程「%{title}」更新成功
+      m143: 课程不存在
+      m144: 邀请码已删除
+      m145: 邮件主题和内容不能为空
+      m146: 配置保存失败
+      m147: 配置已保存
+      m148: 题目「%{question}」已通过审核
+      m149: 题目创建成功
+      m150: 题目已删除
+      m151: 题目已拒绝
+      m152: 题目更新成功
+      m153: 默认主题不存在，无法恢复
+    ui:
+      status: 状态
+      actions: 操作
+      sort_order: 排序
+      cancel: 取消
+      enable: 启用
+      disable: 禁用
+      close: 关闭
+      lower_is_first: 数字越小越靠前
+      preview: 预览
+      edit: 编辑
+      delete: 删除
+      save: 保存
+      save_changes: 保存修改
+      show_on_frontend: 在前台显示
+      hide: 隐藏
+      show: 显示
+      category: 分类
+      upload_failed_retry: 上传失败，请重试
+      max_500_chars: 最多 500 个字符
+      generate: 生成
+      generate_failed: 生成失败
+      email: 邮箱
+      description: 描述
+      error: 错误
+      theme_color: 主题色
+      image_max_5mb: 图片大小不能超过 5MB
+      confirm_delete: 确定删除
+      comment_content: 评论内容
+      failed: 失败
+      url: 链接
+      name: 名称
+      node: 版块
+      unknown_error: 未知错误
+      uploading: 上传中
+      image: 图片
+      icon: 图标
+      add: 添加
+      address: 地址
+      title: 标题
+      user: 用户
+      view: 查看
+      ordered_list: 有序列表
+      unordered_list: 无序列表
+      quote: 引用
+      code_block: 代码块
+      select_category: 请选择分类
+      italic: 斜体
+      bold: 粗体
+      save_draft: 保存草稿
+      upload_plugin: 上传插件
+      icon_image: 图标图片
+      expires_at: 过期时间
+      direction: 方向
+      author: 作者
+      difficulty: 难度
+      save_settings: 保存设置
+      completed: 已完成
+      question_content: 题目内容
+      topic: 话题
+      type: 类型
+      subject_name: 科目名称
+      rating: 评分
+      reject: 拒绝
+      review_content: 评价内容
+      loading: 加载中
+      pending_review: 待审核
+      test: 测试
+      manage: 管理
+      registered_at: 注册时间
+      role: 角色
+      node_name: 版块名称
+      identifier: 标识符
+      verify_license: 验证授权
+      comment: 评论
+      category_name: 分类名称
+      regular_user: 普通用户
+      parse: 解析
+      instructor: 讲师
+      tags: 标签
+      one_click_replace: 一键替换
+      instructor_name: 讲师姓名
+      forward: 转发
+      avatar: 头像
+      text: 文本
+      sort_order_hint: 排序（越小越靠前）
+      strikethrough: 删除线
+      inline_code: 行内代码
+      divider: 分割线
+      table: 表格
+      available: 可用
+      username: 用户名
+      upload_image: 上传图片
+      never_expires: 永不过期
+      disabled_badge: 已禁用
+      expired: 已过期
+      award_name: 奖项名称
+      awarded_on: 获奖日期
+      migrate_to_cos: 迁移到 COS
+      clear_search: 清除搜索
+      waiting_generation: 等待生成
+      bio: 简介
+      migrate_to_local: 迁移回本地
+      remove: 移除
+      own_topic: 所属话题
+      displaying: 展示中
+      pricing: 定价
+      on_shelf: 上架
+      in_use: 使用中
+      os: 操作系统
+      browser: 浏览器
+      location: 地理位置
+      default_icon: 默认图标
+      ad: 广告
+      password_registration: 密码注册
+      own_category: 所属分类
+      new_course: 新建课程
+      course: 课程
+      tool_name: 工具名称
+      tool_description: 工具描述
+      website_url: 官网链接
+      remove_image: 移除图片
+      icon_preview: 图标预览
+      version: 版本
+      paid_member: 付费会员
+      external_url: 外部链接
+      uninstall: 卸载
+      select_user: 请选择用户
+      award_user: 获奖用户
+      add_honor: 添加荣誉
+      no_content: 暂无内容
+      site_name: 网站名称
+      site_url: 网站地址
+      site_description: 网站描述
+      footer_text: 页脚文字
+      add_friend_link: 添加友链
+      email_subject: 邮件主题
+      email_content_html: 邮件内容（HTML）
+      new_tool: 新建工具
+      captcha_management: 验证管理
+      invalid_url: 请输入有效的 URL 地址
+      tags_input_hint: 输入标签后按回车添加
+      categories_input_hint: 输入分类后按回车添加
+      upload_image_file: 请上传图片文件
+      tool_desc_hint: 简要描述该工具的功能和特点
+      icon_drop_hint: 点击或拖拽上传图标图片
+      category_desc: 分类描述
+      category_desc_hint: 简要描述该分类的用途
+      instructor_bio_hint: 讲师的个人介绍
+      job_title: 职称/头衔
+      sort_weight: 排序权重
+      award_desc: 获奖描述
+      award_image_url: 奖状图片地址
+      award_desc_optional: 获奖描述（选填）
+      start_import: 开始导入
+      kol_invitation: 达人邀约
+      records: 条记录
+      achievement_condition: 达成条件
+      storage_local: 本地
+      storage_cos: 对象存储
+      play_key: 播放密钥
+      select_all_toggle: 全选/取消
+      example: 示例：
+      waiting: 等待中
+      running: 执行中
+      retry: 重试
+      upload_failed: '上传失败:'
+      upload_failed_cn: 上传失败：
+      characters: 字符
+      days: 天
+      months: 月
+      hours: 时
+      minutes: 分
+      seconds: 秒
+      star_unit: 星
+      items_unit: 条
+      people_unit: 人
+      bits_unit: 位
+      unit_ge: 个
+      ago_suffix: 前

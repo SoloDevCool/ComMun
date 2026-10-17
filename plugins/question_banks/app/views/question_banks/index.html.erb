@@ -1,0 +1,124 @@
+<% content_for :title, "题库 - #{site_name}" %>
+<% content_for :head do %>
+  <%= seo_meta_tags(title: "题库 - #{site_name}", description: "#{site_name}题库收录多种考试科目的历年真题与模拟题，助你高效备考。") %>
+<% end %>
+
+<div class="container-lg py-4">
+  <!-- 页头 -->
+  <div class="d-flex align-items-center justify-content-between mb-2">
+    <h4 class="fw-bold mb-0" style="font-size:1.15rem">
+      <i class="bi bi-journal-bookmark me-1" style="color:#6366f1"></i>题库
+    </h4>
+    <span class="text-muted" style="font-size:0.82rem">多科目题库，高效备考</span>
+  </div>
+  <!-- 考试级别分类 -->
+  <div class="qb-exam-type-nav mb-4">
+    <div class="d-flex flex-wrap gap-2">
+      <a href="#all" class="qb-exam-type-btn active" data-type="all">
+        <i class="bi bi-grid-3x3-gap me-1"></i>全部科目
+      </a>
+      <% @exam_types.each_with_index do |type, i| %>
+        <a href="#type-<%= i %>" class="qb-exam-type-btn" data-type="<%= i %>">
+          <i class="bi <%= type[:icon] %> me-1"></i><%= type[:name] %>
+          <span class="qb-exam-type-count"><%= type[:exams].length %></span>
+        </a>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- 考试科目列表 -->
+  <% @exam_types.each_with_index do |exam_type, type_index| %>
+    <div class="qb-type-section mb-4" id="type-<%= type_index %>" data-type-index="<%= type_index %>">
+      <div class="d-flex align-items-center gap-2 mb-3">
+        <span class="qb-section-icon" style="background-color: <%= exam_type[:color] %>15; color: <%= exam_type[:color] %>">
+          <i class="bi <%= exam_type[:icon] %>"></i>
+        </span>
+        <div>
+          <h5 class="fw-bold mb-0" style="font-size:1rem"><%= exam_type[:name] %></h5>
+          <span class="text-muted" style="font-size:0.78rem"><%= exam_type[:description] %> · 共 <%= exam_type[:question_count] %> 道题目</span>
+        </div>
+      </div>
+
+      <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-3">
+        <% exam_type[:exams].each do |exam| %>
+          <div class="col">
+            <div class="qb-exam-card h-100 d-flex flex-column">
+              <!-- 卡片头部 -->
+              <div class="qb-card-header d-flex align-items-center justify-content-between">
+                <span class="qb-card-code" style="background-color: <%= exam_type[:color] %>15; color: <%= exam_type[:color] %>">
+                  <%= exam[:code] %>
+                </span>
+                <span class="qb-card-count">
+                  <i class="bi bi-collection me-1"></i><%= exam[:question_count] %> 题
+                </span>
+              </div>
+              <!-- 卡片内容 -->
+              <div class="qb-card-body flex-grow-1">
+                <h6 class="qb-card-title mb-2"><%= exam[:name] %></h6>
+                <p class="qb-card-desc mb-3"><%= exam[:description] %></p>
+                <!-- 知识点标签 -->
+                <div class="d-flex flex-wrap gap-1">
+                  <% exam[:categories].first(4).each do |cat| %>
+                    <span class="qb-tag"><%= cat %></span>
+                  <% end %>
+                  <% if exam[:categories].length > 4 %>
+                    <span class="qb-tag qb-tag-more">+<%= exam[:categories].length - 4 %></span>
+                  <% end %>
+                </div>
+              </div>
+              <!-- 卡片底部 -->
+              <div class="qb-card-footer">
+                <a href="<%= question_bank_path(id: exam[:code]) %>" class="qb-card-action-start">
+                  <i class="bi bi-play-circle me-1"></i>开始练习
+                </a>
+                <a href="#" class="qb-card-action-more">
+                  <i class="bi bi-three-dots"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
+  <!-- 底部提示 -->
+  <div class="qb-footer-note text-center mt-5 mb-2">
+    <i class="bi bi-info-circle me-1"></i>
+    以上题目仅供学习参考，实际考试内容以官方发布为准。持续更新中，欢迎反馈纠错。
+  </div>
+</div>
+
+<script>
+(function() {
+  const typeBtns = document.querySelectorAll('.qb-exam-type-btn');
+  const typeSections = document.querySelectorAll('.qb-type-section');
+
+  typeBtns.forEach(btn => {
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();
+      const type = this.dataset.type;
+
+      typeBtns.forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+
+      if (type === 'all') {
+        typeSections.forEach(s => {
+          s.style.display = '';
+        });
+      } else {
+        typeSections.forEach(s => {
+          s.style.display = s.dataset.typeIndex === type ? '' : 'none';
+        });
+      }
+
+      if (type !== 'all') {
+        const target = document.getElementById('type-' + type);
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }
+    });
+  });
+})();
+</script>

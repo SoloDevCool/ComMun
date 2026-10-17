@@ -1,0 +1,69 @@
+en:
+  devise:
+    shared:
+      links:
+        sign_in: "Sign in"
+        sign_up: "Sign up"
+        forgot_your_password: "Forgot your password?"
+        didn_t_receive_confirmation_instructions: "Didn't receive confirmation instructions?"
+        didn_t_receive_unlock_instructions: "Didn't receive unlock instructions?"
+      mailer:
+        send_code: "Send code"
+        sending: "Sending..."
+        resend_in: "Resend in %{seconds}s"
+        invalid_email: "Please enter a valid email address"
+        network_error: "Network request failed, please try again later"
+        verification_code: "Email verification code"
+        verification_code_placeholder: "Enter the 6-digit code"
+    sessions:
+      new:
+        title: "Sign in"
+        email_or_username: "Username / Email"
+        email_or_username_placeholder: "Enter your username or email"
+        password: "Password"
+        password_placeholder: "Enter your password"
+        remember_me: "Remember me"
+        submit: "Sign in"
+        or: "or"
+        sign_in_with_provider: "Sign in with %{provider}"
+    registrations:
+      min_characters: "(at least %{count} characters)"
+      new:
+        title: "Sign up"
+        sign_up_with_username: "Sign up with username"
+        sign_up_with_email: "Sign up with email"
+        username: "Username"
+        username_placeholder: "2-20 characters, letters, numbers, underscores and CJK"
+        email: "Email"
+        email_placeholder: "Enter your email"
+        verification_code: "Email verification code"
+        invitation_code: "Invitation code"
+        invitation_code_placeholder: "Enter invitation code"
+        invitation_code_default_hint: "An invitation code is required to sign up, please ask an existing user"
+        password: "Password"
+        password_placeholder: "Enter your password"
+        password_confirmation: "Confirm password"
+        password_confirmation_placeholder: "Enter your password again"
+        submit: "Sign up"
+    passwords:
+      new:
+        title: "Forgot password"
+        description: "Enter your registered email, and reset your password after verification"
+        email: "Email"
+        email_placeholder: "Enter your registered email"
+        submit: "Verify and reset password"
+      edit:
+        title: "Reset password"
+        description: "Please enter your new password"
+        new_password: "New password"
+        new_password_placeholder: "Enter your new password"
+        confirm_new_password: "Confirm new password"
+        confirm_new_password_placeholder: "Enter your new password again"
+        submit: "Reset password"
+    mailer:
+      reset_password_instructions:
+        greeting: "Hello %{email}!"
+        intro: "We received a request to reset your password. Set a new password via the link below:"
+        reset_link: "Reset password"
+        valid_for: "This link is valid for 6 hours."
+        ignore: "If you didn't request this, please ignore this email and your password won't be changed."

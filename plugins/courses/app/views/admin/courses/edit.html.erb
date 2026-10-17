@@ -1,0 +1,706 @@
+<h4 class="text-dark fw-bold mb-4"><%= t('admin.ui.m709') %></h4>
+
+<div class="d-flex gap-2 mb-3">
+  <%= link_to admin_course_course_reviews_path(@course), class: "btn btn-outline-info rounded-pill px-3" do %>
+    <i class="bi bi-chat-square-text me-1"></i><%= t('admin.ui.m710') %>
+  <% end %>
+</div>
+
+<div class="row g-4">
+  <!-- 左侧：课程信息 -->
+  <div class="col-lg-4">
+    <div class="card card-admin position-lg-sticky" style="top:1rem">
+      <div class="card-body p-4">
+        <%= form_with model: [:admin, @course], local: true do |f| %>
+          <% if @course.errors.any? %>
+        <div class="alert alert-danger rounded-3 py-2">
+          <i class="bi bi-exclamation-circle me-1"></i>
+          <ul class="mb-0 ms-3">
+            <% @course.errors.full_messages.each do |msg| %>
+              <li><%= msg %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <div class="mb-3">
+        <%= f.label :title, t('admin.ui.m233'), class: "form-label fw-semibold small text-muted" %>
+        <%= f.text_field :title, class: "form-control form-control-lg rounded-3", placeholder: t('admin.ui.m235') %>
+      </div>
+
+      <div class="mb-3">
+        <%= f.label :description, t('admin.ui.m236'), class: "form-label fw-semibold small text-muted" %>
+        <%= f.text_area :description, class: "form-control rounded-3", rows: 3, placeholder: t('admin.ui.m237') %>
+        <div class="form-text"><%= t('admin.ui.m238') %></div>
+      </div>
+
+      <div class="row g-3 mb-3">
+        <div class="col-md-6">
+          <%= f.label :direction, t("admin.direction"), class: "form-label fw-semibold small text-muted" %>
+          <%= f.select :direction, CourseDirection.active.ordered.map { |d| [d.name, d.name] }, { prompt: t('admin.ui.m241') }, class: "form-select form-select-lg rounded-3" %>
+        </div>
+        <div class="col-md-6">
+          <%= f.label :difficulty, t("admin.difficulty"), class: "form-label fw-semibold small text-muted" %>
+          <%= f.select :difficulty, Course::DIFFICULTIES.map { |k, v| [v, k] }, {}, class: "form-select form-select-lg rounded-3" %>
+        </div>
+      </div>
+
+      <div class="row g-3 mb-3">
+        <div class="col-md-4">
+          <%= f.label :lessons_count, t('admin.ui.m242'), class: "form-label fw-semibold small text-muted" %>
+          <%= f.number_field :lessons_count, class: "form-control form-control-lg rounded-3", min: 0 %>
+        </div>
+        <div class="col-md-4">
+          <%= f.label :duration, t('admin.ui.m243'), class: "form-label fw-semibold small text-muted" %>
+          <%= f.text_field :duration, class: "form-control form-control-lg rounded-3" %>
+        </div>
+        <div class="col-md-4">
+          <%= f.label :students_count, t('admin.ui.m244'), class: "form-label fw-semibold small text-muted" %>
+          <%= f.number_field :students_count, class: "form-control form-control-lg rounded-3", min: 0 %>
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <%= f.label :instructor_id, t("admin.instructor"), class: "form-label fw-semibold small text-muted" %>
+        <%= f.collection_select :instructor_id, Instructor.ordered, :id, :name, { prompt: t('admin.ui.m245') }, class: "form-select form-select-lg rounded-3" %>
+      </div>
+
+      <div class="row g-3 mb-3">
+        <div class="col-md-6">
+          <%= f.label :color, t("admin.theme_color"), class: "form-label fw-semibold small text-muted" %>
+          <div class="d-flex gap-2 align-items-center">
+            <%= f.text_field :color, class: "form-control form-control-lg rounded-3", style: "max-width:160px" %>
+            <div id="colorPreview" class="rounded-2 border flex-shrink-0" style="width:44px;height:44px;background-color:<%= @course.color || '#6366f1' %>"></div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <%= f.label :icon, t("admin.icon"), class: "form-label fw-semibold small text-muted" %>
+          <div class="input-group">
+            <span class="input-group-text"><i id="iconPreview" class="bi <%= @course.icon || 'bi-book' %>"></i></span>
+            <%= f.text_field :icon, class: "form-control form-control-lg rounded-3" %>
+          </div>
+          <div class="form-text">Bootstrap Icons <%= t('admin.ui.m711') %></div>
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <%= f.label :cover, t('admin.ui.m247'), class: "form-label fw-semibold small text-muted" %>
+        <% if @course.cover.attached? %>
+          <div class="d-flex align-items-center gap-3 mb-2">
+            <div class="rounded-2 overflow-hidden" style="width:100px;height:50px">
+              <img src="<%= url_for(@course.cover.variant(resize_to_fill: [400, 200])) %>" class="w-100 h-100" style="object-fit:cover" alt="">
+            </div>
+            <label class="form-check">
+              <input type="checkbox" name="course[remove_cover]" value="1" class="form-check-input">
+              <span class="form-check-label" style="font-size:0.85rem"><%= t('admin.ui.m712') %></span>
+            </label>
+          </div>
+        <% end %>
+        <%= f.file_field :cover, class: "form-control form-control-lg rounded-3", accept: "image/*" %>
+        <div class="form-text"><%= t('admin.ui.m252') %></div>
+      </div>
+
+      <div class="row g-3 mb-4">
+        <div class="col-md-6">
+          <%= f.label :sort_order, t("admin.sort_order"), class: "form-label fw-semibold small text-muted" %>
+          <%= f.number_field :sort_order, class: "form-control form-control-lg rounded-3", min: 0 %>
+          <div class="form-text"><%= t('admin.lower_is_first') %></div>
+        </div>
+        <div class="col-md-6">
+          <%= f.label :is_active, t("admin.status"), class: "form-label fw-semibold small text-muted" %>
+          <div class="form-check form-switch mt-2">
+            <%= f.check_box :is_active, class: "form-check-input", style: "width:2.5em;height:1.5em" %>
+            <label class="form-check-label" for="course_is_active"><%= t('admin.show_on_frontend') %></label>
+          </div>
+        </div>
+      </div>
+
+      <div class="d-flex gap-2">
+        <%= f.submit t("admin.save_changes"), class: "btn btn-primary rounded-pill px-4" %>
+        <%= link_to t("admin.cancel"), admin_courses_path, class: "btn btn-outline-secondary rounded-pill px-4" %>
+      </div>
+    <% end %>
+      </div>
+    </div>
+  </div>
+
+  <!-- 右侧：<%= t('admin.ui.m713') %> -->
+  <div class="col-lg-8">
+  <div class="card card-admin">
+  <div class="card-header d-flex align-items-center justify-content-between" style="background:var(--bs-tertiary-bg)">
+    <h5 class="mb-0 fw-bold" style="font-size:0.95rem">
+      <i class="bi bi-list-ul me-1"></i><%= t('admin.ui.m713') %>
+      <span class="badge bg-secondary bg-opacity-25 text-dark ms-2" style="font-size:0.72rem">
+        <%= @course.course_chapters.count %> <%= t('admin.ui.m714') %> <%= @course.course_lessons.count %> <%= t('admin.ui.m254') %>
+      </span>
+    </h5>
+    <button class="btn btn-sm btn-outline-primary rounded-pill" data-bs-toggle="collapse" data-bs-target="#addChapterForm">
+      <i class="bi bi-plus-lg me-1"></i><%= t('admin.ui.m051') %>
+    </button>
+  </div>
+  <div class="card-body">
+    <!-- <%= t('admin.ui.m051') %>表单 -->
+    <div class="collapse mb-3" id="addChapterForm">
+      <div class="border rounded-3 p-3" style="background:var(--bs-tertiary-bg)">
+        <%= form_with model: [:admin, @course, CourseChapter.new], local: true, class: "row g-2 align-items-end" do |f| %>
+          <div class="col">
+            <%= f.label :title, t('admin.ui.m715'), class: "form-label small text-muted mb-1" %>
+            <%= f.text_field :title, class: "form-control form-control-sm", placeholder: t('admin.ui.m716') %>
+          </div>
+          <div class="col-auto" style="width:80px">
+            <%= f.label :sort_order, t("admin.sort_order"), class: "form-label small text-muted mb-1" %>
+            <%= f.number_field :sort_order, class: "form-control form-control-sm", min: 0 %>
+          </div>
+          <div class="col-auto">
+            <%= f.submit t("admin.add"), class: "btn btn-primary btn-sm rounded-pill px-3" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- 章<%= t('admin.ui.m254') %><%= t('admin.ui.m732') %> -->
+    <% if @course.course_chapters.ordered.any? %>
+      <% @course.course_chapters.ordered.each do |chapter| %>
+        <div class="border rounded-3 mb-3 overflow-hidden">
+          <!-- 章<%= t('admin.ui.m254') %>头 -->
+          <div class="d-flex align-items-center justify-content-between px-3 py-2" style="background:var(--bs-tertiary-bg)">
+            <div class="d-flex align-items-center gap-2">
+              <i class="bi bi-bookmark-fill" style="color:#6366f1;font-size:0.8rem"></i>
+              <span class="fw-semibold" style="font-size:0.88rem"><%= chapter.title %></span>
+              <span class="badge bg-light text-dark" style="font-size:0.68rem"><%= chapter.course_lessons.count %> <%= t('admin.ui.m254') %></span>
+            </div>
+            <div class="d-flex align-items-center gap-1">
+              <button class="btn btn-sm btn-outline-secondary py-0 px-1" data-bs-toggle="collapse" data-bs-target="#addLesson-<%= chapter.id %>">
+                <i class="bi bi-plus-lg"></i>
+              </button>
+              <button type="button" class="btn btn-sm btn-outline-danger py-0 px-1" title="<%= t('admin.ui.m717') %>"
+                      onclick="confirmDeleteChapter(this, '<%= j chapter.title %>', <%= chapter.course_lessons.where(lesson_type: 'video').where.not(video_url: [nil, '']).count %>)">
+                <i class="bi bi-trash"></i>
+              </button>
+              <%= form_with url: [:admin, @course, chapter], method: :delete, local: true, class: "d-none", id: "deleteChapterForm-#{chapter.id}" do %><% end %>
+            </div>
+          </div>
+
+          <!-- <%= t('admin.ui.m025') %><%= t('admin.ui.m607') %>表单 -->
+          <div class="collapse px-3 py-2 border-bottom" id="addLesson-<%= chapter.id %>" style="background:var(--bs-tertiary-bg)">
+            <%= form_with model: [:admin, @course, chapter, CourseLesson.new], local: true, id: "newLessonForm-#{chapter.id}" do |f| %>
+              <div class="row g-2 align-items-end mb-2">
+                <div class="col">
+                  <%= f.text_field :title, class: "form-control form-control-sm", placeholder: t('admin.ui.m718'), required: true %>
+                </div>
+                <div class="col-auto" style="width:100px">
+                  <%= f.select :lesson_type, CourseLesson::LESSON_TYPES.invert, {}, class: "form-select form-select-sm", onchange: "toggleNewLessonType('#{chapter.id}', this.value)" %>
+                </div>
+                <div class="col-auto" style="width:80px">
+                  <%= f.text_field :duration, class: "form-control form-control-sm", placeholder: t('admin.ui.m719') %>
+                </div>
+                <div class="col-auto">
+                  <div class="form-check form-switch mt-1">
+                    <%= f.check_box :is_free, class: "form-check-input" %>
+                    <label class="form-check-label" style="font-size:0.78rem;white-space:nowrap"><%= t('admin.ui.m055') %></label>
+                  </div>
+                </div>
+                <div class="col-auto" style="width:60px">
+                  <%= f.number_field :sort_order, class: "form-control form-control-sm", min: 0, value: chapter.course_lessons.count %>
+                </div>
+                <div class="col-auto">
+                  <%= f.submit t("admin.add"), class: "btn btn-primary btn-sm rounded-pill px-3" %>
+                </div>
+              </div>
+              <div id="newLessonContent-<%= chapter.id %>" style="display:none">
+                <div class="d-flex align-items-center gap-1 p-1 mb-1">
+                  <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-1" title="<%= t('admin.bold') %>" onclick="lessonInsertMd(this.form,'**','**')"><i class="bi bi-type-bold"></i></button>
+                  <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-1" title="<%= t('admin.italic') %>" onclick="lessonInsertMd(this.form,'*','*')"><i class="bi bi-type-italic"></i></button>
+                  <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-1" title="<%= t('admin.ui.m056') %>" onclick="lessonInsertMd(this.form,'`','`')"><i class="bi bi-code-slash"></i></button>
+                  <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-1" title="<%= t('admin.code_block') %>" onclick="lessonInsertMd(this.form,'\n```\n','\n```\n')"><i class="bi bi-file-code"></i></button>
+                  <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-1" title="<%= t('admin.url') %>" onclick="lessonInsertMd(this.form,'[','](url)')"><i class="bi bi-link-45deg"></i></button>
+                  <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-1" title="<%= t('admin.quote') %>" onclick="lessonInsertMd(this.form,'> ','')"><i class="bi bi-quote"></i></button>
+                  <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-1" title="<%= t('admin.unordered_list') %>" onclick="lessonInsertMd(this.form,'\n- ','')"><i class="bi bi-list-ul"></i></button>
+                  <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-1" title="<%= t('admin.ordered_list') %>" onclick="lessonInsertMd(this.form,'\n1. ','')"><i class="bi bi-list-ol"></i></button>
+                  <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-1" title="<%= t('admin.image') %>" onclick="this.form.querySelector('input[type=file]').click()"><i class="bi bi-image"></i></button>
+                  <input type="file" accept="image/*" class="d-none" onchange="lessonUploadImage(this)">
+                  <span class="ms-auto text-muted small" style="font-size:0.7rem"><i class="bi bi-markdown me-1"></i>Markdown</span>
+                </div>
+                <%= f.text_area :content, class: "form-control form-control-sm", rows: 10, placeholder: t('admin.ui.m057'), style: "font-family:'JetBrains Mono','Fira Code','Consolas',monospace;font-size:0.82rem;line-height:1.7;resize:vertical" %>
+              </div>
+            <% end %>
+          </div>
+
+          <!-- <%= t('admin.ui.m607') %><%= t('admin.ui.m732') %> -->
+          <% if chapter.course_lessons.ordered.any? %>
+            <% chapter.course_lessons.ordered.each do |lesson| %>
+              <div class="px-3 py-2 border-bottom" style="font-size:0.82rem">
+                <div class="d-flex align-items-center gap-2">
+                  <% icon_cls = lesson.lesson_type == 'video' ? 'bi-play-circle' : lesson.lesson_type == 'text' ? 'bi-file-text' : 'bi-patch-question' %>
+                  <i class="bi <%= icon_cls %>" style="color:var(--text-muted);font-size:0.85rem"></i>
+                  <span class="flex-grow-1"><%= lesson.title %></span>
+                  <span class="badge bg-light text-dark" style="font-size:0.62rem"><%= lesson.lesson_type_label %></span>
+                  <% if lesson.lesson_type == 'video' %>
+                    <button class="btn btn-sm btn-outline-secondary py-0 px-1" data-bs-toggle="collapse" data-bs-target="#editVideo-<%= lesson.id %>" title="<%= t('admin.ui.m720') %>">
+                      <i class="bi bi-film"></i>
+                    </button>
+                  <% elsif lesson.lesson_type == 'text' %>
+                    <button class="btn btn-sm btn-outline-secondary py-0 px-1" data-bs-toggle="collapse" data-bs-target="#editContent-<%= lesson.id %>" title="<%= t('admin.ui.m721') %>">
+                      <i class="bi bi-pencil-square"></i>
+                    </button>
+                  <% end %>
+                  <button type="button" class="btn btn-sm btn-outline-danger py-0 px-1" title="<%= t('admin.ui.m722') %>"
+                          onclick="confirmDeleteLesson(this, '<%= j lesson.title %>', <%= lesson.video_url.present? ? 'true' : 'false' %>)">
+                    <i class="bi bi-x-lg" style="font-size:0.7rem"></i>
+                  </button>
+                  <%= form_with url: [:admin, @course, chapter, lesson], method: :delete, local: true, class: "d-none", id: "deleteLessonForm-#{lesson.id}" do %><% end %>
+                </div>
+                <% if lesson.video_url.present? %>
+                  <div class="mt-1" style="padding-left:1.5rem">
+                    <span class="text-muted" style="font-size:0.72rem">
+                      <i class="bi bi-film me-1"></i>FileID: <%= lesson.video_url %>
+                    </span>
+                    <button type="button" class="btn btn-outline-danger btn-sm py-0 px-1 ms-2" style="font-size:0.65rem" onclick="deleteVodMedia(<%= lesson.id %>, '<%= lesson.video_url %>', this)" title="<%= t('admin.ui.m723') %>">
+                      <i class="bi bi-trash me-1"></i><%= t('admin.ui.m060') %>
+                    </button>
+                  </div>
+                <% end %>
+                <% if lesson.content.present? && lesson.lesson_type == 'text' %>
+                  <div class="mt-1" style="padding-left:1.5rem">
+                    <span class="text-muted" style="font-size:0.72rem">
+                      <i class="bi bi-file-text me-1"></i><%= truncate(lesson.content, length: 50) %>
+                    </span>
+                  </div>
+                <% end %>
+                <% if lesson.is_free? %>
+                  <span class="badge bg-success bg-opacity-10 text-success" style="font-size:0.65rem"><%= t('admin.ui.m055') %></span>
+                <% end %>
+                <% if lesson.duration.present? %>
+                  <span style="color:var(--text-faint);font-size:0.78rem"><%= lesson.duration %></span>
+                <% end %>
+              </div>
+              <!-- 视频<%= t('admin.ui.m008') %>面板 -->
+              <% if lesson.lesson_type == 'video' %>
+              <div class="collapse px-3 py-2 border-bottom" id="editVideo-<%= lesson.id %>" style="background:var(--bs-tertiary-bg)">
+                  <%= form_with model: [:admin, @course, chapter, lesson], local: true, class: "row g-2 align-items-end" do |f| %>
+                    <%= f.hidden_field :lesson_type %>
+                    
+                    <!-- <%= t('admin.ui.m724') %>选择 -->
+                    <div class="col-12 mb-2">
+                      <label class="form-label small text-muted mb-1"><%= t('admin.ui.m724') %></label>
+                      <div class="btn-group w-100" role="group">
+                        <input type="radio" class="btn-check" name="course_lesson[video_storage]" id="video_storage_vod_<%= lesson.id %>" value="vod" <%= lesson.video_storage == 'vod' ? 'checked' : '' %> onchange="toggleVideoStorage(<%= lesson.id %>, 'vod')">
+                        <label class="btn btn-outline-primary btn-sm" for="video_storage_vod_<%= lesson.id %>">
+                          <i class="bi bi-cloud me-1"></i><%= t('admin.ui.m725') %>
+                        </label>
+                        
+                        <input type="radio" class="btn-check" name="course_lesson[video_storage]" id="video_storage_local_<%= lesson.id %>" value="local" <%= lesson.video_storage == 'local' ? 'checked' : '' %> onchange="toggleVideoStorage(<%= lesson.id %>, 'local')">
+                        <label class="btn btn-outline-success btn-sm" for="video_storage_local_<%= lesson.id %>">
+                          <i class="bi bi-hdd me-1"></i><%= t('admin.ui.m674') %>
+                        </label>
+                      </div>
+                    </div>
+
+                    <!-- <%= t('admin.ui.m725') %>配置 -->
+                    <div id="vod_config_<%= lesson.id %>" style="<%= lesson.video_storage == 'vod' ? '' : 'display:none' %>">
+                      <div class="col-12">
+                        <%= f.text_field :video_url, class: "form-control form-control-sm", placeholder: t('admin.ui.m675'), readonly: true, id: "video_url_#{lesson.id}" %>
+                        <div class="d-flex align-items-center gap-2 mt-1 flex-wrap">
+                          <button type="button" class="btn btn-outline-primary btn-sm py-0" onclick="selectVodFile(<%= lesson.id %>)">
+                            <i class="bi bi-cloud-upload me-1"></i><%= t('admin.ui.m676') %>
+                          </button>
+                          <span id="vodStatus-<%= lesson.id %>" class="text-muted small" style="font-size:0.72rem;display:none">
+                            <i class="bi bi-arrow-repeat spin me-1"></i><span></span>
+                          </span>
+                          <span id="vodResult-<%= lesson.id %>" class="text-muted small" style="font-size:0.72rem"></span>
+                        </div>
+                        <input type="file" id="vodFileInput-<%= lesson.id %>" accept="video/*" style="display:none" onchange="uploadVodVideo(<%= lesson.id %>, this)">
+                      </div>
+                    </div>
+
+                    <!-- 本地视频配置 -->
+                    <div id="local_config_<%= lesson.id %>" style="<%= lesson.video_storage == 'local' ? '' : 'display:none' %>">
+                      <div class="col-12">
+                        <% if lesson.video.attached? %>
+                          <div class="alert alert-info py-2 px-3 mb-2" style="font-size:0.82rem">
+                            <i class="bi bi-check-circle me-1"></i>
+                            <%= t('admin.ui.m677') %> <%= lesson.video.filename %> (<%= number_to_human_size(lesson.video.byte_size) %>)
+                            <label class="form-check-label ms-3" style="font-size:0.78rem">
+                              <input type="checkbox" name="course_lesson[remove_video]" value="1" class="form-check-input"> <%= t('admin.ui.m060') %>
+                            </label>
+                          </div>
+                        <% end %>
+                        <%= f.file_field :video, class: "form-control form-control-sm", accept: "video/*", id: "localVideoInput-#{lesson.id}" %>
+                        <div class="form-text" style="font-size:0.72rem">
+                          <%= t('admin.ui.m678') %>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="col-auto mt-2">
+                      <%= f.submit t("admin.save"), class: "btn btn-primary btn-sm rounded-pill px-3" %>
+                    </div>
+                  <% end %>
+                </div>
+              <% end %>
+              <!-- 图文<%= t('admin.ui.m008') %>面板 -->
+              <% if lesson.lesson_type == 'text' %>
+              <div class="collapse px-3 py-2 border-bottom" id="editContent-<%= lesson.id %>" style="background:var(--bs-tertiary-bg)">
+                  <%= form_with model: [:admin, @course, chapter, lesson], local: true, id: "editLessonForm-#{lesson.id}" do |f| %>
+                    <%= f.hidden_field :lesson_type %>
+                    <div class="d-flex align-items-center gap-1 p-1 mb-2">
+                      <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-1" title="<%= t('admin.bold') %>" onclick="lessonInsertMd(this.form,'**','**')"><i class="bi bi-type-bold"></i></button>
+                      <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-1" title="<%= t('admin.italic') %>" onclick="lessonInsertMd(this.form,'*','*')"><i class="bi bi-type-italic"></i></button>
+                      <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-1" title="<%= t('admin.strikethrough') %>" onclick="lessonInsertMd(this.form,'~~','~~')"><i class="bi bi-type-strikethrough"></i></button>
+                      <div class="vr mx-1"></div>
+                      <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-1" title="<%= t('admin.inline_code') %>" onclick="lessonInsertMd(this.form,'`','`')"><i class="bi bi-code-slash"></i></button>
+                      <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-1" title="<%= t('admin.code_block') %>" onclick="lessonInsertMd(this.form,'\n```\n','\n```\n')"><i class="bi bi-file-code"></i></button>
+                      <div class="vr mx-1"></div>
+                      <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-1" title="<%= t('admin.url') %>" onclick="lessonInsertMd(this.form,'[','](url)')"><i class="bi bi-link-45deg"></i></button>
+                      <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-1" title="<%= t('admin.image') %>" onclick="this.form.querySelector('input[type=file]').click()"><i class="bi bi-image"></i></button>
+                      <input type="file" accept="image/*" class="d-none" onchange="lessonUploadImage(this)">
+                      <div class="vr mx-1"></div>
+                      <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-1" title="<%= t('admin.quote') %>" onclick="lessonInsertMd(this.form,'> ','')"><i class="bi bi-quote"></i></button>
+                      <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-1" title="<%= t('admin.unordered_list') %>" onclick="lessonInsertMd(this.form,'\n- ','')"><i class="bi bi-list-ul"></i></button>
+                      <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-1" title="<%= t('admin.ordered_list') %>" onclick="lessonInsertMd(this.form,'\n1. ','')"><i class="bi bi-list-ol"></i></button>
+                      <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-1" title="<%= t('admin.divider') %>" onclick="lessonInsertMd(this.form,'\n\n---\n\n','')"><i class="bi bi-dash-lg"></i></button>
+                      <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-1" title="<%= t('admin.table') %>" onclick="lessonInsertMd(this.form,'\n| <%= t('admin.ui.m026') %>\n| --- | --- | --- |\n| ',' |  |  |\n')"><i class="bi bi-table"></i></button>
+                      <div class="vr mx-1"></div>
+                      <button type="button" class="btn btn-sm btn-outline-primary py-0 px-1" onclick="lessonTogglePreview(this)"><i class="bi bi-eye me-1"></i><%= t('admin.preview') %></button>
+                      <span class="ms-auto text-muted small" style="font-size:0.7rem"><i class="bi bi-markdown me-1"></i>Markdown</span>
+                    </div>
+                    <div class="js-lesson-editor-panel border rounded-top">
+                      <%= f.text_area :content, class: "form-control border-0 rounded-0 js-lesson-textarea", rows: 15, placeholder: t('admin.ui.m057'), style: "font-family:'JetBrains Mono','Fira Code','Consolas',monospace;font-size:0.82rem;line-height:1.7;resize:vertical" %>
+                    </div>
+                    <div class="js-lesson-preview-panel markdown-body border border-top-0 rounded-bottom p-3 overflow-auto" style="display:none;min-height:300px;max-height:500px"></div>
+                    <div class="mt-2">
+                      <%= f.submit t("admin.save"), class: "btn btn-primary btn-sm rounded-pill px-3" %>
+                    </div>
+                  <% end %>
+                </div>
+              <% end %>
+            <% end %>
+          <% else %>
+            <div class="text-center py-3" style="color:var(--text-faint);font-size:0.82rem">
+              <%= t('admin.ui.m679') %> <i class="bi bi-plus-lg"></i> <%= t('admin.ui.m025') %>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+    <% else %>
+      <div class="text-center py-4" style="color:var(--text-faint)">
+        <i class="bi bi-journal-text d-block mb-1" style="font-size:1.5rem"></i>
+        <span style="font-size:0.85rem"><%= t('admin.ui.m680') %>"<%= t('admin.ui.m051') %>"<%= t('admin.ui.m681') %></span>
+      </div>
+    <% end %>
+    </div>
+  </div>
+  </div>
+</div>
+
+<script src="https://cdn-go.cn/cdn/vod-js-sdk-v6/latest/vod-js-sdk-v6.js" charset="utf-8"></script>
+
+<!-- 删除确认 Modal -->
+<div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-danger">
+      <div class="modal-header border-danger bg-danger bg-opacity-10">
+        <h6 class="modal-title fw-bold"><i class="bi bi-exclamation-triangle text-danger me-2"></i><span id="deleteModalTitle"><%= t('admin.confirm_delete') %></span></h6>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div id="deleteModalBody" class="mb-3" style="font-size:0.9rem"></div>
+        <div class="mb-0">
+          <label class="form-label text-muted small mb-1"><%= t('admin.ui.m682') %> <strong class="text-danger"><%= t('admin.confirm_delete') %></strong> <%= t('admin.ui.m683') %></label>
+          <input type="text" id="deleteConfirmInput" class="form-control form-control-sm" autocomplete="off" placeholder="<%= t('admin.confirm_delete') %>">
+        </div>
+      </div>
+      <div class="modal-footer border-0 pt-0">
+        <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill" data-bs-dismiss="modal"><%= t('admin.cancel') %></button>
+        <button type="button" id="deleteConfirmBtn" class="btn btn-danger btn-sm rounded-pill" disabled><%= t('admin.confirm_delete') %></button>
+      </div>
+    </div>
+    </div>
+  </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var colorInput = document.querySelector('#course_color');
+  var colorPreview = document.getElementById('colorPreview');
+  var iconInput = document.querySelector('#course_icon');
+  var iconPreview = document.getElementById('iconPreview');
+
+  if (colorInput) {
+    colorInput.addEventListener('input', function() {
+      colorPreview.style.backgroundColor = this.value || '#6366f1';
+    });
+  }
+  if (iconInput) {
+    iconInput.addEventListener('input', function() {
+      var val = this.value.trim();
+      iconPreview.className = val ? 'bi ' + val : 'bi bi-book';
+    });
+  }
+
+  var confirmInput = document.getElementById('deleteConfirmInput');
+  var confirmBtn = document.getElementById('deleteConfirmBtn');
+  if (confirmInput) {
+    confirmInput.addEventListener('input', function() {
+      confirmBtn.disabled = (this.value.trim() !== "<%= t('admin.confirm_delete') %>");
+    });
+  }
+});
+
+// 切换<%= t('admin.ui.m724') %>
+function toggleVideoStorage(lessonId, storageType) {
+  var vodConfig = document.getElementById('vod_config_' + lessonId);
+  var localConfig = document.getElementById('local_config_' + lessonId);
+  
+  if (storageType === 'vod') {
+    vodConfig.style.display = '';
+    localConfig.style.display = 'none';
+  } else {
+    vodConfig.style.display = 'none';
+    localConfig.style.display = '';
+  }
+}
+
+var _pendingDeleteFormId = null;
+
+function confirmDeleteLesson(btn, title, hasVideo) {
+  var body = '<%= t('admin.ui.m684') %>' + title + '」<%= t('admin.ui.m685') %>';
+  if (hasVideo) {
+    body += '<div class="alert alert-danger py-2 px-3 mt-2 mb-0 rounded-2"><i class="bi bi-film me-1"></i><%= t('admin.ui.m686') %><strong><%= t('admin.ui.m687') %></strong>，<%= t('admin.ui.m069') %></div>';
+  }
+  _pendingDeleteFormId = btn.parentElement.querySelector('form[id^="deleteLessonForm"]').id;
+  showDeleteModal('<%= t('admin.ui.m688') %>', body);
+}
+
+function confirmDeleteChapter(btn, title, videoCount) {
+  var body = '<%= t('admin.ui.m689') %>' + title + '」<%= t('admin.ui.m690') %>';
+  if (videoCount > 0) {
+    body += '<div class="alert alert-danger py-2 px-3 mt-2 mb-0 rounded-2"><i class="bi bi-film me-1"></i><%= t('admin.ui.m691') %> <strong>' + videoCount + '</strong> <%= t('admin.ui.m692') %><strong><%= t('admin.ui.m693') %></strong>，<%= t('admin.ui.m069') %></div>';
+  }
+  _pendingDeleteFormId = btn.parentElement.querySelector('form[id^="deleteChapterForm"]').id;
+  showDeleteModal('<%= t('admin.ui.m694') %>', body);
+}
+
+function showDeleteModal(title, bodyHtml) {
+  document.getElementById('deleteModalTitle').textContent = title;
+  document.getElementById('deleteModalBody').innerHTML = bodyHtml;
+  document.getElementById('deleteConfirmInput').value = '';
+  document.getElementById('deleteConfirmBtn').disabled = true;
+  var modal = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));
+  modal.show();
+  document.getElementById('deleteConfirmBtn').onclick = function() {
+    modal.hide();
+    if (_pendingDeleteFormId) {
+      document.getElementById(_pendingDeleteFormId).submit();
+      _pendingDeleteFormId = null;
+    }
+  };
+}
+
+function selectVodFile(lessonId) {
+  document.getElementById('vodFileInput-' + lessonId).click();
+}
+
+function uploadVodVideo(lessonId, input) {
+  if (!input.files || !input.files[0]) return;
+  var file = input.files[0];
+  if (file.size > 10 * 1024 * 1024 * 1024) {
+    alert('<%= t('admin.ui.m695') %>');
+    input.value = '';
+    return;
+  }
+
+  var statusEl = document.getElementById('vodStatus-' + lessonId);
+  var resultEl = document.getElementById('vodResult-' + lessonId);
+  var urlInput = document.getElementById('video_url_' + lessonId);
+
+  statusEl.style.display = 'inline';
+  statusEl.querySelector('span').textContent = '<%= t('admin.ui.m696') %>';
+  resultEl.textContent = '';
+
+  // 先请求签名，确认点播已配置
+  fetch('/api/vod/upload_signature')
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+      if (!data.signature) {
+        statusEl.style.display = 'none';
+        alert('<%= t('admin.ui.m697') %> > <%= t('admin.ui.m698') %>');
+        return;
+      }
+
+      // 配置<%= t('admin.ui.m417') %>，<%= t('admin.ui.m681') %>上传
+      statusEl.querySelector('span').textContent = '<%= t('admin.ui.m699') %>';
+
+      try {
+        var tcVod = new TcVod.default({
+          getSignature: function() {
+            return fetch('/api/vod/upload_signature')
+              .then(function(res) { return res.json(); })
+              .then(function(d) {
+                if (d.signature) return d.signature;
+                throw new Error(d.error || '<%= t('admin.ui.m566') %>');
+              });
+          }
+        });
+
+        var uploader = tcVod.upload({ mediaFile: file });
+
+        uploader.on('media_progress', function(info) {
+          statusEl.querySelector('span').textContent = '<%= t('admin.ui.m593') %> ' + Math.round(info.percent * 100) + '%...';
+        });
+
+        uploader.done().then(function(doneResult) {
+          statusEl.style.display = 'none';
+          urlInput.value = doneResult.fileId;
+          resultEl.innerHTML = '<i class="bi bi-check-circle text-success me-1"></i><%= t('admin.ui.m594') %>';
+          urlInput.closest('form').querySelector('input[type="submit"]').click();
+        }).catch(function(err) {
+          statusEl.style.display = 'none';
+          resultEl.innerHTML = '<i class="bi bi-exclamation-triangle text-danger me-1"></i><%= t('admin.ui.m075') %> ' + (err.message || "<%= t('admin.unknown_error') %>");
+        });
+      } catch (e) {
+        statusEl.style.display = 'none';
+        alert('<%= t('admin.ui.m595') %> ' + e.message + '。<%= t('admin.ui.m596') %>');
+      }
+    })
+    .catch(function() {
+      statusEl.style.display = 'none';
+      alert('<%= t('admin.ui.m597') %>');
+    });
+
+  input.value = '';
+}
+
+function deleteVodMedia(lessonId, fileId, btn) {
+  if (!confirm('<%= t('admin.ui.m598') %>\n\nFileID: ' + fileId + '\n\n<%= t('admin.ui.m599') %>')) return;
+
+  var originalHtml = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = '<i class="bi bi-arrow-repeat spin me-1"></i><%= t('admin.ui.m600') %>';
+
+  fetch('/api/vod/delete_media', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.content },
+    body: JSON.stringify({ file_id: fileId })
+  })
+  .then(function(res) { return res.json(); })
+  .then(function(data) {
+    if (data.success) {
+      // 清空 video_url 并提交表单
+      var urlInput = document.getElementById('video_url_' + lessonId);
+      if (urlInput) {
+        urlInput.value = '';
+        urlInput.closest('form').querySelector('input[type="submit"]').click();
+      } else {
+        btn.closest('.d-flex').querySelector('.flex-grow-1').insertAdjacentHTML('afterend',
+          '<span class="text-success ms-1" style="font-size:0.72rem"><i class="bi bi-check-circle me-1"></i><%= t('admin.ui.m601') %></span>');
+        btn.remove();
+      }
+    } else {
+      alert('<%= t('admin.ui.m602') %> ' + (data.error || "<%= t('admin.unknown_error') %>"));
+      btn.disabled = false;
+      btn.innerHTML = originalHtml;
+    }
+  })
+  .catch(function(err) {
+    alert('<%= t('admin.ui.m603') %> ' + err.message);
+    btn.disabled = false;
+    btn.innerHTML = originalHtml;
+  });
+}
+
+// === <%= t('admin.ui.m607') %>图文<%= t('admin.ui.m008') %>器 ===
+
+function toggleNewLessonType(chapterId, type) {
+  var el = document.getElementById('newLessonContent-' + chapterId);
+  if (el) el.style.display = (type === 'text') ? 'block' : 'none';
+}
+
+function lessonGetTextarea(form) {
+  return form ? form.querySelector('textarea') : null;
+}
+
+function lessonInsertMd(form, before, after) {
+  var ta = lessonGetTextarea(form);
+  if (!ta) return;
+  var s = ta.selectionStart, e = ta.selectionEnd;
+  var sel = ta.value.substring(s, e) || '';
+  var placeholder = before.match(/\n/) ? '' : "<%= t('admin.text') %>";
+  var replacement = before + (sel || placeholder) + after;
+  ta.setRangeText(replacement, s, e, 'end');
+  if (!sel) ta.selectionEnd = s + before.length + placeholder.length;
+  ta.dispatchEvent(new Event('input'));
+  ta.focus();
+}
+
+function lessonUploadImage(input) {
+  var file = input.files && input.files[0];
+  if (!file || !file.type.startsWith('image/')) return;
+  if (file.size > 5 * 1024 * 1024) { alert("<%= t('admin.image_max_5mb') %>"); input.value = ''; return; }
+
+  var ta = lessonGetTextarea(input.form);
+  if (!ta) return;
+  var s = ta.selectionStart;
+  var placeholder = '![](<%= t('admin.ui.m027') %>';
+  ta.setRangeText(placeholder, s, s, 'end');
+  ta.dispatchEvent(new Event('input'));
+
+  var formData = new FormData();
+  formData.append('file', file);
+  var token = document.querySelector('meta[name="csrf-token"]');
+
+  fetch('/upload_image', {
+    method: 'POST',
+    headers: { 'X-CSRF-Token': token ? token.content : '', 'Accept': 'application/json' },
+    body: formData
+  })
+  .then(function(r) {
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    return r.json();
+  })
+  .then(function(data) {
+    if (data.url) {
+      ta.value = ta.value.replace(placeholder, '![](' + data.url + ')');
+    } else {
+      ta.value = ta.value.replace(placeholder, '');
+      alert("<%= t('admin.upload_failed_cn') %>" + (data.error || "<%= t('admin.unknown_error') %>"));
+    }
+    ta.dispatchEvent(new Event('input'));
+  })
+  .catch(function(err) {
+    ta.value = ta.value.replace(placeholder, '');
+    ta.dispatchEvent(new Event('input'));
+    alert('<%= t('admin.ui.m075') %> ' + err.message);
+  });
+
+  input.value = '';
+}
+
+function lessonTogglePreview(btn) {
+  var form = btn.form;
+  var editor = form.querySelector('.js-lesson-editor-panel');
+  var preview = form.querySelector('.js-lesson-preview-panel');
+  if (!editor || !preview) return;
+
+  if (preview.style.display === 'none') {
+    if (typeof marked === 'undefined') { alert('Markdown <%= t('admin.ui.m604') %>'); return; }
+    var ta = form.querySelector('.js-lesson-textarea');
+    var val = ta ? ta.value : '';
+    preview.innerHTML = marked.parse(val);
+    editor.style.display = 'none';
+    preview.style.display = 'block';
+    btn.innerHTML = '<i class="bi bi-pencil me-1"></i><%= t('admin.ui.m008') %>';
+    btn.classList.remove('btn-outline-primary');
+    btn.classList.add('btn-success');
+  } else {
+    editor.style.display = 'block';
+    preview.style.display = 'none';
+    btn.innerHTML = '<i class="bi bi-eye me-1"></i><%= t('admin.ui.m007') %>';
+    btn.classList.remove('btn-success');
+    btn.classList.add('btn-outline-primary');
+    var ta = form.querySelector('.js-lesson-textarea');
+    if (ta) ta.focus();
+  }
+}
+</script>

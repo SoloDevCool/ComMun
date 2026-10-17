@@ -1,0 +1,6 @@
+{
+  "on_topic_create": ["lib/on_topic_create.rb"],
+  "nav_item": ["lib/nav_item.rb"],
+  "admin_nav_item": ["lib/admin_nav.rb"],
+  "view_injection": ["lib/view_inject.rb"]
+}

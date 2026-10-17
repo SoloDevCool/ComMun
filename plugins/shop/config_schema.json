@@ -1,0 +1,20 @@
+{
+  "show_in_nav": {
+    "label": "前台导航显示",
+    "type": "boolean",
+    "default": true,
+    "description": "是否在前台导航栏显示能量商城入口"
+  },
+  "nav_label": {
+    "label": "导航显示名称",
+    "type": "string",
+    "default": "能量商城",
+    "description": "前台导航栏中显示的名称"
+  },
+  "nav_icon": {
+    "label": "导航图标",
+    "type": "string",
+    "default": "bi-shop",
+    "description": "Bootstrap Icons 图标类名，如 bi-shop、bi-bag"
+  }
+}

@@ -1,0 +1,127 @@
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h4 class="text-dark fw-bold mb-0"><%= t('admin.ui.m752') %></h4>
+  <div class="d-flex gap-2 align-items-center">
+    <span class="text-muted" style="font-size:0.85rem">
+      <i class="bi bi-info-circle me-1"></i><%= t('admin.ui.m753') %>
+    </span>
+  </div>
+</div>
+
+<div class="row g-4">
+  <div class="col-lg-8">
+    <div class="card card-admin">
+      <div class="card-header py-3 d-flex justify-content-between align-items-center">
+        <h6 class="mb-0 fw-bold"><i class="bi bi-person-badge me-2 text-primary"></i><%= t('admin.ui.m754') %></h6>
+        <span class="badge bg-primary"><%= @instructors.size %> <%= t('admin.ui.m755') %></span>
+      </div>
+      <div class="card-body p-0">
+        <% if @instructors.any? %>
+          <table class="table table-hover mb-0">
+            <thead>
+              <tr>
+                <th style="width:8%"><%= t('admin.sort_order') %></th>
+                <th style="width:20%"><%= t('admin.instructor') %></th>
+                <th><%= t('admin.ui.m756') %></th>
+                <th><%= t('admin.ui.m232') %></th>
+                <th style="width:10%"><%= t('admin.status') %></th>
+                <th style="width:10%"><%= t('admin.actions') %></th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @instructors.each do |inst| %>
+                <tr>
+                  <td class="text-muted small"><%= inst.sort_order %></td>
+                  <td>
+                    <div class="d-flex align-items-center gap-2">
+                      <% if inst.avatar_url.present? %>
+                        <div class="rounded-3 overflow-hidden flex-shrink-0" style="width:32px;height:32px">
+                          <img src="<%= inst.avatar_url %>" class="w-100 h-100" style="object-fit:cover" alt="">
+                        </div>
+                      <% else %>
+                        <div class="rounded-3 flex-shrink-0 d-flex align-items-center justify-content-center" style="width:32px;height:32px;background:linear-gradient(135deg, #6366f1, #8b5cf6);color:#fff;font-size:0.75rem;font-weight:600">
+                          <%= inst.name[0] %>
+                        </div>
+                      <% end %>
+                      <span class="fw-semibold"><%= inst.name %></span>
+                    </div>
+                  </td>
+                  <td class="text-muted small"><%= inst.title.presence || '-' %></td>
+                  <td>
+                    <span class="badge bg-light text-dark rounded-pill"><%= inst.courses.active.count %></span>
+                  </td>
+                  <td>
+                    <% if inst.is_active? %>
+                      <span class="badge bg-success-subtle text-success"><%= t('admin.enable') %></span>
+                    <% else %>
+                      <span class="badge bg-secondary-subtle text-secondary"><%= t('admin.disable') %></span>
+                    <% end %>
+                  </td>
+                  <td>
+                    <div class="d-flex gap-1">
+                      <%= link_to edit_admin_instructor_path(inst), class: "btn btn-sm btn-outline-primary btn-action", title: t("admin.edit") do %>
+                        <i class="bi bi-pencil"></i>
+                      <% end %>
+                      <%= button_to admin_instructor_path(inst), method: :delete, class: "btn btn-sm btn-outline-danger btn-action", title: t("admin.delete"), data: { turbo_confirm: "确定删除讲师「#{inst.name}」？关联的课程将解除讲师绑定。" } do %>
+                        <i class="bi bi-trash"></i>
+                      <% end %>
+                    </div>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        <% else %>
+          <div class="text-center text-muted py-5">
+            <i class="bi bi-person-badge d-block fs-1 mb-2"></i>
+            <p><%= t('admin.ui.m759') %></p>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-4">
+    <div class="card card-admin mb-4">
+      <div class="card-header py-3">
+        <h6 class="mb-0 fw-bold"><i class="bi bi-plus-circle me-2 text-success"></i><%= t('admin.ui.m118') %></h6>
+      </div>
+      <div class="card-body">
+        <%= form_with model: [:admin, Instructor.new], url: admin_instructors_path, local: true do |f| %>
+          <div class="mb-3">
+            <%= f.label :name, t("admin.instructor_name"), class: "form-label fw-semibold small" %>
+            <%= f.text_field :name, class: "form-control form-control-sm", placeholder: t("admin.instructor_name"), required: true %>
+          </div>
+          <div class="mb-3">
+            <%= f.label :title, t("admin.job_title"), class: "form-label fw-semibold small" %>
+            <%= f.text_field :title, class: "form-control form-control-sm", placeholder: t('admin.ui.m144') %>
+          </div>
+          <div class="mb-3">
+            <%= f.label :bio, t('admin.ui.m145'), class: "form-label fw-semibold small" %>
+            <%= f.text_area :bio, class: "form-control form-control-sm", rows: 3, placeholder: t('admin.ui.m146') %>
+          </div>
+          <div class="mb-3">
+            <%= f.label :avatar, t("admin.avatar"), class: "form-label fw-semibold small" %>
+            <%= f.file_field :avatar, class: "form-control form-control-sm", accept: "image/*" %>
+            <div class="form-text" style="font-size:0.75rem"><%= t('admin.ui.m147') %></div>
+          </div>
+          <div class="row g-3 mb-3">
+            <div class="col-6">
+              <%= f.label :sort_order, t("admin.sort_order"), class: "form-label fw-semibold small" %>
+              <%= f.number_field :sort_order, class: "form-control form-control-sm", value: 0, min: 0 %>
+            </div>
+            <div class="col-6">
+              <%= f.label :is_active, t("admin.status"), class: "form-label fw-semibold small" %>
+              <select name="instructor[is_active]" class="form-select form-select-sm">
+                <option value="true" selected><%= t('admin.enable') %></option>
+                <option value="false"><%= t('admin.disable') %></option>
+              </select>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary rounded-pill w-100">
+            <i class="bi bi-plus-lg me-1"></i><%= t('admin.ui.m118') %>
+          </button>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

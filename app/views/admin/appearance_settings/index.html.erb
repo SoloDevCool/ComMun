@@ -1,0 +1,487 @@
+<% content_for :title, t('admin.ui.d080') %>
+<% logo_src = @appearance.logo_url.presence || (@appearance.logo.attached? ? url_for(@appearance.logo) : nil) %>
+<% favicon_src = @appearance.favicon_url.presence || (@appearance.favicon.attached? ? url_for(@appearance.favicon) : nil) %>
+
+<h4 class="mb-1 admin-page-title"><i class="bi bi-palette me-2"></i><%= t('admin.ui.d080') %></h4>
+<div class="admin-page-subtitle mb-4"><i class="bi bi-brush me-1"></i><%= t('admin.ui.d060') %></div>
+
+<style>
+  /* Logo 模式选择卡 */
+  .logo-mode-card {
+    cursor: pointer;
+    border: 1.5px solid #e4e7ec !important;
+    border-radius: 12px;
+    transition: border-color .15s, background .15s, transform .12s, box-shadow .15s;
+    position: relative;
+  }
+  .logo-mode-card:hover {
+    border-color: rgba(21,94,239,.45) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 14px rgba(0,0,0,.06);
+  }
+  .logo-mode-card.selected {
+    border-color: #155eef !important;
+    background: rgba(21,94,239,.03);
+    box-shadow: 0 4px 14px rgba(21,94,239,.12);
+  }
+  .logo-mode-card.selected::after {
+    content: '\F26E';
+    font-family: 'bootstrap-icons';
+    position: absolute;
+    top: 10px; right: 10px;
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: #155eef;
+    color: #fff;
+    font-size: .65rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .logo-mode-preview {
+    padding: 6px 14px;
+    border-radius: 8px;
+    background: #f2f4f7;
+    font-size: .8rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    transition: background .15s;
+  }
+  .logo-mode-card.selected .logo-mode-preview { background: #fff; box-shadow: inset 0 0 0 1px #e4e7ec; }
+  /* 上传预览区：虚线 dropzone */
+  .upload-dropzone {
+    border: 1.5px dashed #cbd5e1 !important;
+    border-radius: 12px;
+    background: #f8fafc !important;
+    transition: border-color .15s, background .15s;
+  }
+  .upload-dropzone:hover { border-color: #155eef !important; background: rgba(21,94,239,.02) !important; }
+  /* 导航排序列表 */
+  #nav-modules-sortable { border-radius: 12px; }
+  #nav-modules-sortable .draggable-module {
+    border-radius: 10px;
+    border: 1px solid transparent !important;
+    transition: background .12s, border-color .12s;
+  }
+  #nav-modules-sortable .draggable-module:hover { background: #f8fafc; border-color: #e4e7ec !important; }
+  #nav-modules-sortable .draggable-module .badge.bg-light {
+    background: rgba(21,94,239,.08) !important;
+    color: #155eef !important;
+    font-weight: 700;
+  }
+  /* 文件选择框 */
+  .appearance-form .form-control { border-radius: 9px; transition: border-color .15s, box-shadow .15s; }
+  .appearance-form .form-control:focus { border-color: #155eef; box-shadow: 0 0 0 3px rgba(21,94,239,.1); }
+  /* 保存按钮 */
+  .appearance-form .btn[type="submit"] { border-radius: 999px; padding-left: 1.5rem; padding-right: 1.5rem; transition: transform .12s, box-shadow .12s; }
+  .appearance-form .btn[type="submit"]:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(21,94,239,.25); }
+</style>
+
+<% unless @license_valid %>
+<div class="alert alert-warning mb-4">
+  <i class="bi bi-exclamation-triangle me-1"></i>
+  <strong><%= t('admin.ui.d085') %></strong> — 前<%= t('admin.ui.d086') %>正常<%= t('admin.ui.d087') %><%= t('admin.ui.d043') %><%= t('admin.ui.d088') %>
+  <%= t('admin.ui.d089') %> <a href="<%= admin_settings_path %>" class="alert-link"><%= t('admin.ui.d090') %></a> <%= t('admin.ui.d041') %>
+</div>
+<% end %>
+
+<%= form_with model: @appearance, url: admin_appearance_settings_path, method: :patch,
+              local: true, html: { multipart: true, id: "appearanceForm", class: "appearance-form" } do |f| %>
+
+  <!-- Logo <%= t('admin.ui.d079') %> -->
+  <div class="card card-admin mb-4">
+    <div class="card-header d-flex align-items-center">
+      <i class="bi bi-layout-text-sidebar-reverse me-2 text-info"></i>
+      <span class="fw-semibold">Logo <%= t('admin.ui.d079') %></span>
+    </div>
+    <div class="card-body">
+      <p class="text-muted mb-3" style="font-size:0.85rem">
+        <%= t('admin.ui.d056') %>
+      </p>
+
+      <div class="row g-3">
+        <div class="col-md-4">
+          <label class="form-check-label d-block">
+            <div class="card h-100 logo-mode-card <%= 'selected' if @appearance.logo_display_mode == 'text' || @appearance.logo_display_mode.blank? %>"
+                 onclick="selectLogoMode(this, 'text')">
+              <div class="card-body text-center py-3">
+                <div class="mb-2"><i class="bi bi-type-bold" style="font-size:1.5rem;color:#155eef"></i></div>
+                <div class="fw-semibold" style="font-size:0.9rem"><%= t('admin.ui.d084') %></div>
+                <div class="text-muted" style="font-size:0.8rem"><%= t('admin.ui.d066') %></div>
+                <div class="mt-2 logo-mode-preview">
+                  <i class="bi bi-terminal"></i><%= site_name %>
+                </div>
+              </div>
+              <input type="radio" name="site_appearance[logo_display_mode]" value="text"
+                     class="form-check-input d-none" id="logoModeText"
+                     <%= "checked" if @appearance.logo_display_mode == "text" || @appearance.logo_display_mode.blank? %>>
+            </div>
+          </label>
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-check-label d-block">
+            <div class="card h-100 logo-mode-card <%= 'selected' if @appearance.logo_display_mode == 'logo' %>"
+                 onclick="selectLogoMode(this, 'logo')">
+              <div class="card-body text-center py-3">
+                <div class="mb-2"><i class="bi bi-image" style="font-size:1.5rem;color:#059669"></i></div>
+                <div class="fw-semibold" style="font-size:0.9rem">Logo <%= t('admin.ui.d095') %></div>
+                <div class="text-muted" style="font-size:0.8rem"><%= t('admin.ui.d059') %></div>
+                <div class="mt-2 logo-mode-preview">
+                  <% if logo_src %>
+                    <img src="<%= logo_src %>" style="max-height:24px;max-width:120px;object-fit:contain" alt="">
+                  <% else %>
+                    <span class="text-muted">Logo 预览</span>
+                  <% end %>
+                </div>
+              </div>
+              <input type="radio" name="site_appearance[logo_display_mode]" value="logo"
+                     class="form-check-input d-none" id="logoModeLogo"
+                     <%= "checked" if @appearance.logo_display_mode == "logo" %>>
+            </div>
+          </label>
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-check-label d-block">
+            <div class="card h-100 logo-mode-card <%= 'selected' if @appearance.logo_display_mode == 'icon_logo' %>"
+                 onclick="selectLogoMode(this, 'icon_logo')">
+              <div class="card-body text-center py-3">
+                <div class="mb-2"><i class="bi bi-stack" style="font-size:1.5rem;color:#f59e0b"></i></div>
+                <div class="fw-semibold" style="font-size:0.9rem">Logo + 文字</div>
+                <div class="text-muted" style="font-size:0.8rem">Logo <%= t('admin.ui.d063') %></div>
+                <div class="mt-2 logo-mode-preview">
+                  <% if logo_src %>
+                    <img src="<%= logo_src %>" style="max-height:24px;max-width:120px;object-fit:contain" alt="">
+                  <% end %>
+                  <%= site_name %>
+                </div>
+              </div>
+              <input type="radio" name="site_appearance[logo_display_mode]" value="icon_logo"
+                     class="form-check-input d-none" id="logoModeIconLogo"
+                     <%= "checked" if @appearance.logo_display_mode == "icon_logo" %>>
+            </div>
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+    <!-- <%= t('admin.ui.d070') %> -->
+  <div class="card card-admin mb-4">
+    <div class="card-header d-flex align-items-center justify-content-between">
+      <div class="d-flex align-items-center">
+        <i class="bi bi-sort-numeric-down me-2 text-success"></i>
+        <span class="fw-semibold"><%= t('admin.ui.d070') %></span>
+      </div>
+      <button type="button" class="btn btn-sm btn-outline-success rounded-pill px-3" id="navOrderPreviewBtn" onclick="toggleNavPreview()">
+        <i class="bi bi-eye me-1"></i><%= t('admin.ui.d078') %>
+      </button>
+    </div>
+    <div class="card-body">
+      <p class="text-muted mb-3" style="font-size:0.85rem">
+        <%= t('admin.ui.d054') %><strong><%= t('admin.ui.d055') %></strong>
+      </p>
+
+      <!-- <%= t('admin.ui.d047') %>区 -->
+      <div id="navPreviewArea" class="mb-4" style="display:none">
+        <div class="border rounded-3 p-3 bg-light">
+          <div class="d-flex align-items-center justify-content-between mb-2">
+            <div class="d-flex align-items-center gap-2">
+              <i class="bi bi-terminal"></i>
+              <span class="fw-semibold" style="font-size:0.85rem"><%= t('admin.ui.d075') %></span>
+            </div>
+            <span class="text-muted" style="font-size:0.75rem"><%= t('admin.ui.d057') %></span>
+          </div>
+          <div class="bg-white border rounded-2 py-2 px-3 d-flex align-items-center gap-1 flex-wrap" id="navPreviewBar">
+            <!-- JS 动态渲染 -->
+          </div>
+        </div>
+      </div>
+
+      <ul class="list-group" id="nav-modules-sortable">
+        <% @nav_modules.each_with_index do |mod, idx| %>
+          <li class="list-group-item d-flex align-items-center draggable-module py-2"
+              data-module-key="<%= mod[:key] %>" data-enabled="<%= mod[:enabled] %>" draggable="true">
+            <i class="bi bi-grip-vertical text-muted me-2" style="cursor:move"></i>
+            <span class="badge bg-light text-dark me-2 rounded-pill" style="font-size:0.7rem;min-width:22px;text-align:center"><%= idx + 1 %></span>
+            <i class="bi <%= mod[:icon] %> me-2"></i>
+            <span class="fw-medium flex-grow-1"><%= mod[:name] %></span>
+            <% if idx == 0 && mod[:enabled] %>
+              <span class="badge bg-warning bg-opacity-10 text-warning me-1" style="font-size:0.7rem"><i class="bi bi-house-fill me-1"></i>首页</span>
+            <% end %>
+            <% if mod[:setting_key].nil? %>
+              <span class="badge bg-info bg-opacity-10 text-info" style="font-size:0.7rem"><%= t('admin.ui.d077') %></span>
+            <% else %>
+              <span class="badge bg-<%= mod[:enabled] ? 'success' : 'secondary' %> bg-opacity-10 text-<%= mod[:enabled] ? 'success' : 'secondary' %>" style="font-size:0.7rem">
+                <%= mod[:enabled] ? t('admin.ui.d083') : t('admin.ui.d107') %>
+              </span>
+            <% end %>
+          </li>
+        <% end %>
+      </ul>
+
+      <div class="d-flex justify-content-end mt-3">
+        <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3" onclick="resetNavOrder()">
+          <i class="bi bi-arrow-counterclockwise me-1"></i><%= t('admin.ui.d071') %>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Logo <%= t('admin.ui.d043') %> -->
+  <div class="card card-admin mb-4">
+    <div class="card-header d-flex align-items-center">
+      <i class="bi bi-image me-2 text-primary"></i>
+      <span class="fw-semibold"><%= t('admin.ui.d067') %></span>
+    </div>
+    <div class="card-body">
+      <p class="text-muted mb-3" style="font-size:0.85rem">
+        <%= t('admin.ui.d062') %> <strong>120×40</strong> <%= t('admin.ui.d050') %>
+      </p>
+
+      <div class="mb-3">
+        <div id="logoPreviewArea" class="upload-dropzone p-4 text-center"
+             style="min-height: 100px; display: <%= logo_src ? 'block' : 'flex' %>;
+                    align-items: center; justify-content: center;">
+          <% if logo_src %>
+            <img src="<%= logo_src %>" alt="Logo 预览"
+                 style="max-height: 60px; max-width: 300px; object-fit: contain;">
+          <% else %>
+            <div>
+              <i class="bi bi-cloud-upload text-muted" style="font-size: 2rem"></i>
+              <p class="text-muted mt-2 mb-0" style="font-size:0.85rem"><%= t('admin.ui.d065') %></p>
+            </div>
+          <% end %>
+        </div>
+      </div>
+
+      <div class="d-flex align-items-center gap-3 mb-2">
+        <%= f.file_field :logo, class: "form-control", style: "max-width: 360px",
+                         accept: "image/png,image/jpeg,image/gif,image/webp,image/svg+xml",
+                         onchange: "previewImage(this, 'logoPreviewArea', 'logoPreviewImg', 60, 300)" %>
+        <% if @appearance.logo.attached? %>
+          <label class="form-check-label d-flex align-items-center gap-1 text-danger" style="font-size:0.85rem; cursor:pointer">
+            <%= check_box_tag "appearance[remove_logo]", "1", false, class: "form-check-input" %>
+            <%= t('admin.ui.d064') %>
+          </label>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Favicon <%= t('admin.ui.d043') %> -->
+  <div class="card card-admin mb-4">
+    <div class="card-header d-flex align-items-center">
+      <i class="bi bi-app-indicator me-2 text-warning"></i>
+      <span class="fw-semibold"><%= t('admin.ui.d061') %></span>
+    </div>
+    <div class="card-body">
+      <p class="text-muted mb-3" style="font-size:0.85rem">
+        <%= t('admin.ui.d058') %> <strong><%= t('admin.ui.d081') %></strong> <%= t('admin.ui.d068') %>×64、128×128 <%= t('admin.ui.d074') %>×512），<%= t('admin.ui.d051') %>
+      </p>
+
+      <div class="mb-3">
+        <div id="faviconPreviewArea" class="upload-dropzone p-4 text-center"
+             style="min-height: 100px; display: <%= favicon_src ? 'block' : 'flex' %>;
+                    align-items: center; justify-content: center;">
+          <% if favicon_src %>
+            <img src="<%= favicon_src %>" alt="Favicon 预览"
+                 style="height: 64px; width: 64px; object-fit: contain;">
+          <% else %>
+            <div>
+              <i class="bi bi-cloud-upload text-muted" style="font-size: 2rem"></i>
+              <p class="text-muted mt-2 mb-0" style="font-size:0.85rem"><%= t('admin.ui.d072') %></p>
+            </div>
+          <% end %>
+        </div>
+      </div>
+
+      <div class="d-flex align-items-center gap-3 mb-2">
+        <%= f.file_field :favicon, class: "form-control", style: "max-width: 360px",
+                         accept: "image/png,image/jpeg,image/gif,image/webp,image/svg+xml,image/x-icon",
+                         onchange: "previewImage(this, 'faviconPreviewArea', 'faviconPreviewImg', 64, 64)" %>
+        <% if @appearance.favicon.attached? %>
+          <label class="form-check-label d-flex align-items-center gap-1 text-danger" style="font-size:0.85rem; cursor:pointer">
+            <%= check_box_tag "appearance[remove_favicon]", "1", false, class: "form-check-input" %>
+            <%= t('admin.ui.d073') %>
+          </label>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <div class="d-flex gap-2">
+    <input type="hidden" name="nav_module_order" id="navModuleOrderInput" value="">
+    <%= f.submit t("admin.save_settings"), class: "btn btn-primary px-4", onclick: "return submitNavOrder()", disabled: !@license_valid %>
+    <%= link_to t("admin.cancel"), admin_appearance_settings_path, class: "btn btn-outline-secondary" %>
+  </div>
+<% end %>
+
+<script>
+function selectLogoMode(card, mode) {
+  document.getElementById('logoModeText').checked = (mode === 'text');
+  document.getElementById('logoModeLogo').checked = (mode === 'logo');
+  document.getElementById('logoModeIconLogo').checked = (mode === 'icon_logo');
+  document.querySelectorAll('.logo-mode-card').forEach(function(el) {
+    el.classList.remove('selected');
+  });
+  card.classList.add('selected');
+}
+
+function previewImage(input, areaId, imgClass, maxH, maxW) {
+  const area = document.getElementById(areaId);
+  if (input.files && input.files[0]) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      area.style.display = 'block';
+      area.style.alignItems = 'center';
+      area.style.justifyContent = 'center';
+      area.innerHTML = '<img src="' + e.target.result + '" style="max-height:' + maxH + 'px;max-width:' + maxW + 'px;object-fit:contain;" alt="<%= t('admin.preview') %>">';
+    };
+    reader.readAsDataURL(input.files[0]);
+  }
+}
+
+function submitNavOrder() {
+  var keys = [];
+  document.querySelectorAll('#nav-modules-sortable .draggable-module').forEach(function(el) {
+    keys.push(el.dataset.moduleKey);
+  });
+  document.getElementById('navModuleOrderInput').value = JSON.stringify(keys);
+  return true;
+}
+
+// <%= t('admin.ui.d047') %>
+function toggleNavPreview() {
+  var area = document.getElementById('navPreviewArea');
+  var btn = document.getElementById('navOrderPreviewBtn');
+  if (area.style.display === 'none') {
+    area.style.display = 'block';
+    btn.innerHTML = '<i class="bi bi-eye-slash me-1"></i><%= t('admin.ui.d076') %>';
+    btn.classList.remove('btn-outline-success');
+    btn.classList.add('btn-success');
+    renderNavPreview();
+  } else {
+    area.style.display = 'none';
+    btn.innerHTML = '<i class="bi bi-eye me-1"></i><%= t('admin.ui.d078') %>';
+    btn.classList.remove('btn-success');
+    btn.classList.add('btn-outline-success');
+  }
+}
+
+function renderNavPreview() {
+  var bar = document.getElementById('navPreviewBar');
+  if (!bar) return;
+  bar.innerHTML = '';
+  document.querySelectorAll('#nav-modules-sortable .draggable-module').forEach(function(el) {
+    if (el.dataset.enabled === 'false') return;
+    var icon = el.querySelector('.bi.me-2:not(.bi-grip-vertical):not(.badge)');
+    var name = el.querySelector('.fw-medium').textContent;
+    var iconClass = icon ? icon.className : 'bi bi-link';
+    var a = document.createElement('span');
+    a.className = 'd-inline-flex align-items-center px-3 py-1 rounded-pill';
+    a.style.cssText = 'font-size:0.8rem;background:#e8f5e9;color:#2e7d32;gap:4px';
+    a.innerHTML = '<i class="' + iconClass + '"></i>' + name;
+    bar.appendChild(a);
+  });
+  if (!bar.children.length) {
+    bar.innerHTML = '<span class="text-muted" style="font-size:0.8rem"><%= t('admin.ui.d069') %></span>';
+  }
+}
+
+// <%= t('admin.ui.d048') %>
+function resetNavOrder() {
+  var list = document.getElementById('nav-modules-sortable');
+  var items = Array.from(list.querySelectorAll('.draggable-module'));
+  items.sort(function(a, b) {
+    var order = ['community','chat_groups','tools'];
+    return order.indexOf(a.dataset.moduleKey) - order.indexOf(b.dataset.moduleKey);
+  });
+  items.forEach(function(item) { list.appendChild(item); });
+  updateSortNumbers();
+  renderNavPreview();
+}
+
+// <%= t('admin.ui.d045') %>
+function updateSortNumbers() {
+  document.querySelectorAll('#nav-modules-sortable .draggable-module').forEach(function(el, i) {
+    var badge = el.querySelector('.badge.bg-light');
+    if (badge) badge.textContent = i + 1;
+    // <%= t('admin.ui.d053') %>
+    var homeTag = el.querySelector('.badge.text-warning');
+    if (homeTag) homeTag.remove();
+  });
+  // <%= t('admin.ui.d052') %>
+  var items = document.querySelectorAll('#nav-modules-sortable .draggable-module');
+  if (items.length > 0 && items[0].dataset.enabled === 'true') {
+    var nameSpan = items[0].querySelector('.fw-medium');
+    var tag = document.createElement('span');
+    tag.className = 'badge bg-warning bg-opacity-10 text-warning me-1';
+    tag.style.fontSize = '0.7rem';
+    tag.innerHTML = '<i class="bi bi-house-fill me-1"></i>首页';
+    nameSpan.insertAdjacentElement('afterend', tag);
+  }
+}
+
+// <%= t('admin.ui.d046') %>
+document.addEventListener('DOMContentLoaded', function() {
+  var list = document.getElementById('nav-modules-sortable');
+  if (!list) return;
+
+  var draggedItem = null;
+
+  list.addEventListener('dragstart', function(e) {
+    if (!e.target.classList.contains('draggable-module')) return;
+    draggedItem = e.target;
+    e.target.style.opacity = '0.35';
+    e.target.style.transform = 'scale(0.97)';
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', '');
+    // <%= t('admin.ui.d049') %>
+    setTimeout(function() { e.target.classList.add('dragging'); }, 0);
+  });
+
+  list.addEventListener('dragend', function(e) {
+    if (!e.target.classList.contains('draggable-module')) return;
+    e.target.style.opacity = '1';
+    e.target.style.transform = 'none';
+    e.target.classList.remove('dragging');
+    draggedItem = null;
+    list.querySelectorAll('.draggable-module').forEach(function(i) {
+      i.classList.remove('drag-over');
+      i.style.borderTop = '';
+      i.style.borderBottom = '';
+    });
+    updateSortNumbers();
+    renderNavPreview();
+  });
+
+  list.addEventListener('dragover', function(e) {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    if (!draggedItem) return;
+
+    var target = e.target.closest('.draggable-module');
+    if (!target || target === draggedItem) return;
+
+    list.querySelectorAll('.draggable-module').forEach(function(i) {
+      i.classList.remove('drag-over');
+      i.style.borderTop = '';
+      i.style.borderBottom = '';
+    });
+
+    var rect = target.getBoundingClientRect();
+    var midY = rect.top + rect.height / 2;
+
+    if (e.clientY < midY) {
+      list.insertBefore(draggedItem, target);
+      target.style.borderTop = '2px solid #198754';
+    } else {
+      list.insertBefore(draggedItem, target.nextSibling);
+      target.style.borderBottom = '2px solid #198754';
+    }
+  });
+});
+</script>

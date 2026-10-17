@@ -1,0 +1,218 @@
+<!-- Tab Navigation -->
+<ul class="nav nav-tabs mb-4" id="emailTabs" role="tablist">
+  <li class="nav-item" role="presentation">
+    <button class="nav-link active" id="send-tab" data-bs-toggle="tab" data-bs-target="#sendPanel" type="button" role="tab">
+      <i class="bi bi-envelope-paper me-1"></i><%= t('admin.ui.m246') %>
+    </button>
+  </li>
+</ul>
+
+<div class="tab-content">
+  <div class="tab-pane fade show active" id="sendPanel" role="tabpanel">
+    <form id="userEmailForm" action="<%= send_email_admin_user_emails_path %>" method="post">
+      <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+      <div class="row g-4">
+        <div class="col-lg-5">
+          <!-- 选择用户 -->
+          <div class="card card-admin mb-4">
+            <div class="card-header py-3 d-flex justify-content-between align-items-center">
+              <h6 class="mb-0 fw-bold"><i class="bi bi-check2-square me-2 text-primary"></i><%= t('admin.ui.m376') %></h6>
+              <div class="d-flex gap-2 align-items-center">
+                <button type="button" class="btn btn-sm btn-outline-primary rounded-pill" onclick="toggleAllUsers(this)"><%= t('admin.select_all_toggle') %></button>
+                <span class="text-muted" style="font-size:0.8rem"><%= t('admin.ui.m030') %> <span id="selectedCount" class="fw-bold text-primary">0</span> <%= t('admin.ui.m074') %></span>
+              </div>
+            </div>
+            <div class="card-body p-0">
+              <!-- 搜索 -->
+              <div class="p-2 border-bottom">
+                <div class="input-group input-group-sm">
+                  <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
+                  <input type="text" id="userSearch" class="form-control" placeholder="<%= t('admin.ui.m377') %>" oninput="filterUsers()">
+                </div>
+              </div>
+              <!-- 角色筛选 -->
+              <div class="px-2 py-2 border-bottom d-flex gap-1 flex-wrap">
+                <button type="button" class="btn btn-xs btn-outline-secondary rounded-pill" style="font-size:0.75rem" onclick="filterByRole('')" data-role-filter=""><%= t('admin.ui.m010') %></button>
+                <button type="button" class="btn btn-xs btn-outline-info rounded-pill" style="font-size:0.75rem" onclick="filterByRole('vip')" data-role-filter="vip">VIP</button>
+                <button type="button" class="btn btn-xs btn-outline-secondary rounded-pill" style="font-size:0.75rem" onclick="filterByRole('user')" data-role-filter="user"><%= t('admin.regular_user') %></button>
+              </div>
+              <div style="max-height:420px;overflow-y:auto;" id="userListContainer">
+                <table class="table table-hover mb-0">
+                  <thead>
+                    <tr>
+                      <th style="width:40px"></th>
+                      <th><%= t('admin.user') %></th>
+                      <th><%= t('admin.email') %></th>
+                    </tr>
+                  </thead>
+                  <tbody id="userTableBody">
+                    <% @users.each do |user| %>
+                      <tr data-role="<%= user.role %>" data-search="<%= "#{user.display_name} #{user.email}".downcase %>">
+                        <td>
+                          <input class="form-check-input user-checkbox" type="checkbox" value="<%= user.id %>" id="user_check_<%= user.id %>" onchange="updateSelectedCount()">
+                        </td>
+                        <td>
+                          <label class="form-check-label small d-flex align-items-center gap-2" for="user_check_<%= user.id %>" style="cursor:pointer">
+                            <% if user.has_avatar? %>
+                              <img src="<%= user.avatar_data_url %>" style="width:24px;height:24px;border-radius:4px;object-fit:cover">
+                            <% else %>
+                              <div class="rounded bg-avatar-<%= user.id % 5 + 1 %> d-flex align-items-center justify-content-center" style="width:24px;height:24px;color:#fff;font-size:0.65rem;font-weight:600;flex-shrink:0"><%= user.display_name[0] %></div>
+                            <% end %>
+                            <span><%= user.display_name %></span>
+                            <% if user.vip? %>
+                              <span class="badge bg-danger" style="font-size:0.6rem">VIP</span>
+                            <% end %>
+                          </label>
+                        </td>
+                        <td><span class="text-muted" style="font-size:0.82rem"><%= user.email %></span></td>
+                      </tr>
+                    <% end %>
+                  </tbody>
+                </table>
+              </div>
+              <div class="p-2 text-center">
+                <span class="text-muted" style="font-size:0.8rem"><%= t('admin.ui.m013') %> <%= @pagy.count %> <%= t('admin.ui.m239') %></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-7">
+          <!-- 邮件<%= t('admin.ui.m008') %> -->
+          <div class="card card-admin mb-4">
+            <div class="card-header py-3 d-flex justify-content-between align-items-center">
+              <h6 class="mb-0 fw-bold"><i class="bi bi-envelope me-2 text-success"></i><%= t('admin.ui.m378') %></h6>
+              <div class="d-flex gap-1">
+                <button type="button" class="btn btn-sm btn-primary rounded-pill" id="btnEdit" onclick="setEmailTab('edit')">
+                  <i class="bi bi-code-slash me-1"></i><%= t('admin.ui.m008') %>
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-primary rounded-pill" id="btnPreview" onclick="setEmailTab('preview')">
+                  <i class="bi bi-eye me-1"></i><%= t('admin.ui.m007') %>
+                </button>
+              </div>
+            </div>
+            <div class="card-body">
+              <!-- 邮件<%= t('admin.ui.m588') %> -->
+              <div class="mb-3">
+                <label class="form-label fw-semibold small"><i class="bi bi-type-h1 me-1"></i><%= t('admin.email_subject') %></label>
+                <input type="text" name="subject" class="form-control form-control-sm" placeholder="<%= t('admin.ui.m379') %>" required>
+              </div>
+
+              <!-- 邮件内容 -->
+              <div class="mb-3">
+                <label class="form-label fw-semibold small"><i class="bi bi-file-text me-1"></i><%= t('admin.email_content_html') %></label>
+                <textarea name="html_body" id="emailBody" class="form-control form-control-sm font-monospace" rows="16" style="resize:vertical"
+                  required><div style="max-width:600px;margin:0 auto;font-family:'Helvetica Neue',Arial,'PingFang SC','Microsoft YaHei',sans-serif;color:#333;line-height:1.8;">
+  <div style="background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);padding:40px 30px;text-align:center;border-radius:12px 12px 0 0;">
+    <h1 style="color:#fff;margin:0;font-size:24px;"><%= t('admin.ui.m380') %></h1>
+    <p style="color:rgba(255,255,255,0.85);margin:8px 0 0;font-size:14px;"><%= t('admin.ui.m381') %></p>
+  </div>
+
+  <div style="background:#fff;padding:30px;border-left:1px solid #eee;border-right:1px solid #eee;">
+    <h2 style="color:#333;font-size:20px;margin:0 0 16px;"><%= t('admin.ui.m071') %> {name}，<%= t('admin.ui.m070') %></h2>
+    <p style="color:#555;font-size:14px;margin:0 0 16px;"><%= t('admin.ui.m382') %></p>
+    <p style="color:#555;font-size:14px;margin:0 0 16px;"><%= t('admin.ui.m383') %></p>
+    <p style="color:#555;font-size:14px;margin:0 0 24px;"><%= t('admin.ui.m384') %></p>
+
+    <div style="text-align:center;margin:24px 0;">
+      <a href="https://your-domain.com" style="display:inline-block;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:#fff;text-decoration:none;padding:12px 32px;border-radius:8px;font-size:14px;font-weight:600;"><%= t('admin.ui.m437') %></a>
+    </div>
+
+    <p style="color:#888;font-size:13px;margin:0;"><%= t('admin.ui.m438') %></p>
+  </div>
+
+  <div style="background:#f8f9fa;padding:20px 30px;text-align:center;border-radius:0 0 12px 12px;border:1px solid #eee;border-top:none;">
+    <p style="color:#999;font-size:12px;margin:0;"><%= t('admin.ui.m066') %></p>
+  </div>
+</div></textarea>
+                <div id="emailPreview" class="border rounded p-3 bg-white d-none" style="min-height:300px;font-size:0.9rem;overflow:visible;"></div>
+                <div class="form-text small mt-1">
+                  <i class="bi bi-info-circle me-1"></i><%= t('admin.ui.m065') %> <code>{name}</code> <%= t('admin.ui.m439') %><code>{email}</code> <%= t('admin.ui.m440') %>
+                </div>
+              </div>
+
+              <button type="submit" class="btn btn-primary rounded-pill px-4">
+                <i class="bi bi-send me-1"></i><%= t('admin.ui.m246') %>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+function toggleAllUsers(btn) {
+  var checkboxes = document.querySelectorAll('.user-checkbox:visible');
+  var visibleChecked = Array.from(checkboxes).filter(function(cb) { return cb.checked; });
+  var allChecked = visibleChecked.length === checkboxes.length && checkboxes.length > 0;
+  checkboxes.forEach(function(cb) { cb.checked = !allChecked; });
+  updateSelectedCount();
+}
+
+function updateSelectedCount() {
+  var checked = document.querySelectorAll('.user-checkbox:checked');
+  document.getElementById('selectedCount').textContent = checked.length;
+}
+
+function setEmailTab(tab) {
+  var textarea = document.getElementById('emailBody');
+  var preview = document.getElementById('emailPreview');
+  var btnEdit = document.getElementById('btnEdit');
+  var btnPreview = document.getElementById('btnPreview');
+  if (tab === 'edit') {
+    textarea.classList.remove('d-none');
+    preview.classList.add('d-none');
+    btnEdit.className = 'btn btn-sm btn-primary rounded-pill';
+    btnPreview.className = 'btn btn-sm btn-outline-primary rounded-pill';
+  } else {
+    textarea.classList.add('d-none');
+    preview.classList.remove('d-none');
+    preview.innerHTML = textarea.value || '<span class="text-muted"><%= t('admin.no_content') %></span>';
+    btnEdit.className = 'btn btn-sm btn-outline-primary rounded-pill';
+    btnPreview.className = 'btn btn-sm btn-primary rounded-pill';
+  }
+}
+
+function filterUsers() {
+  var keyword = document.getElementById('userSearch').value.toLowerCase();
+  var rows = document.querySelectorAll('#userTableBody tr');
+  rows.forEach(function(row) {
+    var search = row.getAttribute('data-search') || '';
+    var matchRole = !currentRoleFilter || row.getAttribute('data-role') === currentRoleFilter;
+    var matchSearch = !keyword || search.indexOf(keyword) !== -1;
+    row.style.display = (matchRole && matchSearch) ? '' : 'none';
+  });
+}
+
+var currentRoleFilter = '';
+function filterByRole(role) {
+  currentRoleFilter = role;
+  document.querySelectorAll('[data-role-filter]').forEach(function(btn) {
+    btn.classList.remove('btn-primary');
+    btn.classList.add('btn-outline-secondary');
+  });
+  var activeBtn = document.querySelector('[data-role-filter="' + role + '"]');
+  if (activeBtn) {
+    activeBtn.classList.remove('btn-outline-secondary');
+    activeBtn.classList.add('btn-primary');
+  }
+  filterUsers();
+}
+
+document.getElementById('userEmailForm').addEventListener('submit', function(e) {
+  var checked = document.querySelectorAll('.user-checkbox:checked');
+  if (checked.length === 0) {
+    e.preventDefault();
+    alert('<%= t('admin.ui.m441') %>');
+    return;
+  }
+  var ids = Array.from(checked).map(function(cb) { return cb.value; });
+  var input = document.createElement('input');
+  input.type = 'hidden';
+  input.name = 'user_ids';
+  input.value = ids.join(',');
+  this.appendChild(input);
+});
+</script>

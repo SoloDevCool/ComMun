@@ -1,0 +1,459 @@
+en:
+  admin:
+    settings:
+      s001: Key management
+      s002: Enter SecretId
+      s003: Enter SecretKey
+      s004: Enter Client ID
+      s005: Enter Client Secret
+      s006: One-click replace
+      s007: Key
+      s008: Add ad
+      s009: Test
+      s010: Sign in
+      s011: Migrate to COS
+      s012: Migrate back to local
+      s013: Verify license
+      s014: Region
+      s015: Password registration
+      s016: Auto comment
+      s017: to
+      s018: Auto-filled after selecting a provider, editable manually
+      s019: Random time range
+      s020: 'This operation will:'
+      s021: 'Migration request failed: '
+      s022: " image links replaced."
+      s023: " topics. In topics, "
+      s024: ", failed "
+      s025: 'Migration complete! '
+      s026: " page to view execution status."
+      s027: Migrating, please wait...
+      s028: Auto-replace image links in topic content
+      s029: 'Request failed: '
+      s030: Object storage
+      s031: Local
+      s032: 'Expires at: '
+      s033: Tencent Cloud COS
+      s034: 'Please go to the '
+      s035: Captcha management
+      s036: Leave blank to use the built-in default prompt
+      s037: 'In the Captcha console, '
+      s038: Rewrite historical image links
+      s039: Replace existing COS direct links in topics and comments with proxy URLs
+      s040: to prevent direct access to originals. Newly uploaded images already use
+        proxy URLs automatically.
+      s041: 'Hex color value, e.g. '
+      s042: Rewriting historical image links...
+      s043: Find it in the Tencent Cloud console under "Account Info"
+      s044: e.g. 125xxxxxx
+      s045: " to get the keys."
+      s046: 'Course videos use Tencent Cloud VOD. After configuration you can upload
+        videos in course management. Please go to the '
+      s047: Tencent Cloud VOD
+      s048: Download images from COS to local storage (instructor avatars become base64)
+        and auto-replace image links in topics. Irreversible.
+      s049: Batch upload local images and instructor avatars to COS and auto-replace
+        image links in topics. Irreversible.
+      s050: " to obtain it. Keep it secret."
+      s051: Custom CDN domain for accessing uploaded images. Leave blank to use the
+        default COS domain
+      s052: e.g. img.aibbs.cool
+      s053: Custom domain (origin domain)
+      s054: Bucket region, e.g. ap-guangzhou, ap-shanghai, ap-beijing
+      s055: e.g. ap-guangzhou
+      s056: Region
+      s057: 'Full bucket name, must include the AppId suffix, format: '
+      s058: e.g. my-bucket-125xxxxxx
+      s059: Bucket name
+      s060: " to create a bucket and get the keys."
+      s061: Object Storage console
+      s062: 'The following info is required when image storage is set to COS. Please
+        go to the '
+      s063: When enabled, COS images in topics get text watermarks applied in real
+        time via Tencent Cloud CI — no server-side processing, better performance.
+        Watermark changes take effect immediately. Requires COS with CI enabled.
+      s064: Topic image watermark
+      s065: Upload files to Tencent Cloud COS, requires the configuration below
+      s066: 'Local storage: files are saved on the server disk'
+      s067: Local storage
+      s068: Storage method
+      s069: Choose where uploads (topic images, user avatars, instructor avatars,
+        etc.) are stored. After switching, new uploads use the new storage; existing
+        files are unaffected.
+      s070: Image storage
+      s071: 'Actual replies: '
+      s072: Reply count increment
+      s073: 'Actual topics: '
+      s074: Topic count increment
+      s075: 'Actual members: '
+      s076: Member count increment
+      s077: Virtual increment. E.g. actual members 1121 + increment 10000 displays
+        11121. Leave blank or 0 to disable.
+      s078: Real data
+      s079: Invitation code registration
+      s080: Text color
+      s081: Auto-scales with image size
+      s082: Font size (px)
+      s083: Lower values are more transparent
+      s084: Opacity (%)
+      s085: Bottom right
+      s086: Bottom center
+      s087: Bottom left
+      s088: Center
+      s089: Top right
+      s090: Top center
+      s091: Top left
+      s092: Watermark position
+      s093: Chinese and English supported, max 20 characters recommended
+      s094: My Community
+      s095: Watermark text
+      s096: Enable watermark
+      s097: Local images do not support COS watermark
+      s098: Replacing...
+      s099: After rewriting, images are served via the server proxy so original URLs
+        can't be obtained.
+      s100: This iterates all topics and comments, replacing existing COS image links
+        with /images/:id proxy URLs.
+      s101: Replace COS direct links in topics and comments with proxy URLs?
+      s102: Downloading images from COS to local storage. This may take a while with
+        many images...
+      s103: Irreversible. Make sure COS is configured correctly so files can be downloaded.
+      s104: Convert instructor avatars on COS to base64
+      s105: Download images from COS to local storage
+      s106: Migrate images from object storage back to local?
+      s107: Migrating images to object storage. This may take a while with many images...
+      s108: Irreversible. Make sure COS is configured correctly.
+      s109: Upload base64 instructor avatars to COS
+      s110: Upload local images to COS
+      s111: Migrate local historical images to object storage?
+      s112: Image upload error
+      s113: Image upload failed
+      s114: Failed to parse upload response
+      s115: 'Activation failed: '
+      s116: 'License: '
+      s117: 'Deployment type: '
+      s118: 'Status: '
+      s119: 'Product: '
+      s120: Activation successful
+      s121: Never expires
+      s122: Activating...
+      s123: Enter the license code first
+      s124: 'Hit keywords: '
+      s125: 'Confidence: '
+      s126: 'Tags: '
+      s127: 'Result: '
+      s128: Calling Tencent Cloud TMS detection...
+      s129: Detecting...
+      s130: Enter test text
+      s131: 'Rewrite failed: '
+      s132: " image links."
+      s133: " items updated, involving "
+      s134: 'Rewrite complete! '
+      s135: Private encryption (SimpleAES)
+      s136: Unencrypted (RawAdaptive)
+      s137: Adaptive stream encryption type
+      s138: Find it under "Video Processing > Adaptive Stream Templates". Highest
+        priority, best anti-sniffing. Leave blank to disable adaptive streaming.
+      s139: In the VOD console under "Video Processing Settings
+      s140: e.g. 10
+      s141: Adaptive stream template ID
+      s142: Fill in the sub-application ID if used, otherwise leave blank
+      s143: Leave blank for the main application
+      s144: Sub-application ID
+      s145: Used to generate upload signatures. Keep it secret.
+      s146: " to apply for free."
+      s147: 'VE Console, '
+      s148: Required
+      s149: Player License URL
+      s150: under "Distribution & Playback > Default Distribution Config"
+      s151: 'Distribution & Playback Settings, '
+      s152: 'VOD console, '
+      s153: Optional
+      s154: Delete this ad?
+      s155: 'Save failed: '
+      s156: Enter the ad link URL
+      s157: Enter the ad title
+      s158: Edit ad
+      s159: 'Load failed: '
+      s160: 'Sort: '
+      s161: No ads yet, click the button below to add
+      s162: Save settings
+      s163: bound in it. The signature is only valid for these domains; leave blank
+        for no restriction.
+      s164: e.g. https://your-domain.com
+      s165: Playback domain whitelist
+      s166: Effective when adaptive streaming is not configured. Fill in an HLS transcoding
+        template ID. Leave blank to play the original video.
+      s167: e.g. 100230
+      s168: Transcoding template ID
+      s169: Encryption for adaptive streams. SimpleAES is HLS private encryption,
+        recommended for web.
+      s170: FairPlay only
+      s171: Widevine only
+      s172: Users register with their email
+      s173: Email registration
+      s174: Users register with a username
+      s175: Username registration
+      s176: Control the available registration methods on the frontend. At least one
+        must be enabled or registration will be unavailable.
+      s177: Registration methods
+      s178: Frankfurt (eu-frankfurt)
+      s179: Virginia (na-ashburn)
+      s180: Tokyo (ap-tokyo)
+      s181: Bangkok (ap-bangkok)
+      s182: Sender email address created in the Tencent Cloud SES console
+      s183: Sender email address
+      s184: " to create a sender address."
+      s185: 'console, '
+      s186: " to get SecretId and SecretKey, and in the "
+      s187: 'Uses the Tencent Cloud SES API. Please go to the '
+      s188: Enter the Tencent Cloud SecretId
+      s189: " to obtain it."
+      s190: 'Tencent Cloud SecretId/SecretKey for API signing (different from the
+        captcha AppSecretKey). Please go to the '
+      s191: " column, used for server-side ticket verification"
+      s192: Enter AppSecretKey
+      s193: " page to obtain it"
+      s194: Enter CaptchaAppId
+      s195: When enabled, captcha will be shown on sign-in and sign-up pages
+      s196: Enable captcha
+      s197: " to create a captcha app and get CaptchaAppId and AppSecretKey."
+      s198: 'Captcha console, '
+      s199: 'When enabled, users must pass Tencent Cloud captcha on sign-in and sign-up,
+        effectively preventing brute force and bulk registration. Please go to the '
+      s200: Tencent Cloud Captcha
+      s201: Registration requires an invitation code, please ask an existing user
+      s202: Invitation code hint
+      s203: Enable invitation code registration
+      s204: " page to generate and manage invitation codes."
+      s205: Invitation code management
+      s206: 'When enabled, new users must enter a valid invitation code to register.
+        Manage them in the '
+      s207: 'Third-party apps, '
+      s208: 'When enabled, users can sign in with their Gitee account. Please go to '
+      s209: " to create an OAuth 2.0 client ID. Authorized redirect URI: "
+      s210: 'When enabled, users can sign in with their Google account. Please go
+        to '
+      s211: " to create an OAuth App. Callback URL: "
+      s212: 'When enabled, users can sign in with their GitHub account. Please go
+        to '
+      s213: Set the UI display language; takes effect immediately after saving. Japanese
+        and Korean fall back to Chinese until translations are complete.
+      s214: System Language
+      s215: General settings
+      s216: not verified. The frontend works normally, but the system settings below
+        are unavailable. Please paste the license file issued by the licensor to
+        complete offline activation.
+      s217: License key, e.g. AIBBS-XXXX-XXXX (already embedded in the license file)
+      s218: License Key
+      s219: "This system uses fully offline licensing: the licensor signs a license file
+        (bound to this machine's hardware fingerprint and validity period) offline
+        with the private key, and the admin activates it locally by pasting the file.
+        No network request is involved. Without verification, admin settings are
+        restricted but the frontend is unaffected."
+      s220: License
+      s221: System settings
+      s222: Enable
+      s223: Disable
+      s224: Guangzhou (ap-guangzhou)
+      s225: Singapore (ap-singapore)
+      s226: Hong Kong (ap-hongkong)
+      s227: Chengdu (ap-chengdu)
+      s228: Beijing (ap-beijing)
+      s229: Shanghai (ap-shanghai)
+      s230: 日本語
+      s231: 简体中文
+      s232: e.g. img
+      s233: 'e.g. '
+      s234: Failed to delete
+      s235: ''
+      s236: 'Upload failed: '
+      s237: Email verification code
+      s238: Baidu Translate API
+      s239: Enter APP ID
+      s240: Enter the key
+      s241: Email provider
+      s242: Tencent Cloud SES
+      s243: Feature modules
+      s244: Text moderation
+      s245: Text language
+      s246: Chinese (zh)
+      s247: English (en)
+      s248: BizType (policy ID)
+      s249: Leave blank for the default policy
+      s250: Optional; find it in the CMS console under "Policy Management". Leave
+        blank for the Tencent Cloud default policy.
+      s251: Test text moderation
+      s252: Enter a text snippet to verify connectivity; does not affect real data
+      s253: Question banks
+      s254: Courses
+      s255: Community
+      s256: AI auto topics
+      s257: AI auto comments
+      s258: CPS ads
+      s259: Community stats virtual increment
+      s260: Video
+      s261: not verified
+      license_hint: This system uses fully offline licensing. Send this machine's
+        hardware fingerprint to the licensor, then paste the license file signed
+        with the private key below and click "Verify license" to activate locally.
+        Without verification, admin settings are restricted but the frontend is
+        unaffected.
+      github_hint_html: 'When enabled, users can sign in with their GitHub account.
+        Please go to %{docs} to create an OAuth App. Callback URL: %{callback}'
+      google_hint_html: 'When enabled, users can sign in with their Google account.
+        Please go to %{docs} to create an OAuth 2.0 client ID. Authorized redirect
+        URI: %{callback}'
+      gitee_hint_html: 'When enabled, users can sign in with their Gitee account.
+        Please go to %{docs} to create an app. Callback URL: %{callback}'
+      gitee_apps: Gitee Third-Party Apps
+      baidu_hint_html: Used to auto-translate topic titles into English for friendly
+        URLs. Please go to %{docs} to get an APPID and key.
+      baidu_platform: Baidu Translate Open Platform
+      email_verify_hint: When enabled, users must receive a verification code via
+        email to complete registration.
+      sendflare_hint_html: Uses the Sendflare email service. Please go to %{docs}
+        to register and get an API Token.
+      ses_hint_html: Uses the Tencent Cloud SES API. Please go to %{keys} to get SecretId
+        and SecretKey, and create a sender address in the %{ses}.
+      ses_console: SES console
+      api_key_management: API Key Management
+      registration_hint: Control the registration methods available on the frontend.
+        At least one must be enabled or registration will be unavailable.
+      invite_hint_html: When enabled, new users must enter a valid invitation code
+        to register. Generate and manage codes in the %{mgmt} page.
+      invite_mgmt: Invitation Code Management
+      captcha_hint_html: When enabled, users must pass Tencent Cloud captcha on sign-in
+        and sign-up, preventing brute force and bulk registration. Go to %{docs} to
+        create a captcha app and get CaptchaAppId and AppSecretKey.
+      captcha_console: Captcha console
+      captcha_api_hint_html: Tencent Cloud SecretId/SecretKey for API signing (different
+        from the captcha AppSecretKey). Please go to %{keys} to obtain them.
+      modules_hint: Enable or disable frontend navigation modules. Disabled modules
+        become inaccessible.
+      tms_hint_html: Integrates Tencent Cloud Text Moderation (TMS) to auto-detect
+        topic and comment content on publish, blocking porn, illegal and ad content.
+        Go to %{docs} to enable the service and get keys.
+      cms_console: CMS console
+      ai_hint: Configure AI service connections, shared by comment generation, topic
+        generation and more. All providers are OpenAI API compatible.
+      auto_topic_hint_html: When enabled, the system auto-generates topics with AI
+        daily. Creation times are randomized within the configured range for natural
+        publishing. Check execution status on the %{page} page.
+      auto_topics_page: AI Auto Topics
+      auto_comment_hint_html: When enabled, the system auto-generates comments with
+        AI daily and posts them to random topics. Comment times are randomized within
+        the configured range. Check execution status on the %{page} page.
+      auto_comments_page: AI Auto Comments
+      ai_label_hint: When enabled, AI-generated topics and comments show an "AI" badge
+        on the frontend, helping users identify content sources.
+      cps_hint: Shows a CPS ad card above the hot nodes. Supports multiple ads that
+        rotate on each page refresh.
+      virtual_hint: Set virtual increments for the members, topics and replies counts
+        shown on the homepage. Displayed value = real data + increment. E.g. actual
+        members 1121 + increment 10000 displays 11121. Leave blank or 0 to disable.
+      storage_hint: Choose where uploads (topic images, avatars, instructor photos,
+        etc.) are stored. After switching, new uploads use the new storage; existing
+        files are unaffected.
+      watermark_hint_html: When enabled, COS images in topics get text watermarks
+        applied in real time via Tencent Cloud CI — no server-side processing, better
+        performance. Watermark changes take effect immediately. Requires COS with
+        CI enabled. %{warning}
+      local_no_watermark: Local images do not support COS watermark
+      cos_hint_html: The following info is required when image storage is set to COS.
+        Please go to %{docs} to create a bucket and get keys.
+      cos_console: Object Storage console
+      vod_hint_html: Course videos use Tencent Cloud VOD. After configuration you
+        can upload videos directly in course management. Please go to %{keys} to get
+        keys.
+      s326: Enter SecretId
+      s330: License File
+      s331: Paste the Base64 license file provided by the licensor
+      s332: This system uses fully offline licensing — no license server connection
+        required. Signature, validity period and hardware fingerprint are all
+        verified locally.
+      s333: Hardware Fingerprint (this machine)
+      s334: Plan
+      s335: Verify license
+      s325: 'Upload failed: '
+      s262: From email
+      s263: Enter the Sendflare API Token
+      s264: Provider
+      s265: Custom
+      s266: Tencent Cloud TokenHub
+      s267: Alibaba Cloud Bailian
+      s268: AI service
+      s269: service
+      s270: API URL
+      s271: URL
+      s272: Model name
+      s273: Enter the API key
+      s274: AI auto topic creation
+      s275: Enable auto creation
+      s276: Daily creation count
+      s277: Creation method
+      s278: Save as draft
+      s279: Publish directly
+      s280: Topics are created at random times within this range
+      s281: Daily comment count
+      s282: Comment prompt
+      s283: Custom System Prompt for AI comment generation; leave blank for the default.
+        Applies to both auto-created and manually generated content.
+      s284: Topic default prompt
+      s285: Custom System Prompt for AI topic generation; leave blank for the default.
+        Applies to both auto-created and manually generated content.
+      s286: Comments are published at random times within this range
+      s287: AI label
+      s288: label
+      s289: When enabled, all AI-generated content looks identical to users
+      s290: Enable text moderation
+      s291: When enabled, topics and comments are automatically checked before publishing
+      s292: Enter the Tencent Cloud SecretKey
+      s293: Play key
+      s294: h
+      s295: Disable
+      s296: Delete
+      s297: Edit
+      s298: Save
+      s299: Cancel
+      s300: Status
+      s301: Remove
+      s302: Upload image
+      s303: Uploading...
+      s304: Loading...
+      s305: Image must be under 5MB
+      s306: Unknown error
+      s307: Preview
+      s308: Hide
+      s309: Show
+      s310: URL to open when the ad is clicked
+      s311: Ad link URL
+      s312: Supports PNG / JPG / GIF / WebP
+      s313: Recommended size 340
+      s314: Use external link
+      s315: Ad image preview
+      s316: Ad image
+      s317: Short description shown under the title
+      s318: Ad description
+      s319: Limited-time offer · Cloud server deals
+      s320: Ad title
+      s321: Add/
+      s322: Tencent Cloud
+      s323: Data decoration
+      s324: Enter test text
+      sendflare_token_hint_html: Go to the %{console} API Keys page to create a Token
+      console: console
+      enable_text_moderation: Enable text moderation
+      tms_check_hint: When enabled, topics and comments are automatically checked
+        before publishing
+      tms_keys_hint_html: Please go to %{keys} to obtain them
+      enter_test_text: Enter test text
+      enable_auto_create: Enable auto creation
+      comment_prompt_hint: Custom System Prompt for AI comment generation; leave blank
+        for the default. Applies to both auto-created and manually generated content.
+      ai_label_note: When enabled, all AI-generated content looks identical to users
+      sort_order_hint: Sort order (lower comes first)
+      tcplayer_required: Required for TCPlayer v5
+      vod_license_hint_html: Apply for free at the %{console}
+      ve_console: VE Console
+      hls_template_id: HLS transcoding template ID

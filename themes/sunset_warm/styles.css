@@ -1,0 +1,80 @@
+:root {
+  /* === Sunset Warm 亮色主题 === */
+
+  /* 背景 */
+  --bg-body: #faf7f2;
+  --bg-card: #ffffff;
+  --bg-card-hover: #fdf9f4;
+  --bg-input: #faf7f2;
+
+  /* 边框 */
+  --border-color: #e8ddd0;
+  --border-color-strong: #d4c4b0;
+  --border-color-stronger: #c4a88a;
+
+  /* 文字 */
+  --text-primary: #3d2b14;
+  --text-secondary: #5c4022;
+  --text-tertiary: #7a5933;
+  --text-muted: #9a7d55;
+  --text-faint: #c4a88a;
+  --text-link: #c2410c;
+
+  /* 导航栏 */
+  --bg-navbar: #78350f;
+  --border-navbar: #5c2a0a;
+  --text-navbar: #fde8d0;
+  --text-brand: #ffffff;
+  --bg-search-icon: #c4a88a;
+
+  /* 代码 */
+  --bg-code: #fffbeb;
+  --text-code: #b45309;
+
+  /* 引用 */
+  --bg-blockquote: #faf7f2;
+  --border-blockquote: #d4c4b0;
+  --text-blockquote: #7a5933;
+
+  /* 按钮 */
+  --bg-btn-outline: #faf7f2;
+  --border-btn-outline: #d4c4b0;
+  --text-btn-outline: #5c4022;
+  --bg-btn-outline-hover: #e8ddd0;
+  --border-btn-outline-hover: #c4a88a;
+  --text-btn-outline-hover: #3d2b14;
+  --bg-btn-primary: #b45309;
+  --border-btn-primary: #b45309;
+  --text-btn-primary: #ffffff;
+  --bg-btn-primary-hover: #d97706;
+  --border-btn-primary-hover: #d97706;
+  --bg-btn-active: #92400e;
+  --border-btn-active: #92400e;
+
+  /* 置顶 & 高亮 */
+  --bg-pinned: #fffbeb;
+  --border-pinned: #c2410c;
+  --bg-mark: #fef3c7;
+  --text-mark: #78350f;
+
+  /* 节点卡片 */
+  --border-node-card: #e8ddd0;
+  --border-node-card-hover: #d4c4b0;
+  --bg-node-card-hover: #faf7f2;
+  --bg-badge-node: #fffbeb;
+  --text-badge-node: #d97706;
+
+  /* 用户头部 */
+  --bg-user-header: linear-gradient(135deg, #78350f 0%, #b45309 50%, #c2410c 100%);
+  --shadow-card: rgba(120, 53, 15, 0.06);
+  --shadow-avatar: rgba(120, 53, 15, 0.12);
+
+  /* 节点激活 */
+  --bg-node-active: #b45309;
+  --text-node-active: #ffffff;
+
+  /* 代码块 */
+  --bg-pre: #292014;
+  --border-pre: #5c4022;
+  --text-pre: #fde8d0;
+}

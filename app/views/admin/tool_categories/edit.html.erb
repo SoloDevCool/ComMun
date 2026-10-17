@@ -1,0 +1,84 @@
+<h4 class="text-dark fw-bold mb-4"><%= t('admin.ui.m553') %></h4>
+
+<div class="card card-admin" style="max-width:640px">
+  <div class="card-body p-4">
+    <%= form_with model: [:admin, @tool_category], local: true do |f| %>
+      <% if @tool_category.errors.any? %>
+        <div class="alert alert-danger rounded-3 py-2">
+          <i class="bi bi-exclamation-circle me-1"></i>
+          <ul class="mb-0 ms-3">
+            <% @tool_category.errors.full_messages.each do |msg| %>
+              <li><%= msg %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <div class="mb-3">
+        <%= f.label :name, t("admin.category_name"), class: "form-label fw-semibold small text-muted" %>
+        <%= f.text_field :name, class: "form-control form-control-lg rounded-3", placeholder: t('admin.ui.m115') %>
+      </div>
+
+      <div class="row g-3 mb-3">
+        <div class="col-md-6">
+          <%= f.label :icon, t("admin.icon"), class: "form-label fw-semibold small text-muted" %>
+          <div class="input-group">
+            <span class="input-group-text rounded-start-3"><i class="bi <%= @tool_category.icon.presence || 'bi-robot' %>"></i></span>
+            <%= f.text_field :icon, class: "form-control form-control-lg rounded-end-3", placeholder: "bi-robot" %>
+          </div>
+          <div class="form-text">Bootstrap Icons <%= t('admin.ui.m116') %></div>
+        </div>
+        <div class="col-md-6">
+          <%= f.label :color, t("admin.theme_color"), class: "form-label fw-semibold small text-muted" %>
+          <div class="input-group">
+            <input type="color" id="tool_category_color_preview" value="<%= @tool_category.color || '#6366f1' %>" class="form-control form-control-color rounded-start-3" style="width:46px">
+            <%= f.text_field :color, class: "form-control form-control-lg rounded-end-3", placeholder: "#6366f1" %>
+          </div>
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <%= f.label :description, t("admin.category_desc"), class: "form-label fw-semibold small text-muted" %>
+        <%= f.text_area :description, class: "form-control rounded-3", rows: 2, placeholder: t('admin.ui.m117') %>
+        <div class="form-text"><%= t('admin.max_500_chars') %></div>
+      </div>
+
+      <div class="row g-3 mb-4">
+        <div class="col-md-6">
+          <%= f.label :sort_order, t("admin.sort_order"), class: "form-label fw-semibold small text-muted" %>
+          <%= f.number_field :sort_order, class: "form-control form-control-lg rounded-3", min: 0 %>
+          <div class="form-text"><%= t('admin.lower_is_first') %></div>
+        </div>
+        <div class="col-md-6">
+          <%= f.label :is_active, t("admin.status"), class: "form-label fw-semibold small text-muted" %>
+          <div class="form-check form-switch mt-2">
+            <%= f.check_box :is_active, class: "form-check-input", style: "width:2.5em;height:1.5em" %>
+            <label class="form-check-label" for="tool_category_is_active"><%= t('admin.show_on_frontend') %></label>
+          </div>
+        </div>
+      </div>
+
+      <div class="d-flex gap-2">
+        <%= f.submit t("admin.save_changes"), class: "btn btn-primary rounded-pill px-4" %>
+        <%= link_to t("admin.cancel"), admin_tool_categories_path, class: "btn btn-outline-secondary rounded-pill px-4" %>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<script>
+(function() {
+  const colorPicker = document.getElementById('tool_category_color_preview');
+  const colorInput = document.querySelector('#tool_category_color');
+  if (colorPicker && colorInput) {
+    colorPicker.addEventListener('input', function() {
+      colorInput.value = this.value;
+    });
+    colorInput.addEventListener('input', function() {
+      if (/^#[0-9a-fA-F]{6}$/.test(this.value)) {
+        colorPicker.value = this.value;
+      }
+    });
+  }
+})();
+</script>

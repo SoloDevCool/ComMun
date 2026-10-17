@@ -1,0 +1,99 @@
+en:
+  flash:
+    join_comma: ", "
+    deleted: "Deleted"
+    forbidden: "Not authorized"
+    chat_groups:
+      disabled: "Chat groups feature is disabled"
+    comments:
+      no_permission: "You don't have permission to comment in this node"
+      reply_success: "Reply posted"
+      created: "Comment posted"
+      blank: "Content can't be blank or too short"
+      login_only_enabled: "Set to visible for logged-in users only"
+      login_only_disabled: "Visibility restriction removed"
+    license_verification:
+      not_verified: "License is not verified, unable to change this setting. Please paste a valid license file on the settings page to complete offline activation first."
+    courses:
+      not_found: "Course not found or unavailable"
+      no_permission: "You don't have permission to watch this course, please contact the administrator"
+      login_required: "Please sign in to watch course videos"
+      no_lessons: "This course has no lessons yet"
+      disabled: "Courses feature is disabled"
+    honors:
+      disabled: "Honors feature is disabled"
+    kols:
+      disabled: "KOL feature is disabled"
+    polls:
+      created: "Poll created successfully"
+      failed: "Failed to create poll: %{errors}"
+      closed: "Poll closed"
+      reopened: "Poll reopened"
+      deleted: "Poll deleted"
+    profiles:
+      avatar_failed: "Avatar upload failed, please try again"
+      avatar_updated: "Avatar updated successfully"
+      avatar_required: "Please select an avatar file"
+      demo_username: "In demo mode, the admin account cannot change username"
+      username_updated: "Username updated successfully"
+      demo_password: "In demo mode, the admin account cannot change password"
+      password_updated: "Password changed successfully"
+      privacy_updated: "Privacy settings updated"
+    qb_user_questions:
+      submitted: "Question submitted, pending review"
+    question_banks:
+      invalid_mode: "Invalid practice mode"
+      daily_limit: "You have already practiced today, come back tomorrow!"
+      chapter_empty: "No questions in this chapter"
+      login_required: "Please sign in to view your wrong-question book"
+      no_wrong_questions: "No wrong questions, keep it up!"
+      disabled: "Question banks feature is disabled"
+      subject_not_found: "Exam subject not found"
+    shop:
+      item_not_found: "Item not found"
+      item_unavailable: "Item is unavailable or sold out"
+      domain_required: "Please fill in the domain"
+      insufficient_points: "Insufficient points, need %{price} points, current balance %{balance}"
+      purchase_failed: "Purchase failed: %{message}"
+      purchased: "Purchase successful! %{price} points used"
+      disabled: "Points shop feature is disabled"
+    tools:
+      disabled: "Tools feature is disabled"
+    topics:
+      no_post_permission: "You don't have permission to post, please contact the administrator"
+      created: "Topic published successfully"
+      updated: "Topic updated successfully"
+      deleted: "Topic deleted"
+      delete_failed: "Failed to delete"
+      keyword_required: "Please enter a search keyword"
+      pinned: "Pinned"
+      unpinned: "Unpinned"
+      invalid_points: "Please enter a valid number of points"
+      cannot_unlock_own: "You can't unlock your own content"
+      unlocked: "Unlocked successfully"
+    omniauth:
+      failed: "Third-party sign-in failed"
+      expired: "Sign-in session expired, please sign in again"
+      invitation_required: "Please enter an invitation code"
+      invitation_invalid: "Invitation code is invalid or expired"
+      invitation_limit: "Invitation code has reached its usage limit"
+      sign_in_failed: "%{kind} sign-in failed, please try again"
+    passwords:
+      verified: "Verification successful, please set a new password"
+    users:
+      profile_private: "This profile is private"
+    blocks:
+      created: "User blocked"
+      removed: "Block removed"
+    favorites:
+      created: "Added to favorites"
+      removed: "Removed from favorites"
+      not_found: "Not in favorites"
+    follows:
+      created: "Followed successfully"
+      removed: "Unfollowed"
+    node_follows:
+      created: "Followed %{name}"
+      removed: "Unfollowed %{name}"
+    notifications:
+      marked_all_as_read: "All marked as read"

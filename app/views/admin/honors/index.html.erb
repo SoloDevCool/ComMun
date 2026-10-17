@@ -1,0 +1,212 @@
+<div class="card card-admin mb-4">
+  <div class="card-header py-3 d-flex justify-content-between align-items-center">
+    <h6 class="mb-0 fw-bold"><i class="bi bi-trophy me-2 text-warning"></i><%= t('admin.ui.m842') %></h6>
+    <div class="d-flex gap-2 align-items-center">
+      <span class="badge bg-primary"><%= @honors.size %> <%= t('admin.ui.m139') %></span>
+      <button type="button" class="btn btn-sm btn-outline-primary rounded-pill" data-bs-toggle="modal" data-bs-target="#newHonorModal">
+        <i class="bi bi-plus-lg me-1"></i><%= t('admin.ui.m843') %>
+      </button>
+    </div>
+  </div>
+  <div class="card-body p-0">
+    <% if @honors.any? %>
+      <table class="table table-hover mb-0">
+        <thead>
+          <tr>
+            <th style="width:5%"><%= t('admin.sort_order') %></th>
+            <th style="width:12%"><%= t('admin.user') %></th>
+            <th><%= t('admin.award_name') %></th>
+            <th style="width:20%"><%= t('admin.ui.m844') %></th>
+            <th style="width:12%"><%= t('admin.awarded_on') %></th>
+            <th style="width:8%"><%= t('admin.status') %></th>
+            <th style="width:10%"><%= t('admin.actions') %></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @honors.each do |honor| %>
+            <tr id="honor_<%= honor.id %>">
+              <td class="text-muted small"><%= honor.sort_order %></td>
+              <td>
+                <div class="d-flex align-items-center gap-2">
+                  <% if honor.avatar_url.present? %>
+                    <img src="<%= honor.avatar_url %>" alt="" class="rounded" style="width:32px;height:32px;object-fit:cover;">
+                  <% else %>
+                    <div class="bg-avatar-3 rounded d-flex align-items-center justify-content-center text-white fw-bold" style="width:32px;height:32px;font-size:0.75rem">
+                      <%= honor.display_name[0] %>
+                    </div>
+                  <% end %>
+                  <span class="fw-semibold small"><%= truncate(honor.display_name, length: 10) %></span>
+                </div>
+              </td>
+              <td>
+                <span class="fw-semibold"><%= honor.title %></span>
+                <% if honor.description.present? %>
+                  <br><span class="text-muted small"><%= truncate(honor.description, length: 30) %></span>
+                <% end %>
+              </td>
+              <td>
+                <% if honor.certificate_image.present? %>
+                  <a href="<%= honor.certificate_image %>" target="_blank" rel="noopener noreferrer" title="<%= t('admin.ui.m845') %>">
+                    <img src="<%= honor.certificate_image %>" alt="" class="rounded" style="width:80px;height:50px;object-fit:cover;border:1px solid #e5e7eb;" loading="lazy">
+                  </a>
+                <% else %>
+                  <span class="text-muted small"><%= t('admin.ui.m846') %></span>
+                <% end %>
+              </td>
+              <td class="small">
+                <% if honor.awarded_at.present? %>
+                  <%= honor.awarded_at.strftime('%Y-%m-%d') %>
+                <% else %>
+                  <span class="text-muted">-</span>
+                <% end %>
+              </td>
+              <td>
+                <% if honor.is_active? %>
+                  <span class="badge bg-success-subtle text-success"><%= t('admin.displaying') %></span>
+                <% else %>
+                  <span class="badge bg-secondary-subtle text-secondary"><%= t('admin.hide') %></span>
+                <% end %>
+              </td>
+              <td>
+                <div class="d-flex gap-1">
+                  <button type="button" class="btn btn-sm btn-outline-primary btn-action" data-bs-toggle="modal" data-bs-target="#editModal_<%= honor.id %>" title="<%= t('admin.edit') %>">
+                    <i class="bi bi-pencil"></i>
+                  </button>
+                  <%= button_to admin_honor_path(honor), method: :delete, class: "btn btn-sm btn-outline-danger btn-action", title: t("admin.delete"), data: { turbo_confirm: t('admin.ui.m847') } do %>
+                    <i class="bi bi-trash"></i>
+                  <% end %>
+                </div>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    <% else %>
+      <div class="text-center text-muted py-5">
+        <i class="bi bi-trophy d-block fs-1 mb-2" style="opacity:0.5"></i>
+        <p><%= t('admin.ui.m848') %></p>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<!-- 新建弹窗 -->
+<div class="modal fade" id="newHonorModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h6 class="modal-title fw-bold"><i class="bi bi-plus-circle me-2 text-success"></i><%= t('admin.ui.m849') %></h6>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <%= form_with model: [:admin, @honor], url: admin_honors_path, class: "needs-validation" do |f| %>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <%= f.label :user_id, t("admin.award_user"), class: "form-label fw-semibold small" %>
+              <%= f.collection_select :user_id, User.order(:id), :id, ->(u){ u.display_name }, { include_blank: t("admin.select_user") }, { class: "form-select form-control-sm", required: true } %>
+            </div>
+            <div class="col-md-6">
+              <%= f.label :title, t("admin.award_name"), class: "form-label fw-semibold small" %>
+              <%= f.text_field :title, class: "form-control form-control-sm", placeholder: t('admin.ui.m850'), required: true %>
+            </div>
+            <div class="col-12">
+              <%= f.label :certificate_image, t("admin.award_image_url"), class: "form-label fw-semibold small" %>
+              <%= f.url_field :certificate_image, class: "form-control form-control-sm", placeholder: "https://example.com/certificate.png（建议尺寸比例 4:3）" %>
+              <div class="form-text small mt-1">
+                <i class="bi bi-info-circle me-1"></i><%= t('admin.ui.m852') %>
+              </div>
+            </div>
+            <div class="col-12">
+              <%= f.label :description, t("admin.award_desc"), class: "form-label fw-semibold small" %>
+              <%= f.text_area :description, class: "form-control form-control-sm", rows: 3, placeholder: t('admin.ui.m853') %>
+            </div>
+            <div class="col-md-6">
+              <%= f.label :awarded_at, t("admin.awarded_on"), class: "form-label fw-semibold small" %>
+              <%= f.date_field :awarded_at, class: "form-control form-control-sm" %>
+            </div>
+            <div class="col-md-6">
+              <%= f.label :sort_order, t("admin.sort_weight"), class: "form-label fw-semibold small" %>
+              <%= f.number_field :sort_order, class: "form-control form-control-sm", value: 0, min: 0 %>
+              <div class="form-text small mt-1"><%= t('admin.lower_is_first') %></div>
+            </div>
+            <div class="col-md-6">
+              <%= f.label :is_active, t("admin.status"), class: "form-label fw-semibold small" %>
+              <select name="honor[is_active]" class="form-select form-select-sm">
+                <option value="true" selected><%= t('admin.displaying') %></option>
+                <option value="false"><%= t('admin.hide') %></option>
+              </select>
+            </div>
+          </div>
+          <div class="d-flex justify-content-end gap-2 mt-3">
+            <button type="button" class="btn btn-light rounded-pill" data-bs-dismiss="modal"><%= t('admin.cancel') %></button>
+            <button type="submit" class="btn btn-primary rounded-pill">
+              <i class="bi bi-plus-lg me-1"></i><%= t('admin.ui.m025') %>
+            </button>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- <%= t('admin.ui.m008') %>弹窗 -->
+<% @honors.each do |honor| %>
+  <div class="modal fade" id="editModal_<%= honor.id %>" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h6 class="modal-title fw-bold"><%= t('admin.ui.m854') %> <%= honor.title %></h6>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <%= form_with model: [:admin, honor], url: admin_honor_path(honor), method: :patch do |f| %>
+            <div class="row g-3">
+              <div class="col-md-6">
+                <%= f.label :user_id, t("admin.award_user"), class: "form-label fw-semibold small" %>
+                <%= f.collection_select :user_id, User.order(:id), :id, ->(u){ u.display_name }, { prompt: t("admin.select_user") }, { class: "form-select form-control-sm", required: true } %>
+              </div>
+              <div class="col-md-6">
+                <%= f.label :title, t("admin.award_name"), class: "form-label fw-semibold small" %>
+                <%= f.text_field :title, class: "form-control form-control-sm", required: true %>
+              </div>
+              <div class="col-12">
+                <%= f.label :certificate_image, t("admin.award_image_url"), class: "form-label fw-semibold small" %>
+                <%= f.url_field :certificate_image, class: "form-control form-control-sm" %>
+                <% if honor.certificate_image.present? %>
+                  <div class="mt-1">
+                    <img src="<%= honor.certificate_image %>" alt="" class="rounded" style="max-height:60px;border:1px solid #e5e7eb;" loading="lazy">
+                  </div>
+                <% end %>
+              </div>
+              <div class="col-12">
+                <%= f.label :description, t("admin.award_desc"), class: "form-label fw-semibold small" %>
+                <%= f.text_area :description, class: "form-control form-control-sm", rows: 3 %>
+              </div>
+              <div class="col-md-6">
+                <%= f.label :awarded_at, t("admin.awarded_on"), class: "form-label fw-semibold small" %>
+                <%= f.date_field :awarded_at, class: "form-control form-control-sm" %>
+              </div>
+              <div class="col-md-6">
+                <%= f.label :sort_order, t("admin.sort_weight"), class: "form-label fw-semibold small" %>
+                <%= f.number_field :sort_order, class: "form-control form-control-sm", min: 0 %>
+              </div>
+              <div class="col-md-6">
+                <%= f.label :is_active, t("admin.status"), class: "form-label fw-semibold small" %>
+                <select name="honor[is_active]" class="form-select form-select-sm">
+                  <option value="true" <%= "selected" if honor.is_active? %>><%= t('admin.displaying') %></option>
+                  <option value="false" <%= "selected" unless honor.is_active? %>><%= t('admin.hide') %></option>
+                </select>
+              </div>
+            </div>
+            <div class="d-flex justify-content-end gap-2 mt-3">
+              <button type="button" class="btn btn-light rounded-pill" data-bs-dismiss="modal"><%= t('admin.cancel') %></button>
+              <button type="submit" class="btn btn-primary rounded-pill">
+                <i class="bi bi-check-lg me-1"></i><%= t('admin.ui.m002') %>
+              </button>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>

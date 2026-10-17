@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  name: MyString
+  title: MyString
+  bio: MyText
+  sort_order: 1
+  is_active: false
+
+two:
+  name: MyString
+  title: MyString
+  bio: MyText
+  sort_order: 1
+  is_active: false

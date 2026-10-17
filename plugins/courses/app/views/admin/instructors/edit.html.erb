@@ -1,0 +1,60 @@
+<h4 class="text-dark fw-bold mb-4"><%= t('admin.ui.m855') %></h4>
+
+<div class="card card-admin" style="max-width:560px">
+  <div class="card-body p-4">
+    <%= form_with model: [:admin, @instructor], local: true do |f| %>
+      <div class="mb-3">
+        <%= f.label :name, t("admin.instructor_name"), class: "form-label fw-semibold small text-muted" %>
+        <%= f.text_field :name, class: "form-control form-control-lg rounded-3", required: true %>
+      </div>
+
+      <div class="mb-3">
+        <%= f.label :title, t("admin.job_title"), class: "form-label fw-semibold small text-muted" %>
+        <%= f.text_field :title, class: "form-control form-control-lg rounded-3", placeholder: t('admin.ui.m144') %>
+      </div>
+
+      <div class="mb-3">
+        <%= f.label :bio, t('admin.ui.m145'), class: "form-label fw-semibold small text-muted" %>
+        <%= f.text_area :bio, class: "form-control rounded-3", rows: 4, placeholder: t('admin.ui.m146') %>
+        <div class="form-text"><%= t('admin.max_500_chars') %></div>
+      </div>
+
+      <div class="mb-3">
+        <%= f.label :avatar, t("admin.avatar"), class: "form-label fw-semibold small text-muted" %>
+        <% if @instructor.avatar_url.present? %>
+          <div class="d-flex align-items-center gap-3 mb-2">
+            <div class="rounded-3 overflow-hidden" style="width:64px;height:64px">
+              <img src="<%= @instructor.avatar_url %>" class="w-100 h-100" style="object-fit:cover" alt="">
+            </div>
+            <label class="form-check">
+              <input type="checkbox" name="instructor[remove_avatar]" value="1" class="form-check-input">
+              <span class="form-check-label" style="font-size:0.85rem"><%= t('admin.ui.m619') %></span>
+            </label>
+          </div>
+        <% end %>
+        <%= f.file_field :avatar, class: "form-control form-control-lg rounded-3", accept: "image/*" %>
+        <div class="form-text"><%= t('admin.ui.m147') %></div>
+      </div>
+
+      <div class="row g-3 mb-4">
+        <div class="col-md-6">
+          <%= f.label :sort_order, t("admin.sort_order"), class: "form-label fw-semibold small text-muted" %>
+          <%= f.number_field :sort_order, class: "form-control form-control-lg rounded-3", min: 0 %>
+          <div class="form-text"><%= t('admin.lower_is_first') %></div>
+        </div>
+        <div class="col-md-6">
+          <%= f.label :is_active, t("admin.status"), class: "form-label fw-semibold small text-muted" %>
+          <div class="form-check form-switch mt-2">
+            <%= f.check_box :is_active, class: "form-check-input", style: "width:2.5em;height:1.5em" %>
+            <label class="form-check-label" for="instructor_is_active"><%= t('admin.enable') %></label>
+          </div>
+        </div>
+      </div>
+
+      <div class="d-flex gap-2">
+        <%= f.submit t("admin.save_changes"), class: "btn btn-primary rounded-pill px-4" %>
+        <%= link_to t("admin.cancel"), admin_instructors_path, class: "btn btn-outline-secondary rounded-pill px-4" %>
+      </div>
+    <% end %>
+  </div>
+</div>

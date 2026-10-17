@@ -1,0 +1,287 @@
+<% content_for :title, t('admin.ui.m782') %>
+
+<h4 class="text-dark fw-bold mb-4">
+  <i class="bi bi-shield-check me-2"></i><%= t('admin.ui.m783') %>
+</h4>
+
+<!-- 统计卡片 -->
+<div class="row g-3 mb-4">
+  <div class="col-6 col-lg-3">
+    <div class="card card-admin border-start border-warning border-3">
+      <div class="card-body d-flex align-items-center">
+        <div class="stat-icon bg-warning bg-opacity-10 text-warning me-3">
+          <i class="bi bi-clock-history"></i>
+        </div>
+        <div>
+          <div class="text-muted small"><%= t('admin.ui.m784') %></div>
+          <div class="fs-5 fw-bold <%= 'text-warning' if @topic_pending_count > 0 %>"><%= @topic_pending_count %></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="card card-admin border-start border-warning border-3">
+      <div class="card-body d-flex align-items-center">
+        <div class="stat-icon bg-warning bg-opacity-10 text-warning me-3">
+          <i class="bi bi-chat-dots"></i>
+        </div>
+        <div>
+          <div class="text-muted small"><%= t('admin.ui.m785') %></div>
+          <div class="fs-5 fw-bold <%= 'text-warning' if @comment_pending_count > 0 %>"><%= @comment_pending_count %></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="card card-admin">
+      <div class="card-body d-flex align-items-center">
+        <div class="stat-icon bg-danger bg-opacity-10 text-danger me-3">
+          <i class="bi bi-x-circle"></i>
+        </div>
+        <div>
+          <div class="text-muted small"><%= t('admin.ui.m786') %></div>
+          <div class="fs-5 fw-bold"><%= Topic.moderation_blocked.count %></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="card card-admin">
+      <div class="card-body d-flex align-items-center">
+        <div class="stat-icon bg-danger bg-opacity-10 text-danger me-3">
+          <i class="bi bi-x-circle"></i>
+        </div>
+        <div>
+          <div class="text-muted small"><%= t('admin.ui.m787') %></div>
+          <div class="fs-5 fw-bold"><%= Comment.moderation_blocked.count %></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 筛选栏 -->
+<div class="card card-admin mb-4">
+  <div class="card-body py-2">
+    <div class="d-flex gap-2 flex-wrap align-items-center">
+      <span class="text-muted small me-1"><%= t('admin.ui.m788') %></span>
+      <% [ ["topic", t("admin.topic")], ["comment", t("admin.comment")] ].each do |value, label| %>
+        <%= link_to admin_moderations_path(type: value, scope: @scope), class: "btn btn-sm rounded-pill #{'btn-primary' if @type == value}" do %>
+          <i class="bi bi-<%= value == 'topic' ? 'megaphone' : 'chat-dots' %> me-1"></i><%= label %>
+        <% end %>
+      <% end %>
+      <span class="mx-2 border-start" style="height:24px"></span>
+      <span class="text-muted small me-1"><%= t('admin.ui.m789') %></span>
+      <% [ ["pending", t("admin.pending_review")], ["blocked", t('admin.ui.m790')] ].each do |value, label| %>
+        <%= link_to admin_moderations_path(type: @type, scope: value), class: "btn btn-sm rounded-pill #{'btn-warning' if @scope == value}" do %>
+          <%= label %>
+        <% end %>
+      <% end %>
+      <% if @items.any? %>
+        <span class="mx-2 border-start" style="height:24px"></span>
+        <button type="button" class="btn btn-sm btn-outline-success rounded-pill" id="btn-batch-approve" onclick="batchAction('approve')">
+          <i class="bi bi-check2-all me-1"></i><%= t('admin.ui.m180') %>
+        </button>
+        <button type="button" class="btn btn-sm btn-outline-danger rounded-pill" id="btn-batch-reject" onclick="batchAction('reject')">
+          <i class="bi bi-x-lg me-1"></i><%= t('admin.ui.m182') %>
+        </button>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<!-- 内容<%= t('admin.ui.m732') %> -->
+<div class="card card-admin">
+  <div class="card-header d-flex justify-content-between align-items-center py-3">
+    <span class="fw-bold"><i class="bi bi-<%= @type == 'comment' ? 'chat-dots' : 'megaphone' %> me-2"></i><%= @type == 'comment' ? t("admin.comment") : t("admin.topic") %><%= t('admin.ui.m791') %></span>
+    <span class="badge bg-light text-dark"><%= @total_pending %> <%= t('admin.ui.m015') %></span>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-hover mb-0">
+      <thead>
+        <tr>
+          <th style="width:36px"><input type="checkbox" class="form-check-input" id="selectAll"></th>
+          <% if @type == "comment" %>
+            <th style="width:40%"><%= t('admin.comment_content') %></th>
+            <th><%= t('admin.own_topic') %></th>
+            <th><%= t('admin.ui.m187') %></th>
+            <th><%= t('admin.ui.m188') %></th>
+            <th><%= t('admin.ui.m035') %></th>
+            <th style="width:120px"><%= t('admin.actions') %></th>
+          <% else %>
+            <th><%= t('admin.title') %></th>
+            <th><%= t('admin.node') %></th>
+            <th><%= t('admin.ui.m187') %></th>
+            <th><%= t('admin.ui.m188') %></th>
+            <th><%= t('admin.ui.m035') %></th>
+            <th style="width:120px"><%= t('admin.actions') %></th>
+          <% end %>
+        </tr>
+      </thead>
+      <tbody>
+        <% if @items.any? %>
+          <% @items.each do |item| %>
+            <tr data-id="<%= item.id %>">
+              <td><input type="checkbox" class="form-check-input item-check" value="<%= item.id %>"></td>
+              <% if @type == "comment" %>
+                <td>
+                  <div class="text-dark" style="font-size:0.9rem;max-width:400px;word-break:break-all">
+                    <%= item.content.truncate(80) %>
+                  </div>
+                  <% if item.moderation_keywords.present? %>
+                    <div class="mt-1">
+                      <% item.moderation_keywords.each do |kw| %>
+                        <span class="badge bg-danger bg-opacity-10 text-danger me-1" style="font-size:0.7rem"><%= kw %></span>
+                      <% end %>
+                    </div>
+                  <% end %>
+                </td>
+                <td>
+                  <% if item.topic.present? %>
+                    <%= link_to topic_path(item.topic), target: "_blank", class: "text-decoration-none" do %>
+                      <span class="fw-medium text-primary"><%= item.topic.title.truncate(20) %></span>
+                    <% end %>
+                  <% else %>
+                    <span class="text-muted"><%= t('admin.ui.m150') %></span>
+                  <% end %>
+                </td>
+              <% else %>
+                <td>
+                  <%= link_to topic_path(item), target: "_blank", class: "text-decoration-none fw-medium text-dark" do %>
+                    <%= item.title.truncate(40) %>
+                  <% end %>
+                  <% if item.moderation_keywords.present? %>
+                    <div class="mt-1">
+                      <% item.moderation_keywords.each do |kw| %>
+                        <span class="badge bg-danger bg-opacity-10 text-danger me-1" style="font-size:0.7rem"><%= kw %></span>
+                      <% end %>
+                    </div>
+                  <% end %>
+                </td>
+                <td>
+                  <% if item.node.present? %>
+                    <span class="badge bg-light text-dark"><%= item.node.name %></span>
+                  <% else %>
+                    <span class="text-muted">-</span>
+                  <% end %>
+                </td>
+              <% end %>
+              <td>
+                <div class="d-flex align-items-center">
+                  <div class="rounded-3 bg-primary bg-opacity-10 text-primary d-flex align-items-center justify-content-center me-2" style="width:28px;height:28px;font-size:0.7rem">
+                    <i class="bi bi-person-fill"></i>
+                  </div>
+                  <span style="font-size:0.85rem"><%= item.user&.display_name || t('admin.ui.m792') %></span>
+                </div>
+              </td>
+              <td>
+                <% label = item.moderation_label.presence %>
+                <% score = item.moderation_score.to_i %>
+                <% if label && label != "Normal" %>
+                  <span class="badge bg-danger bg-opacity-10 text-danger">
+                    <%= TextModerationService.label_name(label) %>
+                  </span>
+                  <% if score > 0 %>
+                    <div class="text-muted" style="font-size:0.75rem"><%= t('admin.ui.m793') %> <%= score %>%</div>
+                  <% end %>
+                <% else %>
+                  <span class="badge bg-warning bg-opacity-10 text-warning"><%= t('admin.pending_review') %></span>
+                <% end %>
+              </td>
+              <td class="text-muted small">
+                <% if item.moderation_checked_at %>
+                  <%= item.moderation_checked_at.strftime("%m-%d %H:%M") %>
+                <% else %>
+                  -
+                <% end %>
+              </td>
+              <td>
+                <div class="d-flex gap-1">
+                  <%= button_to approve_admin_moderation_path(item, type: @type), method: :patch, class: "btn btn-sm btn-outline-success btn-action", title: t('admin.ui.m153') do %>
+                    <i class="bi bi-check-lg"></i>
+                  <% end %>
+                  <%= button_to reject_admin_moderation_path(item, type: @type), method: :patch, class: "btn btn-sm btn-outline-danger btn-action", title: t("admin.reject"),
+                      data: { confirm: "确定拒绝该#{@type == 'comment' ? t("admin.comment") : t("admin.topic")}？拒绝后将不再对用户显示。" } do %>
+                    <i class="bi bi-x-lg"></i>
+                  <% end %>
+                  <%= link_to @type == "comment" ? topic_path(item.topic, anchor: "comment-#{item.id}") : topic_path(item),
+                      target: "_blank", class: "btn btn-sm btn-outline-secondary btn-action", title: t('admin.ui.m796') do %>
+                    <i class="bi bi-box-arrow-up-right"></i>
+                  <% end %>
+                </div>
+              </td>
+            </tr>
+          <% end %>
+        <% else %>
+          <tr>
+            <td colspan="7" class="text-center text-muted py-5">
+              <i class="bi bi-shield-check" style="font-size:2rem"></i>
+              <div class="mt-2"><%= @scope == 'blocked' ? t('admin.ui.m797') : t('admin.ui.m798') %></div>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- 分页 -->
+<% if @pagy.pages > 1 %>
+  <div class="mt-3 d-flex justify-content-center">
+    <%== @pagy.series_nav(:bootstrap) %>
+  </div>
+<% end %>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var selectAll = document.getElementById('selectAll');
+  if (selectAll) {
+    selectAll.addEventListener('change', function() {
+      document.querySelectorAll('.item-check').forEach(function(cb) {
+        cb.checked = selectAll.checked;
+      });
+    });
+  }
+});
+
+function getSelectedIds() {
+  return Array.from(document.querySelectorAll('.item-check:checked')).map(function(cb) {
+    return cb.value;
+  }).join(',');
+}
+
+function batchAction(action) {
+  var ids = getSelectedIds();
+  if (!ids) {
+    alert('<%= t('admin.ui.m799') %>');
+    return;
+  }
+
+  var type = '<%= @type %>';
+  var confirmMsg = action === 'approve' ? '<%= t('admin.ui.m800') %>' : '<%= t('admin.ui.m801') %>';
+  if (!confirm(confirmMsg)) return;
+
+  var token = document.querySelector('meta[name="csrf-token"]');
+  var url = '/admin/moderations/batch_' + action + '?type=' + type + '&ids=' + ids;
+
+  fetch(url, {
+    method: 'POST',
+    headers: {
+      'X-CSRF-Token': token ? token.content : '',
+      'Content-Type': 'application/json',
+      'Accept': 'text/html'
+    },
+    redirect: 'follow'
+  })
+  .then(function(r) {
+    if (r.ok) {
+      window.location.reload();
+    } else {
+      return r.text().then(function(t) { throw new Error('<%= t('admin.ui.m802') %>'); });
+    }
+  })
+  .catch(function(err) {
+    alert(err.message);
+  });
+}
+</script>

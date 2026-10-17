@@ -1,0 +1,138 @@
+en:
+  admin:
+    actions: Actions
+    add: Add
+    add_friend_link: Add Friend Link
+    ad: Ad
+    ago_suffix: ago
+    author: Author
+    available: Available
+    avatar: Avatar
+    award_desc: Award description
+    award_image_url: Award image URL
+    award_name: Award name
+    award_user: Awarded user
+    awarded_on: Awarded on
+    bio: Bio
+    bold: Bold
+    browser: Browser
+    cancel: Cancel
+    categories_input_hint: Separate multiple categories with commas
+    category: Category
+    category_desc: Category description
+    category_name: Category name
+    clear_search: Clear search
+    close: Close
+    code_block: Code block
+    comment: Comment
+    comment_content: Comment content
+    completed: Completed
+    confirm_delete: Are you sure you want to delete?
+    course: Course
+    default_icon: Default icon
+    delete: Delete
+    description: Description
+    difficulty: Difficulty
+    direction: Direction
+    disable: Disable
+    disabled_badge: Disabled
+    divider: Divider
+    edit: Edit
+    email: Email
+    email_content_html: Email content
+    email_subject: Email subject
+    enable: Enable
+    error: Error
+    expired: Expired
+    expires_at: Expires at
+    failed: Failed
+    footer_text: Footer text
+    forward: Forward
+    hide: Hide
+    icon: Icon
+    icon_drop_hint: Drag image here to upload icon
+    icon_image: Icon image
+    icon_preview: Icon preview
+    identifier: Identifier
+    image: Image
+    image_max_5mb: Image must be under 5MB
+    in_use: In use
+    inline_code: Inline code
+    instructor: Instructor
+    instructor_name: Instructor name
+    invalid_url: Invalid URL
+    italic: Italic
+    job_title: Job title
+    location: Location
+    lower_is_first: Lower value comes first
+    max_500_chars: Max 500 characters
+    name: Name
+    never_expires: Never expires
+    new_course: New Course
+    new_tool: New Tool
+    no_content: No content
+    node: Node
+    node_name: Node name
+    on_shelf: On shelf
+    ordered_list: Ordered list
+    os: OS
+    own_category: Own category
+    own_topic: Own topic
+    parse: Parse
+    paid_member: Paid member
+    pending_review: Pending review
+    preview: Preview
+    pricing: Pricing
+    question_content: Question content
+    quote: Quote
+    rating: Rating
+    registered_at: Registered at
+    regular_user: Regular user
+    reject: Reject
+    remove: Remove
+    retry: Retry
+    review_content: Review content
+    role: Role
+    running: Running
+    save: Save
+    save_changes: Save changes
+    save_settings: Save settings
+    select_all_toggle: Select all
+    select_category: Select category
+    select_user: Select user
+    show: Show
+    show_on_frontend: Show on frontend
+    site_description: Site description
+    site_name: Site name
+    site_url: Site URL
+    sort_order: Sort order
+    sort_order_hint: Lower value comes first
+    sort_weight: Sort weight
+    status: Status
+    strikethrough: Strikethrough
+    subject_name: Subject
+    table: Table
+    tags: Tags
+    tags_input_hint: Separate multiple tags with commas
+    text: Text
+    theme_color: Theme color
+    title: Title
+    tool_description: Tool description
+    tool_name: Tool name
+    topic: Topic
+    type: Type
+    unknown_error: Unknown error
+    unordered_list: Unordered list
+    uninstall: Uninstall
+    unit_ge: items
+    upload_failed_cn: Upload failed
+    upload_failed_retry: Upload failed, click to retry
+    upload_image_file: Upload image file
+    upload_plugin: Upload plugin
+    url: URL
+    user: User
+    username: Username
+    version: Version
+    view: View
+    waiting: Waiting
+    website_url: Website URL

@@ -1,0 +1,140 @@
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h4 class="text-dark fw-bold mb-0"><%= t('admin.ui.m442') %></h4>
+    <small class="text-muted"><%= t('admin.ui.m024') %> <%= @user.display_name %> <%= t('admin.ui.m443') %></small>
+  </div>
+  <%= link_to admin_users_path, class: "btn btn-outline-secondary rounded-pill" do %>
+    <i class="bi bi-arrow-left me-1"></i><%= t('admin.ui.m063') %>
+  <% end %>
+</div>
+
+<div class="row">
+  <div class="col-lg-8">
+    <!-- <%= t('admin.ui.m444') %> -->
+    <div class="card card-admin mb-4">
+      <div class="card-header bg-white border-bottom">
+        <h6 class="mb-0 fw-bold"><i class="bi bi-check-circle-fill text-success me-2"></i><%= t('admin.ui.m444') %></h6>
+      </div>
+      <div class="card-body p-0">
+        <% if @memberships.any? %>
+          <div class="table-responsive">
+            <table class="table table-hover mb-0">
+              <thead>
+                <tr>
+                  <th class="ps-3"><%= t('admin.node_name') %></th>
+                  <th><%= t('admin.ui.m445') %></th>
+                  <th><%= t('admin.expires_at') %></th>
+                  <th class="pe-3 text-end"><%= t('admin.actions') %></th>
+                </tr>
+              </thead>
+              <tbody>
+                <% @memberships.each do |membership| %>
+                  <tr>
+                    <td class="ps-3">
+                      <span class="badge bg-light text-dark me-1"><%= node_icon(membership.node, size: "0.85em") %></span>
+                      <%= membership.node.name %>
+                    </td>
+                    <td class="text-muted"><small><%= membership.joined_at.strftime("%Y-%m-%d %H:%M") %></small></td>
+                    <td>
+                      <% if membership.expires_at %>
+                        <span class="text-muted small"><%= membership.expires_at.strftime("%Y-%m-%d %H:%M") %></span>
+                        <% if membership.expired? %>
+                          <span class="badge bg-danger bg-opacity-10 text-danger rounded-pill ms-1"><%= t('admin.expired') %></span>
+                        <% end %>
+                      <% else %>
+                        <span class="badge bg-success bg-opacity-10 text-success rounded-pill"><%= t('admin.ui.m446') %></span>
+                      <% end %>
+                    </td>
+                    <td class="pe-3 text-end">
+                      <%= button_to admin_user_node_membership_path(@user, membership.node),
+                        method: :delete,
+                        class: "btn btn-sm btn-outline-danger rounded-pill",
+                        data: { confirm: "确定要将 #{@user.display_name} 移出 #{membership.node.name} 版块吗？" } do %>
+                        <i class="bi bi-trash me-1"></i><%= t('admin.ui.m449') %>
+                      <% end %>
+                    </td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+        <% else %>
+          <div class="text-center py-5">
+            <i class="bi bi-inbox text-muted" style="font-size:3rem"></i>
+            <p class="text-muted mt-3"><%= t('admin.ui.m450') %></p>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-4">
+    <!-- <%= t('admin.ui.m170') %> -->
+    <div class="card card-admin">
+      <div class="card-header bg-white border-bottom">
+        <h6 class="mb-0 fw-bold"><i class="bi bi-plus-circle-fill text-primary me-2"></i><%= t('admin.ui.m170') %></h6>
+      </div>
+      <div class="card-body">
+        <%= form_with url: admin_user_node_memberships_path(@user), method: :post do |f| %>
+          <div class="mb-3">
+            <label class="form-label fw-semibold small text-muted"><%= t('admin.ui.m451') %></label>
+            <select name="node_id" id="node_id" class="form-select form-select-sm rounded-3" required>
+              <option value="">-- <%= t('admin.ui.m042') %> --</option>
+              <% Node.kinds.each do |kind, _value| %>
+                <% nodes = @all_nodes.select { |n| n.kind == kind.to_s } %>
+                <% if nodes.any? %>
+                  <optgroup label="<%= Node.kinds_i18n[kind.to_sym] %>">
+                    <% nodes.each do |node| %>
+                      <option value="<%= node.id %>"><%= node.icon %> <%= node.name %></option>
+                    <% end %>
+                  </optgroup>
+                <% end %>
+              <% end %>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <%= f.label :expires_at, t('admin.ui.m452'), class: "form-label fw-semibold small text-muted" %>
+            <%= f.datetime_field :expires_at,
+              class: "form-control form-control-sm rounded-3",
+              placeholder: t('admin.ui.m453') %>
+            <div class="form-text small text-muted"><%= t('admin.ui.m454') %></div>
+          </div>
+
+          <div class="mb-3">
+            <%= f.label :notes, t('admin.ui.m455'), class: "form-label fw-semibold small text-muted" %>
+            <%= f.text_area :notes,
+              class: "form-control form-control-sm rounded-3",
+              rows: 3,
+              placeholder: t('admin.ui.m456') %>
+          </div>
+
+          <%= f.submit t('admin.ui.m170'), class: "btn btn-primary w-100 rounded-pill" %>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- 用户信息 -->
+    <div class="card card-admin mt-4">
+      <div class="card-body">
+        <div class="d-flex align-items-center mb-3">
+          <div class="rounded-3 bg-primary bg-opacity-10 text-primary d-flex align-items-center justify-content-center me-3 flex-shrink-0" style="width:50px;height:50px;font-size:1.2rem">
+            <i class="bi bi-person-fill"></i>
+          </div>
+          <div>
+            <div class="fw-bold text-dark"><%= @user.display_name %></div>
+            <div class="text-muted small"><%= @user.email %></div>
+          </div>
+        </div>
+        <div class="d-flex gap-2">
+          <span class="badge <%= @user.role_badge_class %> rounded-pill">
+            <%= @user.role_label %>
+          </span>
+          <span class="badge bg-light text-dark rounded-pill">
+            <%= t('admin.ui.m457') %> <%= @memberships.count %> <%= t('admin.ui.m458') %>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

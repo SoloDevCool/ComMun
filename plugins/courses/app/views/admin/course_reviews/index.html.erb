@@ -1,0 +1,189 @@
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div class="d-flex align-items-center gap-2">
+    <h4 class="text-dark fw-bold mb-0"><%= t('admin.ui.m673') %></h4>
+    <span class="badge bg-light text-dark rounded-pill"><%= @course.title %></span>
+  </div>
+  <div class="d-flex gap-2 align-items-center">
+    <%= link_to admin_courses_path, class: "btn btn-outline-secondary rounded-pill px-3" do %>
+      <i class="bi bi-arrow-left me-1"></i><%= t('admin.ui.m700') %>
+    <% end %>
+  </div>
+</div>
+
+<!-- <%= t('admin.ui.m704') %>表单 -->
+<div class="card card-admin mb-4" style="max-width:720px">
+  <div class="card-body p-4">
+    <h6 class="fw-bold text-dark mb-3"><i class="bi bi-plus-circle me-1"></i><%= t('admin.ui.m701') %></h6>
+    <%= form_with model: [:admin, @course, @review], local: true do |f| %>
+      <% if @review.errors.any? %>
+        <div class="alert alert-danger rounded-3 py-2">
+          <i class="bi bi-exclamation-circle me-1"></i>
+          <ul class="mb-0 ms-3">
+            <% @review.errors.full_messages.each do |msg| %>
+              <li><%= msg %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <div class="row g-3 mb-3">
+        <div class="col-md-6">
+          <%= f.label :user_name, t('admin.ui.m240'), class: "form-label fw-semibold small text-muted" %>
+          <%= f.text_field :user_name, class: "form-control rounded-3", placeholder: t('admin.ui.m702') %>
+        </div>
+        <div class="col-md-6">
+          <%= f.label :rating, t("admin.rating"), class: "form-label fw-semibold small text-muted" %>
+          <div class="d-flex align-items-center gap-2">
+            <%= f.select :rating, [[5, '5 星'], [4, '4 星'], [3, '3 星'], [2, '2 星'], [1, '1 星']], {}, class: "form-select rounded-3", style: "max-width:120px" %>
+            <span class="text-warning">
+              <% 5.times do |i| %>
+                <i class="bi bi-star-fill"></i>
+              <% end %>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <%= f.label :content, t("admin.review_content"), class: "form-label fw-semibold small text-muted" %>
+        <%= f.text_area :content, class: "form-control rounded-3", rows: 3, placeholder: t('admin.ui.m703') %>
+        <div class="form-text"><%= t('admin.max_500_chars') %></div>
+      </div>
+
+      <div class="row g-3 mb-3">
+        <div class="col-md-6">
+          <%= f.label :sort_order, t("admin.sort_order"), class: "form-label fw-semibold small text-muted" %>
+          <%= f.number_field :sort_order, class: "form-control rounded-3", min: 0 %>
+          <div class="form-text"><%= t('admin.lower_is_first') %></div>
+        </div>
+        <div class="col-md-6">
+          <%= f.label :is_active, t("admin.status"), class: "form-label fw-semibold small text-muted" %>
+          <div class="form-check form-switch mt-2">
+            <%= f.check_box :is_active, class: "form-check-input", style: "width:2.5em;height:1.5em" %>
+            <label class="form-check-label" for="course_review_is_active"><%= t('admin.show_on_frontend') %></label>
+          </div>
+        </div>
+      </div>
+
+      <%= f.submit t('admin.ui.m704'), class: "btn btn-primary rounded-pill px-4" %>
+    <% end %>
+  </div>
+</div>
+
+<!-- 评价<%= t('admin.ui.m732') %> -->
+<div class="card card-admin">
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-hover mb-0">
+        <thead>
+          <tr>
+            <th class="ps-3"><%= t('admin.ui.m705') %></th>
+            <th class="text-center"><%= t('admin.rating') %></th>
+            <th><%= t('admin.review_content') %></th>
+            <th class="text-center d-none d-md-table-cell"><%= t('admin.status') %></th>
+            <th class="text-center d-none d-md-table-cell"><%= t('admin.sort_order') %></th>
+            <th class="pe-3 text-end"><%= t('admin.actions') %></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @reviews.each do |review| %>
+            <tr id="review-<%= review.id %>">
+              <td class="ps-3">
+                <div class="d-flex align-items-center gap-2">
+                  <div class="rounded-3 d-flex align-items-center justify-content-center flex-shrink-0" style="width:32px;height:32px;background:linear-gradient(135deg, #6366f1, #a78bfa);color:#fff;font-size:0.7rem;font-weight:600">
+                    <%= review.user_name[0] %>
+                  </div>
+                  <span class="fw-semibold"><%= review.user_name %></span>
+                </div>
+              </td>
+              <td class="text-center">
+                <span class="text-warning" style="font-size:0.8rem">
+                  <% review.rating.times do %><i class="bi bi-star-fill"></i><% end %>
+                  <% (5 - review.rating).times do %><i class="bi bi-star" style="opacity:0.3"></i><% end %>
+                </span>
+              </td>
+              <td style="max-width:300px">
+                <div style="font-size:0.85rem;color:var(--text-secondary)"><%= truncate(review.content, length: 80) %></div>
+              </td>
+              <td class="text-center d-none d-md-table-cell">
+                <span class="badge <%= review.is_active? ? 'bg-success' : 'bg-secondary' %> rounded-pill" style="font-size:0.75rem">
+                  <%= review.is_active? ? t("admin.show") : t("admin.hide") %>
+                </span>
+              </td>
+              <td class="text-center d-none d-md-table-cell">
+                <span class="text-muted"><%= review.sort_order %></span>
+              </td>
+              <td class="pe-3 text-end">
+                <div class="d-flex justify-content-end gap-1">
+                  <button type="button" class="btn btn-sm btn-outline-primary border-0" data-bs-toggle="modal" data-bs-target="#editReviewModal<%= review.id %>">
+                    <i class="bi bi-pencil"></i>
+                  </button>
+                  <%= button_to admin_course_course_review_path(@course, review), method: :delete,
+                      class: "btn btn-sm btn-outline-danger border-0",
+                      data: { confirm: t('admin.ui.m706') } do %>
+                    <i class="bi bi-trash"></i>
+                  <% end %>
+                </div>
+              </td>
+            </tr>
+          <% end %>
+          <% if @reviews.empty? %>
+            <tr>
+              <td colspan="6" class="text-center text-muted py-5">
+                <i class="bi bi-chat-square-text d-block mb-2" style="font-size:2rem"></i>
+                <%= t('admin.ui.m707') %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- <%= t('admin.ui.m008') %>弹窗 -->
+<% @reviews.each do |review| %>
+  <div class="modal fade" id="editReviewModal<%= review.id %>" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content rounded-3">
+        <div class="modal-header border-0 pb-0">
+          <h6 class="modal-title fw-bold"><%= t('admin.ui.m708') %></h6>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="<%= t('admin.close') %>"></button>
+        </div>
+        <div class="modal-body">
+          <%= form_with model: [:admin, @course, review], local: true do |f| %>
+            <div class="mb-3">
+              <%= f.label :user_name, t('admin.ui.m240'), class: "form-label fw-semibold small text-muted" %>
+              <%= f.text_field :user_name, class: "form-control rounded-3" %>
+            </div>
+            <div class="mb-3">
+              <%= f.label :rating, t("admin.rating"), class: "form-label fw-semibold small text-muted" %>
+              <%= f.select :rating, [[5, '5 星'], [4, '4 星'], [3, '3 星'], [2, '2 星'], [1, '1 星']], {}, class: "form-select rounded-3" %>
+            </div>
+            <div class="mb-3">
+              <%= f.label :content, t("admin.review_content"), class: "form-label fw-semibold small text-muted" %>
+              <%= f.text_area :content, class: "form-control rounded-3", rows: 3 %>
+            </div>
+            <div class="row g-3 mb-3">
+              <div class="col-6">
+                <%= f.label :sort_order, t("admin.sort_order"), class: "form-label fw-semibold small text-muted" %>
+                <%= f.number_field :sort_order, class: "form-control rounded-3", min: 0 %>
+              </div>
+              <div class="col-6">
+                <%= f.label :is_active, t("admin.status"), class: "form-label fw-semibold small text-muted" %>
+                <div class="form-check form-switch mt-2">
+                  <%= f.check_box :is_active, class: "form-check-input" %>
+                  <label class="form-check-label" for="course_review_is_active"><%= t('admin.show') %></label>
+                </div>
+              </div>
+            </div>
+            <div class="d-flex justify-content-end gap-2">
+              <button type="button" class="btn btn-outline-secondary rounded-pill px-3" data-bs-dismiss="modal"><%= t('admin.cancel') %></button>
+              <%= f.submit t("admin.save"), class: "btn btn-primary rounded-pill px-3" %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>

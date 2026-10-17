@@ -1,0 +1,183 @@
+<div class="d-flex align-items-center justify-content-between mb-4">
+  <div>
+    <h5 class="fw-bold mb-1"><i class="bi bi-brush me-2"></i><%= t('admin.ui.m475') %></h5>
+    <p class="text-muted mb-0" style="font-size:0.85rem"><%= t('admin.ui.m476') %></p>
+  </div>
+</div>
+
+<!-- 上传区域 -->
+<div class="card card-admin mb-4">
+  <div class="card-body">
+    <h6 class="fw-semibold mb-3"><%= t('admin.ui.m477') %></h6>
+    <%= form_with url: admin_themes_path, method: :post, multipart: true, class: "row g-3 align-items-end" do |f| %>
+      <div class="col-auto">
+        <label class="form-label" style="font-size:0.8rem;color:#6b7280"><%= t('admin.ui.m478') %></label>
+        <input type="file" name="theme_zip" accept=".zip" class="form-control form-control-sm" style="width:280px" required>
+      </div>
+      <div class="col-auto">
+        <button type="submit" class="btn btn-sm btn-primary">
+          <i class="bi bi-cloud-upload me-1"></i><%= t('admin.ui.m479') %>
+        </button>
+      </div>
+    <% end %>
+    <div class="mt-2" style="font-size:0.75rem;color:#9ca3af">
+      <%= t('admin.ui.m480') %>
+    </div>
+  </div>
+</div>
+
+<!-- <%= t('admin.ui.m481') %> -->
+<details class="mb-4">
+  <summary class="text-muted" style="font-size:0.85rem;cursor:pointer">
+    <i class="bi bi-question-circle me-1"></i><%= t('admin.ui.m481') %>
+  </summary>
+  <div class="card card-admin mt-2">
+    <div class="card-body" style="font-size:0.82rem">
+      <pre class="mb-0 p-3 rounded" style="background:#f9fafb;border:1px solid #e5e7eb;overflow-x:auto">my-theme.zip
+├── theme.json          # <%= t('admin.ui.m482') %>
+├── screenshot.png      # <%= t('admin.ui.m483') %>
+├── styles.css          # <%= t('admin.ui.m484') %>
+├── custom.css          # <%= t('admin.ui.m485') %>
+├── dark.css            # <%= t('admin.ui.m486') %>
+└── assets/             # <%= t('admin.ui.m487') %>
+    ├── fonts/
+    └── images/</pre>
+      <p class="mt-2 mb-1"><strong>theme.json <%= t('admin.ui.m143') %></strong></p>
+      <pre class="mb-0 p-3 rounded" style="background:#f9fafb;border:1px solid #e5e7eb">{
+  "name": "Ocean Blue",
+  "identifier": "ocean_blue",
+  "version": "1.0.0",
+  "description": "<%= t('admin.ui.m540') %>",
+  "author": "Your Name",
+  "preview_color": "#1e3a5f"
+}</pre>
+      <p class="mt-2 mb-1"><strong>styles.css <%= t('admin.ui.m143') %></strong></p>
+      <pre class="mb-0 p-3 rounded" style="background:#f9fafb;border:1px solid #e5e7eb">:root {
+  --bg-body: #f0f7ff;
+  --bg-card: #ffffff;
+  --bg-navbar: #1e3a5f;
+  --text-navbar: #ffffff;
+  --text-brand: #1e3a5f;
+  --bg-btn-primary: #1e3a5f;
+  --border-btn-primary: #1e3a5f;
+  --text-link: #1e3a5f;
+  --bg-user-header: linear-gradient(135deg, #1e3a5f 0%, #2d5f8a 100%);
+}</pre>
+    </div>
+  </div>
+</details>
+
+<!-- <%= t('admin.ui.m588') %><%= t('admin.ui.m732') %> -->
+<% if @active_theme.present? %>
+<div class="mb-3">
+  <span class="badge bg-success px-3 py-2" style="font-size:0.82rem">
+    <i class="bi bi-check-circle me-1"></i><%= t('admin.ui.m541') %> <%= @active_theme.name %> (v<%= @active_theme.version %>)
+  </span>
+</div>
+<% end %>
+
+<% if @themes.any? || @active_theme.blank? %>
+<div class="row g-3">
+  <!-- <%= t('admin.ui.m542') %><%= t('admin.ui.m588') %> -->
+  <div class="col-md-4 col-lg-3">
+    <div class="card card-admin h-100 <%= 'border-primary border-2' if @default_theme&.active? %>">
+      <div style="height:180px;background:linear-gradient(135deg, #f8f9fa 0%, #e9ecef 50%, #dee2e6 100%);border-radius:12px 12px 0 0" class="d-flex align-items-center justify-content-center">
+        <i class="bi bi-palette" style="font-size:2.5rem;color:#6c757d;opacity:0.5"></i>
+      </div>
+      <div class="card-body">
+        <h6 class="fw-semibold mb-1">
+          <%= t('admin.ui.m542') %>
+          <span class="badge bg-secondary ms-1" style="font-size:0.65rem"><%= t('admin.ui.m543') %></span>
+          <% if @default_theme&.active? %><span class="badge bg-success ms-1" style="font-size:0.65rem"><%= t('admin.in_use') %></span><% end %>
+        </h6>
+        <p class="text-muted mb-1" style="font-size:0.78rem;line-height:1.4"><%= @default_theme&.description.presence || "Bootstrap #{t('admin.ui.m544')}" %></p>
+        <div class="d-flex gap-1 flex-wrap mb-2">
+          <% if @default_theme %>
+            <span class="badge" style="background:var(--bg-input);color:var(--text-muted);font-size:0.65rem">v<%= @default_theme.version %></span>
+          <% else %>
+            <span class="badge" style="background:var(--bg-input);color:var(--text-muted);font-size:0.65rem"><%= t('admin.ui.m545') %></span>
+          <% end %>
+        </div>
+        <div class="d-flex gap-2">
+          <% if @default_theme %>
+            <%= link_to edit_admin_theme_path(@default_theme), class: "btn btn-sm btn-outline-secondary" do %>
+              <i class="bi bi-gear me-1"></i><%= t('admin.ui.m200') %>
+            <% end %>
+          <% end %>
+          <% if @default_theme&.active? %>
+            <%= button_to deactivate_admin_theme_path(@default_theme), method: :patch,
+                class: "btn btn-sm btn-outline-secondary flex-grow-1" do %>
+              <i class="bi bi-x-lg me-1"></i><%= t('admin.ui.m549') %>
+            <% end %>
+          <% elsif @active_theme.present? %>
+            <%= button_to reset_admin_themes_path, method: :patch,
+                class: "btn btn-sm btn-primary flex-grow-1",
+                data: { confirm: t('admin.ui.m546') } do %>
+              <i class="bi bi-check-lg me-1"></i><%= t('admin.ui.m022') %>
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <% @themes.each do |theme| %>
+  <div class="col-md-4 col-lg-3">
+    <div class="card card-admin h-100 <%= 'border-primary border-2' if theme.active? %>">
+      <% if theme.screenshot_path %>
+        <div style="height:180px;overflow:hidden;background:#f3f4f6;border-radius:12px 12px 0 0">
+          <img src="<%= screenshot_admin_theme_path(theme) %>" alt="<%= theme.name %>" style="width:100%;height:100%;object-fit:cover">
+        </div>
+      <% else %>
+        <div style="height:180px;background:linear-gradient(135deg, <%= theme.preview_color || '#6366f1' %> 0%, #1e1e2e 100%);border-radius:12px 12px 0 0" class="d-flex align-items-center justify-content-center">
+          <i class="bi bi-brush text-white" style="font-size:2.5rem;opacity:0.4"></i>
+        </div>
+      <% end %>
+      <div class="card-body">
+        <h6 class="fw-semibold mb-1">
+          <%= theme.name %>
+          <% if theme.active? %><span class="badge bg-success ms-1" style="font-size:0.65rem"><%= t('admin.in_use') %></span><% end %>
+        </h6>
+        <p class="text-muted mb-1" style="font-size:0.78rem;line-height:1.4"><%= theme.description || t('admin.ui.m547') %></p>
+        <div class="d-flex gap-1 flex-wrap mb-2">
+          <span class="badge" style="background:var(--bg-input);color:var(--text-muted);font-size:0.65rem">v<%= theme.version %></span>
+          <% if theme.author.present? %>
+            <span class="badge" style="background:var(--bg-input);color:var(--text-muted);font-size:0.65rem"><%= theme.author %></span>
+          <% end %>
+        </div>
+        <div class="d-flex gap-2">
+          <%= link_to edit_admin_theme_path(theme), class: "btn btn-sm btn-outline-secondary" do %>
+            <i class="bi bi-gear me-1"></i><%= t('admin.ui.m200') %>
+          <% end %>
+          <% unless theme.active? %>
+            <%= button_to activate_admin_theme_path(theme), method: :patch,
+                class: "btn btn-sm btn-primary flex-grow-1",
+                data: { confirm: t('admin.ui.m548') } do %>
+              <i class="bi bi-check-lg me-1"></i><%= t('admin.ui.m022') %>
+            <% end %>
+          <% else %>
+            <%= button_to deactivate_admin_theme_path(theme), method: :patch,
+                class: "btn btn-sm btn-outline-secondary flex-grow-1" do %>
+              <i class="bi bi-x-lg me-1"></i><%= t('admin.ui.m549') %>
+            <% end %>
+          <% end %>
+          <% unless theme.builtin_default? %>
+          <%= button_to admin_theme_path(theme), method: :delete,
+              class: "btn btn-sm btn-outline-danger",
+              data: { confirm: "确认删除主题「#{theme.name}」？" } do %>
+            <i class="bi bi-trash"></i>
+          <% end %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+  <% end %>
+</div>
+<% else %>
+<div class="text-center py-5">
+  <i class="bi bi-brush text-muted" style="font-size:3rem;opacity:0.3"></i>
+  <p class="text-muted mt-3" style="font-size:0.9rem"><%= t('admin.ui.m551') %></p>
+  <p class="text-muted" style="font-size:0.8rem"><%= t('admin.ui.m552') %></p>
+</div>
+<% end %>

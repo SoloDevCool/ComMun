@@ -1,0 +1,72 @@
+<h4 class="mb-4 text-dark fw-bold"><%= t('admin.ui.m465') %></h4>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <span class="text-muted"><%= t('admin.ui.m013') %> <%= @shop_items.size %> <%= t('admin.ui.m466') %></span>
+  <%= link_to new_admin_shop_item_path, class: "btn btn-primary rounded-pill px-3 btn-sm" do %>
+    <i class="bi bi-plus-lg me-1"></i><%= t('admin.ui.m095') %>
+  <% end %>
+</div>
+
+<div class="card card-admin">
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead>
+        <tr>
+          <th><%= t('admin.name') %></th>
+          <th><%= t('admin.type') %></th>
+          <th><%= t('admin.ui.m467') %></th>
+          <th><%= t('admin.ui.m468') %></th>
+          <th><%= t('admin.ui.m469') %></th>
+          <th><%= t('admin.status') %></th>
+          <th><%= t('admin.sort_order') %></th>
+          <th><%= t('admin.actions') %></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @shop_items.each do |item| %>
+          <tr>
+            <td>
+              <i class="bi <%= item.icon.presence || 'bi-gift' %> me-1 text-primary"></i>
+              <strong><%= item.name %></strong>
+              <% if item.description.present? %>
+                <br><span class="text-muted small"><%= truncate(item.description, length: 40) %></span>
+              <% end %>
+            </td>
+            <td><span class="badge bg-light text-secondary"><%= item.item_type_label %></span></td>
+            <td><span class="fw-bold text-primary"><%= item.price %></span> <%= t('admin.ui.m470') %></td>
+            <td>
+              <% if item.stock == -1 %>
+                <span class="text-muted"><%= t('admin.ui.m471') %></span>
+              <% else %>
+                <%= item.stock %>
+              <% end %>
+            </td>
+            <td><%= @total_purchases[item.id] || 0 %></td>
+            <td>
+              <% if item.active? %>
+                <span class="badge bg-success"><%= t('admin.ui.m472') %></span>
+              <% else %>
+                <span class="badge bg-secondary"><%= t('admin.ui.m473') %></span>
+              <% end %>
+            </td>
+            <td><%= item.sort_order %></td>
+            <td>
+              <div class="btn-group btn-group-sm">
+                <%= link_to edit_admin_shop_item_path(item), class: "btn btn-outline-primary" do %>
+                  <i class="bi bi-pencil"></i>
+                <% end %>
+                <%= button_to toggle_active_admin_shop_item_path(item), method: :patch, class: "btn #{item.active? ? 'btn-outline-warning' : 'btn-outline-success'}" do %>
+                  <i class="bi bi-<%= item.active? ? 'pause' : 'play' %>"></i>
+                <% end %>
+                <%= button_to admin_shop_item_path(item), method: :delete, class: "btn btn-outline-danger",
+                    onclick: "return confirm('确认删除「#{item.name}」？')" do %>
+                  <i class="bi bi-trash"></i>
+                <% end %>
+              </div>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

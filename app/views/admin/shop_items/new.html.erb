@@ -1,0 +1,61 @@
+<h4 class="mb-4 text-dark fw-bold"><%= t('admin.ui.m095') %></h4>
+
+<div class="card card-admin">
+  <div class="card-body p-4">
+    <%= form_with model: @shop_item, url: admin_shop_items_path, local: true do |f| %>
+      <div class="row g-3">
+        <div class="col-md-6">
+          <%= f.label :name, t('admin.ui.m082'), class: "form-label fw-semibold small" %>
+          <%= f.text_field :name, class: "form-control form-control-sm", placeholder: t('admin.ui.m083') %>
+        </div>
+        <div class="col-md-3">
+          <%= f.label :item_type, t('admin.ui.m084'), class: "form-label fw-semibold small" %>
+          <%= f.select :item_type, ShopItem::ITEM_TYPES.map { |t| [ShopItem::ITEM_TYPE_LABELS[t], t] }, {}, class: "form-select form-select-sm" %>
+        </div>
+        <div class="col-md-3">
+          <%= f.label :price, t('admin.ui.m085'), class: "form-label fw-semibold small" %>
+          <%= f.number_field :price, class: "form-control form-control-sm", min: 1, placeholder: "100" %>
+        </div>
+        <div class="col-md-9">
+          <%= f.label :description, t('admin.ui.m086'), class: "form-label fw-semibold small" %>
+          <%= f.text_area :description, class: "form-control form-control-sm", rows: 3, placeholder: t('admin.ui.m087') %>
+        </div>
+        <div class="col-md-3">
+          <%= f.label :icon, t('admin.ui.m088'), class: "form-label fw-semibold small" %>
+          <%= f.text_field :icon, class: "form-control form-control-sm", placeholder: "bi-gift" %>
+          <div class="form-text">Bootstrap Icons class 名</div>
+        </div>
+        <div class="col-md-4">
+          <%= f.label :stock, t('admin.ui.m089'), class: "form-label fw-semibold small" %>
+          <%= f.number_field :stock, class: "form-control form-control-sm", value: -1 %>
+        </div>
+        <div class="col-md-4">
+          <%= f.label :sort_order, t("admin.sort_order_hint"), class: "form-label fw-semibold small" %>
+          <%= f.number_field :sort_order, class: "form-control form-control-sm", value: 0 %>
+        </div>
+        <div class="col-md-4">
+          <%= f.label :active, t("admin.status"), class: "form-label fw-semibold small" %>
+          <div>
+            <div class="form-check form-switch mt-1">
+              <%= f.check_box :active, checked: true, class: "form-check-input" %>
+              <%= f.label :active, t("admin.on_shelf"), class: "form-check-label small" %>
+            </div>
+          </div>
+        </div>
+        <div class="col-12">
+          <%= f.label :metadata, t('admin.ui.m090'), class: "form-label fw-semibold small" %>
+          <%= f.text_field :metadata, class: "form-control form-control-sm", value: (@shop_item.metadata.to_json rescue '{}'), placeholder: '{"plan": "free", "domain": "example.com"}' %>
+          <div class="form-text">License <%= t('admin.ui.m091') %></div>
+        </div>
+      </div>
+      <div class="d-flex justify-content-end mt-4">
+        <%= link_to admin_shop_items_path, class: "btn btn-outline-secondary rounded-pill px-3 me-2" do %>
+          <%= t('admin.ui.m092') %>
+        <% end %>
+        <button type="submit" class="btn btn-primary rounded-pill px-4">
+          <i class="bi bi-check-lg me-1"></i><%= t('admin.ui.m002') %>
+        </button>
+      </div>
+    <% end %>
+  </div>
+</div>

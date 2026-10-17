@@ -1,0 +1,592 @@
+<% content_for :title, "#{@qb_exam.name}#{@mode_name} - 题库 - #{site_name}" %>
+
+<div class="container-lg py-4">
+  <!-- 顶部导航栏 -->
+  <div class="qb-practice-header d-flex align-items-center justify-content-between mb-4">
+    <div class="d-flex align-items-center gap-2">
+      <a href="<%= question_bank_path(id: @qb_exam.code) %>" class="qb-back-btn">
+        <i class="bi bi-arrow-left"></i>
+      </a>
+      <div>
+        <h4 class="fw-bold mb-0" style="font-size:1.1rem">
+          <span class="qb-exam-type-badge" style="background-color: <%= @qb_exam.color %>15; color: <%= @qb_exam.color %>"><%= @qb_exam.type_name %></span>
+          <%= @qb_exam.name %>
+          <span class="qb-mode-label"><i class="bi <%= @mode_icon %> me-1"></i><%= @mode_name %></span>
+        </h4>
+        <span class="text-muted" style="font-size:0.78rem"><%= @mode_desc %></span>
+      </div>
+    </div>
+    <div class="d-flex align-items-center gap-3">
+      <div class="qb-timer d-flex align-items-center gap-1" id="timer">
+        <i class="bi bi-clock"></i>
+        <span id="timer-display">00:00</span>
+      </div>
+      <div class="qb-progress-text">
+        <span id="answered-count">0</span>/<%= @questions.length %>
+      </div>
+    </div>
+  </div>
+
+  <!-- 进度条 -->
+  <div class="qb-progress-bar-wrap mb-4">
+    <div class="qb-progress-bar" id="progress-bar" style="width: 0%"></div>
+  </div>
+
+  <div class="row g-4">
+    <!-- 左侧：题目区域 -->
+    <div class="col-lg-8">
+      <!-- 题目卡片 -->
+      <div class="qb-question-card" id="question-card">
+        <div class="qb-question-header">
+          <div class="d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center gap-2">
+              <span class="qb-question-num" id="question-num">1</span>
+              <span class="qb-question-type-tag" id="question-type-tag">单选题</span>
+              <span class="qb-question-category-tag"><%= @questions.first&.dig(:category) %></span>
+            </div>
+            <button class="qb-collect-btn" id="collect-btn" title="收藏">
+              <i class="bi bi-star"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="qb-question-content" id="question-content">
+          <%= @questions.first&.dig(:content) %>
+        </div>
+
+        <div class="qb-options" id="options-container">
+          <% @questions.first&.dig(:options)&.each_with_index do |opt, i| %>
+            <div class="qb-option-item" data-index="<%= i %>" onclick="selectOption(this)">
+              <span class="qb-option-letter"><%= ('A'.ord + i).chr %></span>
+              <span class="qb-option-text"><%= opt %></span>
+              <span class="qb-option-icon"><i class="bi bi-circle"></i></span>
+            </div>
+          <% end %>
+        </div>
+
+        <div class="qb-explanation" id="explanation" style="display:none">
+          <div class="qb-explanation-header">
+            <i class="bi bi-lightbulb me-1"></i>答案解析
+          </div>
+          <div class="qb-explanation-body" id="explanation-body"></div>
+        </div>
+      </div>
+
+      <!-- 底部操作按钮 -->
+      <div class="d-flex align-items-center justify-content-between mt-3">
+        <button class="qb-nav-btn" id="prev-btn" onclick="goQuestion(-1)" disabled>
+          <i class="bi bi-chevron-left me-1"></i>上一题
+        </button>
+        <div class="d-flex align-items-center gap-2" id="action-buttons">
+          <% if @mode == 'exam' %>
+            <button class="qb-btn-submit" id="submit-exam-btn" onclick="submitExam()">
+              <i class="bi bi-send me-1"></i>交卷
+            </button>
+          <% else %>
+            <button class="qb-btn-secondary" id="confirm-btn" onclick="confirmAnswer()">
+              <i class="bi bi-check2-circle me-1"></i>确认答案
+            </button>
+          <% end %>
+          <button class="qb-btn-primary" id="next-btn" onclick="goQuestion(1)" style="display:none">
+            下一题<i class="bi bi-chevron-right ms-1"></i>
+          </button>
+        </div>
+        <button class="qb-nav-btn" id="next-btn-alt" onclick="goQuestion(1)">
+          下一题<i class="bi bi-chevron-right ms-1"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- 右侧：答题卡 -->
+    <div class="col-lg-4">
+      <div class="qb-answer-sheet">
+        <div class="qb-answer-sheet-header">
+          <h6 class="fw-bold mb-0" style="font-size:0.9rem"><i class="bi bi-grid-3x3-gap me-1"></i>答题卡</h6>
+        </div>
+        <div class="qb-answer-sheet-body">
+          <div class="qb-answer-grid" id="answer-grid">
+            <% @questions.each_with_index do |q, i| %>
+              <button class="qb-answer-cell" data-index="<%= i %>" onclick="jumpToQuestion(<%= i %>)">
+                <%= i + 1 %>
+              </button>
+            <% end %>
+          </div>
+          <div class="qb-answer-legend mt-3">
+            <div class="d-flex align-items-center gap-4 justify-content-center">
+              <span class="d-flex align-items-center gap-1"><span class="qb-legend-dot qb-legend-current"></span>当前</span>
+              <span class="d-flex align-items-center gap-1"><span class="qb-legend-dot qb-legend-answered"></span>已答</span>
+              <% unless @mode == 'exam' %>
+                <span class="d-flex align-items-center gap-1"><span class="qb-legend-dot qb-legend-correct"></span>正确</span>
+                <span class="d-flex align-items-center gap-1"><span class="qb-legend-dot qb-legend-wrong"></span>错误</span>
+              <% end %>
+            </div>
+          </div>
+        </div>
+
+        <div class="qb-answer-sheet-stats" id="stats-panel" style="display:none">
+          <div class="row g-2 text-center">
+            <div class="col-4">
+              <div class="qb-stat-num" style="color:#10b981" id="stat-correct">0</div>
+              <div class="qb-stat-label">正确</div>
+            </div>
+            <div class="col-4">
+              <div class="qb-stat-num" style="color:#ef4444" id="stat-wrong">0</div>
+              <div class="qb-stat-label">错误</div>
+            </div>
+            <div class="col-4">
+              <div class="qb-stat-num" style="color:#6b7280" id="stat-unanswered">0</div>
+              <div class="qb-stat-label">未答</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 考试信息 -->
+      <div class="qb-exam-info mt-3">
+        <div class="d-flex align-items-center justify-content-between py-2">
+          <span class="text-muted" style="font-size:0.82rem"><i class="bi bi-collection me-1"></i>题目总数</span>
+          <span class="fw-bold" style="font-size:0.85rem"><%= @qb_exam.total_count %></span>
+        </div>
+        <div class="d-flex align-items-center justify-content-between py-2 border-top">
+          <span class="text-muted" style="font-size:0.82rem"><i class="bi bi-clock me-1"></i><%= @mode == 'exam' ? '考试时长' : '不限时' %></span>
+          <span class="fw-bold" style="font-size:0.85rem"><%= @mode == 'exam' ? "#{@qb_exam.duration} 分钟" : '--' %></span>
+        </div>
+        <div class="d-flex align-items-center justify-content-between py-2 border-top">
+          <span class="text-muted" style="font-size:0.82rem"><i class="bi bi-bookmarks me-1"></i>本次练习</span>
+          <span class="fw-bold" style="font-size:0.85rem"><%= @questions.length %> 题</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 结果遮罩 -->
+<div class="qb-result-overlay" id="result-overlay" style="display:none">
+  <div class="qb-result-card">
+    <div class="qb-result-header" id="result-header">
+      <div class="qb-result-icon" id="result-icon"><i class="bi bi-trophy"></i></div>
+      <h4 class="fw-bold mt-2" id="result-title">练习完成</h4>
+      <p class="text-muted mb-0" id="result-subtitle" style="font-size:0.85rem"></p>
+    </div>
+    <div class="qb-result-body">
+      <div class="qb-result-score" id="result-score">0%</div>
+      <div class="qb-result-label">正确率</div>
+      <div class="row g-3 mt-3">
+        <div class="col-4 text-center">
+          <div class="qb-result-stat-num text-success" id="result-correct">0</div>
+          <div class="qb-result-stat-label">正确</div>
+        </div>
+        <div class="col-4 text-center">
+          <div class="qb-result-stat-num text-danger" id="result-wrong">0</div>
+          <div class="qb-result-stat-label">错误</div>
+        </div>
+        <div class="col-4 text-center">
+          <div class="qb-result-stat-num text-secondary" id="result-unanswered">0</div>
+          <div class="qb-result-stat-label">未答</div>
+        </div>
+      </div>
+      <div class="qb-result-time mt-3">
+        <i class="bi bi-clock me-1"></i>用时：<span id="result-time">00:00</span>
+      </div>
+    </div>
+    <div class="qb-result-footer">
+      <a href="<%= question_bank_path(id: @qb_exam.code) %>" class="qb-result-btn qb-result-btn-secondary">返回</a>
+      <a href="<%= @mode == 'wrong' ? wrong_question_bank_path(id: @qb_exam.code) : practice_question_bank_path(id: @qb_exam.code, mode: @mode) %>" class="qb-result-btn qb-result-btn-primary">再来一次</a>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  var questions = <%= raw @questions.to_json %>;
+  var total = questions.length;
+  var currentIndex = 0;
+  var selectedOption = null;
+  var answered = new Array(total).fill(null);
+  var confirmed = new Array(total).fill(false);
+  var correctCount = 0;
+  var wrongCount = 0;
+  var timerSeconds = 0;
+  var timerInterval = null;
+  var submitted = false;
+
+  var config = {
+    mode: '<%= @mode %>',
+    isExam: <%= @mode == 'exam' ? 'true' : 'false' %>,
+    duration: <%= @mode == 'exam' ? @qb_exam.duration * 60 : 0 %>,
+    examCode: '<%= @qb_exam.code %>'
+  };
+
+  // 计时器
+  if (config.isExam) {
+    timerSeconds = config.duration;
+    updateTimerDisplay();
+    timerInterval = setInterval(function() {
+      timerSeconds--;
+      updateTimerDisplay();
+      if (timerSeconds <= 60) {
+        document.getElementById('timer').classList.add('qb-timer-warning');
+      }
+      if (timerSeconds <= 0) {
+        clearInterval(timerInterval);
+        submitExam();
+      }
+    }, 1000);
+  } else {
+    timerInterval = setInterval(function() {
+      timerSeconds++;
+      updateTimerDisplay();
+    }, 1000);
+  }
+
+  function updateTimerDisplay() {
+    var m = Math.floor(Math.abs(timerSeconds) / 60);
+    var s = Math.abs(timerSeconds) % 60;
+    document.getElementById('timer-display').textContent =
+      (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+  }
+
+  function formatTime(sec) {
+    var m = Math.floor(sec / 60);
+    var s = sec % 60;
+    return (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+  }
+
+  // 渲染题目
+  function renderQuestion(index) {
+    if (submitted) return;
+    var q = questions[index];
+    document.getElementById('question-num').textContent = index + 1;
+    document.getElementById('question-content').textContent = q.content;
+    document.getElementById('question-type-tag').textContent = q.type;
+    document.querySelector('.qb-question-category-tag').textContent = q.category;
+
+    var container = document.getElementById('options-container');
+    container.innerHTML = '';
+    var letters = ['A','B','C','D','E','F'];
+    q.options.forEach(function(opt, i) {
+      var div = document.createElement('div');
+      div.className = 'qb-option-item';
+      div.setAttribute('data-index', i);
+      div.onclick = function() { selectOption(div); };
+
+      var letterSpan = document.createElement('span');
+      letterSpan.className = 'qb-option-letter';
+      letterSpan.textContent = letters[i];
+
+      var textSpan = document.createElement('span');
+      textSpan.className = 'qb-option-text';
+      textSpan.textContent = opt;
+
+      var iconSpan = document.createElement('span');
+      iconSpan.className = 'qb-option-icon';
+      iconSpan.innerHTML = '<i class="bi bi-circle"></i>';
+
+      div.appendChild(letterSpan);
+      div.appendChild(textSpan);
+      div.appendChild(iconSpan);
+      container.appendChild(div);
+    });
+
+    // 恢复状态
+    if (!config.isExam && confirmed[index]) {
+      showResultForQuestion(index);
+    } else if (answered[index] !== null && answered[index] >= 0) {
+      var opts = container.querySelectorAll('.qb-option-item');
+      opts[answered[index]].classList.add('qb-option-selected');
+    }
+
+    // 解析区域
+    if (!config.isExam) {
+      document.getElementById('explanation').style.display = confirmed[index] ? '' : 'none';
+      if (confirmed[index]) {
+        document.getElementById('explanation-body').textContent = q.explanation;
+      }
+    } else {
+      document.getElementById('explanation').style.display = 'none';
+    }
+
+    updateCollectBtn(index);
+
+    document.getElementById('prev-btn').disabled = (index === 0);
+    var isLast = (index === total - 1);
+
+    if (!config.isExam && confirmed[index]) {
+      document.getElementById('confirm-btn').style.display = 'none';
+      document.getElementById('next-btn').style.display = isLast ? 'none' : '';
+      document.getElementById('next-btn-alt').style.display = isLast ? 'none' : '';
+    } else {
+      if (!config.isExam) {
+        document.getElementById('confirm-btn').style.display = '';
+      }
+      document.getElementById('next-btn').style.display = 'none';
+      document.getElementById('next-btn-alt').style.display = '';
+    }
+
+    selectedOption = answered[index] !== null ? answered[index] : null;
+    updateProgress();
+    updateAnswerSheet();
+  }
+
+  // 选择选项
+  window.selectOption = function(el) {
+    if (submitted) return;
+    if (!config.isExam && confirmed[currentIndex]) return;
+    var idx = parseInt(el.getAttribute('data-index'));
+    selectedOption = idx;
+    answered[currentIndex] = idx;
+
+    var opts = document.querySelectorAll('#options-container .qb-option-item');
+    opts.forEach(function(o) { o.classList.remove('qb-option-selected'); });
+    el.classList.add('qb-option-selected');
+  };
+
+  // 确认答案（非考试模式）
+  window.confirmAnswer = function() {
+    if (submitted) return;
+    if (selectedOption === null || selectedOption < 0) {
+      document.querySelectorAll('#options-container .qb-option-item').forEach(function(o) {
+        o.style.animation = 'none';
+        o.offsetHeight;
+        o.style.animation = 'qb-shake 0.4s ease';
+      });
+      return;
+    }
+    confirmed[currentIndex] = true;
+    var q = questions[currentIndex];
+    if (selectedOption === q.answer) {
+      correctCount++;
+    } else {
+      wrongCount++;
+    }
+    showResultForQuestion(currentIndex);
+    updateStats();
+
+    // 全部作答完自动提交
+    if (confirmed.every(function(c) { return c; })) {
+      setTimeout(function() { submitResults(); }, 800);
+    }
+  };
+
+  // 显示单题结果
+  function showResultForQuestion(index) {
+    var q = questions[index];
+    var opts = document.querySelectorAll('#options-container .qb-option-item');
+
+    opts.forEach(function(o, i) {
+      o.classList.remove('qb-option-selected');
+      o.style.pointerEvents = 'none';
+      if (i === q.answer) {
+        o.classList.add('qb-option-correct');
+      } else if (i === answered[index] && answered[index] !== q.answer) {
+        o.classList.add('qb-option-wrong');
+      }
+    });
+
+    document.getElementById('explanation').style.display = '';
+    document.getElementById('explanation-body').textContent = q.explanation;
+
+    var isLast = (index === total - 1);
+    document.getElementById('confirm-btn').style.display = 'none';
+    document.getElementById('next-btn').style.display = isLast ? 'none' : '';
+    document.getElementById('next-btn-alt').style.display = isLast ? 'none' : '';
+
+    if (isLast) {
+      document.getElementById('stats-panel').style.display = '';
+    }
+  }
+
+  // 交卷（考试模式）
+  window.submitExam = function() {
+    if (submitted) return;
+
+    var answeredCount = answered.filter(function(a) { return a !== null && a >= 0; }).length;
+    var unanswered = total - answeredCount;
+    var msg = '确认交卷？';
+    if (unanswered > 0) {
+      msg = '还有 ' + unanswered + ' 题未作答，确认交卷？';
+    }
+    if (!confirm(msg)) return;
+
+    clearInterval(timerInterval);
+    submitted = true;
+
+    // 计算结果
+    correctCount = 0;
+    wrongCount = 0;
+    var unansweredCount = 0;
+
+    for (var i = 0; i < total; i++) {
+      if (answered[i] === null || answered[i] < 0) {
+        unansweredCount++;
+      } else if (answered[i] === questions[i].answer) {
+        correctCount++;
+        confirmed[i] = true;
+      } else {
+        wrongCount++;
+        confirmed[i] = true;
+      }
+    }
+
+    // 显示当前题结果
+    showResultForQuestion(currentIndex);
+
+    // 显示统计
+    document.getElementById('stat-correct').textContent = correctCount;
+    document.getElementById('stat-wrong').textContent = wrongCount;
+    document.getElementById('stat-unanswered').textContent = unansweredCount;
+    document.getElementById('stats-panel').style.display = '';
+
+    // 提交到服务器
+    submitResults();
+  };
+
+  // 提交结果到服务器
+  function submitResults() {
+    var answers = [];
+    for (var i = 0; i < total; i++) {
+      answers.push({
+        question_id: questions[i].id,
+        selected_option: answered[i] !== null && answered[i] >= 0 ? answered[i] : null
+      });
+    }
+
+    var timeSpent = config.isExam ? (config.duration - timerSeconds) : timerSeconds;
+
+    fetch('/question_banks/' + config.examCode + '/submit', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+      },
+      body: JSON.stringify({
+        mode: config.mode,
+        answers: answers,
+        time_spent: timeSpent
+      })
+    })
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+      showResultOverlay(data, timeSpent);
+    })
+    .catch(function(err) {
+      // 即使提交失败也显示本地结果
+      var localData = {
+        accuracy: total > 0 ? (correctCount / total * 100).toFixed(1) : 0,
+        correct_count: correctCount,
+        wrong_count: wrongCount,
+        unanswered_count: total - correctCount - wrongCount
+      };
+      showResultOverlay(localData, timeSpent);
+    });
+  }
+
+  // 显示结果遮罩
+  function showResultOverlay(data, timeSpent) {
+    var acc = parseFloat(data.accuracy) || 0;
+    document.getElementById('result-score').textContent = acc + '%';
+    document.getElementById('result-correct').textContent = data.correct_count || correctCount;
+    document.getElementById('result-wrong').textContent = data.wrong_count || wrongCount;
+    document.getElementById('result-unanswered').textContent = data.unanswered_count || (total - correctCount - wrongCount);
+    document.getElementById('result-time').textContent = formatTime(timeSpent);
+
+    if (acc >= 80) {
+      document.getElementById('result-header').style.background = 'linear-gradient(135deg, #10b981, #059669)';
+      document.getElementById('result-icon').innerHTML = '<i class="bi bi-trophy"></i>';
+      document.getElementById('result-title').textContent = '表现优秀！';
+      document.getElementById('result-subtitle').textContent = '继续保持，你离目标更近了';
+    } else if (acc >= 60) {
+      document.getElementById('result-header').style.background = 'linear-gradient(135deg, #6366f1, #4f46e5)';
+      document.getElementById('result-icon').innerHTML = '<i class="bi bi-emoji-smile"></i>';
+      document.getElementById('result-title').textContent = '还不错！';
+      document.getElementById('result-subtitle').textContent = '再多练习，争取更高分';
+    } else {
+      document.getElementById('result-header').style.background = 'linear-gradient(135deg, #ef4444, #dc2626)';
+      document.getElementById('result-icon').innerHTML = '<i class="bi bi-book"></i>';
+      document.getElementById('result-title').textContent = '继续加油！';
+      document.getElementById('result-subtitle').textContent = '回顾错题，巩固薄弱知识点';
+    }
+
+    document.getElementById('result-overlay').style.display = '';
+  }
+
+  // 翻页
+  window.goQuestion = function(dir) {
+    if (submitted) return;
+    var next = currentIndex + dir;
+    if (next < 0 || next >= total) return;
+    currentIndex = next;
+    renderQuestion(currentIndex);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // 跳转
+  window.jumpToQuestion = function(index) {
+    if (submitted) return;
+    currentIndex = index;
+    renderQuestion(currentIndex);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // 收藏
+  var collected = new Array(total).fill(false);
+  function updateCollectBtn(index) {
+    var btn = document.getElementById('collect-btn');
+    if (collected[index]) {
+      btn.classList.add('qb-collected');
+      btn.innerHTML = '<i class="bi bi-star-fill"></i>';
+    } else {
+      btn.classList.remove('qb-collected');
+      btn.innerHTML = '<i class="bi bi-star"></i>';
+    }
+  }
+  document.getElementById('collect-btn').onclick = function() {
+    collected[currentIndex] = !collected[currentIndex];
+    updateCollectBtn(currentIndex);
+  };
+
+  // 进度条
+  function updateProgress() {
+    var count;
+    if (config.isExam) {
+      count = answered.filter(function(a) { return a !== null && a >= 0; }).length;
+    } else {
+      count = confirmed.filter(function(c) { return c; }).length;
+    }
+    var pct = (count / total * 100).toFixed(1);
+    document.getElementById('progress-bar').style.width = pct + '%';
+    document.getElementById('answered-count').textContent = count;
+  }
+
+  // 答题卡
+  function updateAnswerSheet() {
+    var cells = document.querySelectorAll('.qb-answer-cell');
+    cells.forEach(function(cell, i) {
+      cell.classList.remove('qb-cell-current', 'qb-cell-answered', 'qb-cell-correct', 'qb-cell-wrong');
+      if (i === currentIndex) {
+        cell.classList.add('qb-cell-current');
+      } else if (submitted && confirmed[i]) {
+        cell.classList.add(questions[i].answer === answered[i] ? 'qb-cell-correct' : 'qb-cell-wrong');
+      } else if (!config.isExam && confirmed[i]) {
+        cell.classList.add(questions[i].answer === answered[i] ? 'qb-cell-correct' : 'qb-cell-wrong');
+      } else if (answered[i] !== null && answered[i] >= 0) {
+        cell.classList.add('qb-cell-answered');
+      }
+    });
+  }
+
+  // 统计
+  function updateStats() {
+    var unanswered = total - correctCount - wrongCount;
+    document.getElementById('stat-correct').textContent = correctCount;
+    document.getElementById('stat-wrong').textContent = wrongCount;
+    document.getElementById('stat-unanswered').textContent = unanswered;
+
+    if (confirmed.every(function(c) { return c; })) {
+      document.getElementById('stats-panel').style.display = '';
+    }
+  }
+
+  renderQuestion(0);
+})();
+</script>

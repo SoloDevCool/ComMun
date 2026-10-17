@@ -1,0 +1,5 @@
+{
+  "nav_item": ["lib/register_nav.rb"],
+  "admin_nav_item": ["lib/register_admin_nav.rb"],
+  "view_injection": ["lib/register_styles.rb"]
+}

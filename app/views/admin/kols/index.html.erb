@@ -1,0 +1,537 @@
+<!-- Tab Navigation -->
+<ul class="nav nav-tabs mb-4" id="kolTabs" role="tablist">
+  <li class="nav-item" role="presentation">
+    <button class="nav-link active" id="manage-tab" data-bs-toggle="tab" data-bs-target="#managePanel" type="button" role="tab">
+      <i class="bi bi-stars me-1"></i>KOL<%= t('admin.ui.m730') %>
+    </button>
+  </li>
+  <li class="nav-item" role="presentation">
+    <button class="nav-link" id="invite-tab" data-bs-toggle="tab" data-bs-target="#invitePanel" type="button" role="tab">
+      <i class="bi bi-envelope-paper me-1"></i>KOL<%= t('admin.ui.m731') %>
+    </button>
+  </li>
+</ul>
+
+<div class="tab-content">
+  <!-- ========== Tab 1: KOL<%= t('admin.ui.m730') %> ========== -->
+  <div class="tab-pane fade show active" id="managePanel" role="tabpanel">
+    <div class="card card-admin mb-4">
+      <div class="card-header py-3 d-flex justify-content-between align-items-center">
+        <h6 class="mb-0 fw-bold"><i class="bi bi-stars me-2 text-warning"></i>KOL <%= t('admin.ui.m732') %></h6>
+        <div class="d-flex gap-2 align-items-center">
+          <span class="badge bg-primary"><%= @kols.size %> <%= t('admin.ui.m733') %></span>
+          <button type="button" class="btn btn-sm btn-outline-primary rounded-pill" data-bs-toggle="modal" data-bs-target="#newKolModal">
+            <i class="bi bi-plus-lg me-1"></i><%= t('admin.ui.m076') %>
+          </button>
+          <%= link_to import_template_admin_kols_path(format: :xlsx), class: "btn btn-sm btn-outline-info rounded-pill" do %>
+            <i class="bi bi-download me-1"></i><%= t('admin.ui.m734') %>
+          <% end %>
+          <button type="button" class="btn btn-sm btn-outline-success rounded-pill" data-bs-toggle="modal" data-bs-target="#importModal">
+            <i class="bi bi-file-earmark-excel me-1"></i>Excel <%= t('admin.ui.m735') %>
+          </button>
+        </div>
+      </div>
+          <div class="card-body p-0">
+            <% if @kols.any? %>
+              <table class="table table-hover mb-0">
+                <thead>
+                  <tr>
+                    <th style="width:5%"><%= t('admin.sort_order') %></th>
+                    <th style="width:15%"><%= t('admin.avatar') %></th>
+                    <th style="width:12%"><%= t('admin.name') %></th>
+                    <th><%= t('admin.bio') %></th>
+                    <th style="width:10%"><%= t('admin.url') %></th>
+                    <th style="width:10%"><%= t('admin.ui.m031') %></th>
+                    <th style="width:10%"><%= t('admin.email') %></th>
+                    <th style="width:8%"><%= t('admin.status') %></th>
+                    <th style="width:10%"><%= t('admin.actions') %></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% @kols.each do |kol| %>
+                    <tr id="kol_<%= kol.id %>">
+                      <td class="text-muted small"><%= kol.sort_order %></td>
+                      <td>
+                        <% if kol.avatar.present? %>
+                          <img src="<%= kol.avatar %>" alt="" style="width:36px;height:36px;border-radius:6px;object-fit:cover;">
+                        <% else %>
+                          <span class="text-muted" style="font-size:0.8rem"><%= t('admin.ui.m736') %></span>
+                        <% end %>
+                      </td>
+                      <td><span class="fw-semibold"><%= kol.name %></span></td>
+                      <td class="text-muted small"><%= truncate(kol.bio.to_s, length: 50) %></td>
+                      <td>
+                        <% if kol.url.present? %>
+                          <a href="<%= kol.url %>" target="_blank" style="font-size:0.82rem" class="text-truncate d-block" title="<%= kol.url %>"><%= truncate(kol.url, length: 25) %></a>
+                        <% else %>
+                          <span class="text-muted" style="font-size:0.8rem">-</span>
+                        <% end %>
+                      </td>
+                      <td>
+                        <span class="<%= kol.price == t('admin.ui.m737') ? 'text-muted' : 'text-danger fw-semibold' %>" style="font-size:0.85rem">
+                          <%= kol.price.presence || '-' %>
+                        </span>
+                      </td>
+                      <td>
+                        <% if kol.email.present? %>
+                          <a href="mailto:<%= kol.email %>" style="font-size:0.82rem"><%= kol.email %></a>
+                        <% else %>
+                          <span class="text-muted" style="font-size:0.8rem">-</span>
+                        <% end %>
+                      </td>
+                      <td>
+                        <% if kol.is_active? %>
+                          <span class="badge bg-success-subtle text-success"><%= t('admin.enable') %></span>
+                        <% else %>
+                          <span class="badge bg-secondary-subtle text-secondary"><%= t('admin.disable') %></span>
+                        <% end %>
+                      </td>
+                      <td>
+                        <div class="d-flex gap-1">
+                          <button type="button" class="btn btn-sm btn-outline-primary btn-action" data-bs-toggle="modal" data-bs-target="#editModal_<%= kol.id %>" title="<%= t('admin.edit') %>">
+                            <i class="bi bi-pencil"></i>
+                          </button>
+                          <%= button_to admin_kol_path(kol), method: :delete, class: "btn btn-sm btn-outline-danger btn-action", title: t("admin.delete"), data: { turbo_confirm: "确定删除「#{kol.name}」？" } do %>
+                            <i class="bi bi-trash"></i>
+                          <% end %>
+                        </div>
+                      </td>
+                    </tr>
+                  <% end %>
+                </tbody>
+              </table>
+            <% else %>
+                <div class="text-center text-muted py-5">
+                <i class="bi bi-stars d-block fs-1 mb-2"></i>
+                <p><%= t('admin.ui.m738') %></p>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== Tab 2: KOL<%= t('admin.ui.m731') %> ========== -->
+  <div class="tab-pane fade" id="invitePanel" role="tabpanel">
+    <form id="inviteForm" action="<%= invite_admin_kols_path %>" method="post">
+      <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+      <div class="row g-4">
+        <div class="col-lg-5">
+          <!-- 选择 KOL -->
+          <div class="card card-admin mb-4">
+            <div class="card-header py-3 d-flex justify-content-between align-items-center">
+              <h6 class="mb-0 fw-bold"><i class="bi bi-check2-square me-2 text-primary"></i><%= t('admin.ui.m739') %></h6>
+              <div class="d-flex gap-2 align-items-center">
+                <button type="button" class="btn btn-sm btn-outline-primary rounded-pill" onclick="toggleAllKols(this)"><%= t('admin.select_all_toggle') %></button>
+                <span class="text-muted" style="font-size:0.8rem"><%= t('admin.ui.m030') %> <span id="selectedCount" class="fw-bold text-primary">0</span> <%= t('admin.ui.m074') %></span>
+              </div>
+            </div>
+            <div class="card-body p-0">
+              <% if @kols.select(&:email).any? %>
+                <div style="max-height:500px;overflow-y:auto;">
+                  <table class="table table-hover mb-0">
+                    <thead>
+                      <tr>
+                        <th style="width:40px"></th>
+                        <th><%= t('admin.ui.m023') %></th>
+                        <th><%= t('admin.email') %></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <% @kols.select(&:email).each do |kol| %>
+                        <tr>
+                          <td>
+                            <input class="form-check-input kol-checkbox" type="checkbox" value="<%= kol.id %>" id="kol_check_<%= kol.id %>" onchange="updateSelectedCount()">
+                          </td>
+                          <td>
+                            <label class="form-check-label small" for="kol_check_<%= kol.id %>" style="cursor:pointer">
+                              <%= kol.name %>
+                            </label>
+                          </td>
+                          <td><span class="text-muted" style="font-size:0.82rem"><%= kol.email %></span></td>
+                        </tr>
+                      <% end %>
+                    </tbody>
+                  </table>
+                </div>
+              <% else %>
+                <div class="text-center text-muted py-5" style="font-size:0.85rem">
+                  <i class="bi bi-exclamation-circle d-block fs-3 mb-2"></i>
+                  <p class="mb-0"><%= t('admin.ui.m740') %></p>
+                  <p class="small"><%= t('admin.ui.m741') %></p>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-7">
+          <!-- 邮件<%= t('admin.ui.m008') %> -->
+          <div class="card card-admin mb-4">
+            <div class="card-header py-3 d-flex justify-content-between align-items-center">
+              <h6 class="mb-0 fw-bold"><i class="bi bi-envelope me-2 text-success"></i><%= t('admin.ui.m742') %></h6>
+              <div class="d-flex gap-1">
+                <button type="button" class="btn btn-sm <%= 'btn-primary' %> rounded-pill" id="btnEdit" onclick="setInviteTab('edit')">
+                  <i class="bi bi-code-slash me-1"></i><%= t('admin.ui.m008') %>
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-primary rounded-pill" id="btnPreview" onclick="setInviteTab('preview')">
+                  <i class="bi bi-eye me-1"></i><%= t('admin.ui.m007') %>
+                </button>
+              </div>
+            </div>
+            <div class="card-body">
+              <!-- 邮件<%= t('admin.ui.m588') %> -->
+              <div class="mb-3">
+                <label class="form-label fw-semibold small"><i class="bi bi-type-h1 me-1"></i><%= t('admin.email_subject') %></label>
+                <input type="text" name="subject" class="form-control form-control-sm" placeholder="<%= t('admin.ui.m743') %>" required>
+              </div>
+
+              <!-- 邮件内容 -->
+              <div class="mb-3">
+                <label class="form-label fw-semibold small"><i class="bi bi-file-text me-1"></i><%= t('admin.email_content_html') %></label>
+                <textarea name="html_body" id="inviteBody" class="form-control form-control-sm font-monospace" rows="14" style="resize:vertical"
+                  required><div style="max-width:600px;margin:0 auto;font-family:'Helvetica Neue',Arial,'PingFang SC','Microsoft YaHei',sans-serif;color:#333;line-height:1.8;">
+  <div style="background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);padding:40px 30px;text-align:center;border-radius:12px 12px 0 0;">
+    <h1 style="color:#fff;margin:0;font-size:24px;"><%= t('admin.ui.m744') %></h1>
+    <p style="color:rgba(255,255,255,0.85);margin:8px 0 0;font-size:14px;"><%= t('admin.ui.m745') %></p>
+  </div>
+
+  <div style="background:#fff;padding:30px;border-left:1px solid #eee;border-right:1px solid #eee;">
+    <h2 style="color:#333;font-size:20px;margin:0 0 16px;"><%= t('admin.ui.m071') %> {name}，<%= t('admin.ui.m070') %></h2>
+    <p style="color:#555;font-size:14px;margin:0 0 16px;"><%= t('admin.ui.m746') %></p>
+    <p style="color:#555;font-size:14px;margin:0 0 16px;"><%= t('admin.ui.m747') %></p>
+    <p style="color:#555;font-size:14px;margin:0 0 24px;"><%= t('admin.ui.m748') %></p>
+
+    <div style="background:#f8f9fa;border-radius:8px;padding:20px;margin:0 0 24px;">
+      <p style="color:#333;font-size:14px;font-weight:bold;margin:0 0 8px;"><%= t('admin.ui.m749') %></p>
+      <ul style="color:#555;font-size:14px;margin:0;padding-left:20px;">
+        <li style="margin-bottom:6px;"><%= t('admin.ui.m750') %></li>
+        <li style="margin-bottom:6px;"><%= t('admin.ui.m751') %></li>
+        <li style="margin-bottom:6px;"><%= t('admin.ui.m777') %></li>
+      </ul>
+    </div>
+
+    <p style="color:#888;font-size:13px;margin:0;"><%= t('admin.ui.m804') %></p>
+  </div>
+
+  <div style="background:#f8f9fa;padding:20px 30px;text-align:center;border-radius:0 0 12px 12px;border:1px solid #eee;border-top:none;">
+    <p style="color:#999;font-size:12px;margin:0;"><%= t('admin.ui.m066') %></p>
+  </div>
+</div></textarea>
+                <div id="invitePreview" class="border rounded p-3 bg-white d-none" style="min-height:300px;font-size:0.9rem;overflow:visible;"></div>
+                <div class="form-text small mt-1">
+                  <i class="bi bi-info-circle me-1"></i><%= t('admin.ui.m065') %> <code>{name}</code> <%= t('admin.ui.m805') %>
+                </div>
+              </div>
+
+              <button type="submit" class="btn btn-primary rounded-pill px-4">
+                <i class="bi bi-send me-1"></i><%= t('admin.ui.m806') %>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- 新建 KOL 弹窗 -->
+<div class="modal fade" id="newKolModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h6 class="modal-title fw-bold"><i class="bi bi-plus-circle me-2 text-success"></i><%= t('admin.ui.m807') %></h6>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <%= form_with model: [:admin, @kol], url: admin_kols_path, class: "needs-validation" do |f| %>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <%= f.label :name, t('admin.ui.m023'), class: "form-label fw-semibold small" %>
+              <%= f.text_field :name, class: "form-control form-control-sm", placeholder: t('admin.ui.m808'), required: true %>
+            </div>
+            <div class="col-md-6">
+              <%= f.label :avatar, t('admin.ui.m062'), class: "form-label fw-semibold small" %>
+              <%= f.url_field :avatar, class: "form-control form-control-sm", placeholder: "https://example.com/avatar.png（正方形）" %>
+            </div>
+            <div class="col-12">
+              <div class="d-flex justify-content-between align-items-center">
+                <%= f.label :bio, t("admin.bio"), class: "form-label fw-semibold small mb-0" %>
+                <span class="text-muted" style="font-size:0.75rem"><span class="bio-count">0</span>/80</span>
+              </div>
+              <%= f.text_area :bio, class: "form-control form-control-sm bio-input", rows: 3, maxlength: 80, placeholder: t('admin.ui.m061'), data: { bio_count: true } %>
+            </div>
+            <div class="col-md-6">
+              <%= f.label :email, t('admin.ui.m059'), class: "form-label fw-semibold small" %>
+              <%= f.email_field :email, class: "form-control form-control-sm", placeholder: "kol@example.com（可选）" %>
+            </div>
+            <div class="col-md-6">
+              <%= f.label :url, t('admin.ui.m058'), class: "form-label fw-semibold small" %>
+              <%= f.url_field :url, class: "form-control form-control-sm", placeholder: "https://example.com（可选，点击按钮跳转）" %>
+            </div>
+            <div class="col-md-6">
+              <%= f.label :price, t('admin.ui.m031'), class: "form-label fw-semibold small" %>
+              <%= f.text_field :price, class: "form-control form-control-sm", placeholder: '例如：¥5000起/篇 或 面议' %>
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-semibold small"><%= t('admin.ui.m053') %></label>
+              <div id="platformFieldsNew" class="platform-fields"></div>
+              <div class="d-flex gap-2 mt-2 flex-wrap">
+                <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill" onclick="addPlatformField('platformFieldsNew')">+ <%= t('admin.ui.m052') %></button>
+                <button type="button" class="btn btn-outline-success btn-sm rounded-pill" onclick="addPlatformField('platformFieldsNew','<%= t('admin.ui.m021') %>')"><%= t('admin.ui.m021') %></button>
+                <button type="button" class="btn btn-outline-success btn-sm rounded-pill" onclick="addPlatformField('platformFieldsNew','<%= t('admin.ui.m020') %>')"><%= t('admin.ui.m020') %></button>
+                <button type="button" class="btn btn-outline-success btn-sm rounded-pill" onclick="addPlatformField('platformFieldsNew','<%= t('admin.ui.m017') %>')"><%= t('admin.ui.m017') %></button>
+                <button type="button" class="btn btn-outline-success btn-sm rounded-pill" onclick="addPlatformField('platformFieldsNew','<%= t('admin.ui.m019') %>')"><%= t('admin.ui.m019') %></button>
+              </div>
+            </div>
+            <div class="col-6">
+              <%= f.label :sort_order, t("admin.sort_order"), class: "form-label fw-semibold small" %>
+              <%= f.number_field :sort_order, class: "form-control form-control-sm", value: 0, min: 0 %>
+            </div>
+            <div class="col-6">
+              <%= f.label :is_active, t("admin.status"), class: "form-label fw-semibold small" %>
+              <select name="kol[is_active]" class="form-select form-select-sm">
+                <option value="true" selected><%= t('admin.enable') %></option>
+                <option value="false"><%= t('admin.disable') %></option>
+              </select>
+            </div>
+          </div>
+          <div class="d-flex justify-content-end gap-2 mt-3">
+            <button type="button" class="btn btn-light rounded-pill" data-bs-dismiss="modal"><%= t('admin.cancel') %></button>
+            <button type="submit" class="btn btn-primary rounded-pill">
+              <i class="bi bi-plus-lg me-1"></i><%= t('admin.ui.m076') %>
+            </button>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Excel <%= t('admin.ui.m735') %>弹窗 -->
+<div class="modal fade" id="importModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h6 class="modal-title fw-bold"><i class="bi bi-file-earmark-excel me-2 text-success"></i>Excel <%= t('admin.ui.m812') %></h6>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label class="form-label fw-semibold small">
+            <i class="bi bi-upload me-1"></i><%= t('admin.ui.m813') %>
+          </label>
+          <input type="file" name="file" id="importFile" accept=".xlsx" class="form-control form-control-sm" required>
+        </div>
+        <div class="alert alert-info small mb-0" style="font-size:0.82rem">
+          <i class="bi bi-info-circle me-1"></i>
+          <strong><%= t('admin.ui.m814') %></strong>
+          <ul class="mb-0 mt-1 ps-3">
+            <li><%= t('admin.ui.m815') %><a href="<%= import_template_admin_kols_path(format: :xlsx) %>" class="text-decoration-underline"><%= t('admin.ui.m816') %></a>，<%= t('admin.ui.m817') %></li>
+            <li>「<%= t('admin.ui.m818') %></li>
+            <li><%= t('admin.ui.m819') %><code><%= t('admin.ui.m820') %></code>，<%= t('admin.ui.m821') %></li>
+            <li><%= t('admin.ui.m822') %></li>
+          </ul>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-light rounded-pill" data-bs-dismiss="modal"><%= t('admin.cancel') %></button>
+        <button type="button" class="btn btn-primary rounded-pill" id="importSubmitBtn">
+          <i class="bi bi-upload me-1"></i><%= t('admin.ui.m234') %>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- <%= t('admin.ui.m008') %>弹窗 -->
+<% @kols.each do |kol| %>
+  <div class="modal fade" id="editModal_<%= kol.id %>" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h6 class="modal-title fw-bold"><%= t('admin.ui.m823') %> <%= kol.name %></h6>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <%= form_with model: [:admin, kol], url: admin_kol_path(kol), method: :patch do |f| %>
+            <div class="row g-3">
+              <div class="col-md-6">
+                <%= f.label :name, t('admin.ui.m023'), class: "form-label fw-semibold small" %>
+                <%= f.text_field :name, class: "form-control form-control-sm", required: true %>
+              </div>
+              <div class="col-md-6">
+                <%= f.label :avatar, t('admin.ui.m062'), class: "form-label fw-semibold small" %>
+                <%= f.url_field :avatar, class: "form-control form-control-sm" %>
+              </div>
+              <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center">
+                  <%= f.label :bio, t("admin.bio"), class: "form-label fw-semibold small mb-0" %>
+                  <span class="text-muted" style="font-size:0.75rem"><span class="bio-count"><%= (kol.bio || '').length %></span>/80</span>
+                </div>
+                <%= f.text_area :bio, class: "form-control form-control-sm bio-input", rows: 3, maxlength: 80, placeholder: t('admin.ui.m061'), data: { bio_count: true } %>
+              </div>
+              <div class="col-md-6">
+                <%= f.label :email, t('admin.ui.m059'), class: "form-label fw-semibold small" %>
+                <%= f.email_field :email, class: "form-control form-control-sm" %>
+              </div>
+              <div class="col-md-6">
+                <%= f.label :url, t('admin.ui.m058'), class: "form-label fw-semibold small" %>
+                <%= f.url_field :url, class: "form-control form-control-sm", placeholder: "https://example.com" %>
+              </div>
+              <div class="col-md-6">
+                <%= f.label :price, t('admin.ui.m031'), class: "form-label fw-semibold small" %>
+                <%= f.text_field :price, class: "form-control form-control-sm", placeholder: '¥5000起/篇 或 面议' %>
+              </div>
+              <div class="col-12">
+                <label class="form-label fw-semibold small"><%= t('admin.ui.m053') %></label>
+                <div id="platformFields_<%= kol.id %>" class="platform-fields"></div>
+                <div class="d-flex gap-2 mt-2 flex-wrap">
+                  <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill" onclick="addPlatformField('platformFields_<%= kol.id %>')">+ <%= t('admin.ui.m052') %></button>
+                  <button type="button" class="btn btn-outline-success btn-sm rounded-pill" onclick="addPlatformField('platformFields_<%= kol.id %>','<%= t('admin.ui.m021') %>')"><%= t('admin.ui.m021') %></button>
+                  <button type="button" class="btn btn-outline-success btn-sm rounded-pill" onclick="addPlatformField('platformFields_<%= kol.id %>','<%= t('admin.ui.m020') %>')"><%= t('admin.ui.m020') %></button>
+                  <button type="button" class="btn btn-outline-success btn-sm rounded-pill" onclick="addPlatformField('platformFields_<%= kol.id %>','<%= t('admin.ui.m017') %>')"><%= t('admin.ui.m017') %></button>
+                  <button type="button" class="btn btn-outline-success btn-sm rounded-pill" onclick="addPlatformField('platformFields_<%= kol.id %>','<%= t('admin.ui.m019') %>')"><%= t('admin.ui.m019') %></button>
+                </div>
+              </div>
+              <div class="col-6">
+                <%= f.label :sort_order, t("admin.sort_order"), class: "form-label fw-semibold small" %>
+                <%= f.number_field :sort_order, class: "form-control form-control-sm", min: 0 %>
+              </div>
+              <div class="col-6">
+                <%= f.label :is_active, t("admin.status"), class: "form-label fw-semibold small" %>
+                <select name="kol[is_active]" class="form-select form-select-sm">
+                  <option value="true" <%= "selected" if kol.is_active? %>><%= t('admin.enable') %></option>
+                  <option value="false" <%= "selected" unless kol.is_active? %>><%= t('admin.disable') %></option>
+                </select>
+              </div>
+            </div>
+            <div class="d-flex justify-content-end gap-2 mt-3">
+              <button type="button" class="btn btn-light rounded-pill" data-bs-dismiss="modal"><%= t('admin.cancel') %></button>
+              <button type="submit" class="btn btn-primary rounded-pill">
+                <i class="bi bi-check-lg me-1"></i><%= t('admin.ui.m002') %>
+              </button>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>
+
+<script>
+// Excel Import
+document.getElementById('importSubmitBtn').addEventListener('click', function() {
+  var fileInput = document.getElementById('importFile');
+  if (!fileInput.files.length) {
+    alert('<%= t('admin.ui.m824') %>');
+    return;
+  }
+  var formData = new FormData();
+  formData.append('file', fileInput.files[0]);
+  var token = document.querySelector('meta[name="csrf-token"]');
+  if (token) formData.append('authenticity_token', token.getAttribute('content'));
+
+  var btn = this;
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span><%= t('admin.ui.m825') %>';
+
+  fetch('<%= import_admin_kols_path %>', { method: 'POST', body: formData, redirect: 'manual' })
+    .then(function(response) {
+      window.location.href = response.headers.get('Location') || '<%= admin_kols_path %>';
+    })
+    .catch(function() {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="bi bi-upload me-1"></i><%= t('admin.ui.m234') %>';
+      alert('<%= t('admin.ui.m826') %>');
+    });
+});
+
+// Bio character count
+document.addEventListener('input', function(e) {
+  if (e.target.dataset.bioCount) {
+    var counter = e.target.closest('.mb-3, .col-12').querySelector('.bio-count');
+    if (counter) counter.textContent = e.target.value.length;
+  }
+});
+
+function addPlatformField(containerId, presetName) {
+  var container = document.getElementById(containerId);
+  var idx = container.dataset.nextIdx || 0;
+  var row = document.createElement('div');
+  row.className = 'd-flex gap-1 mb-1 align-items-center';
+  row.innerHTML =
+    '<input type="text" name="kol[platforms_attributes][' + idx + '][name]" value="' + (presetName || '') + '" placeholder="<%= t('admin.ui.m827') %>" class="form-control form-control-sm" style="max-width:120px">' +
+    '<input type="url" name="kol[platforms_attributes][' + idx + '][url]" placeholder="<%= t('admin.ui.m828') %>" class="form-control form-control-sm">' +
+    '<button type="button" class="btn btn-outline-danger btn-sm flex-shrink-0" onclick="this.parentElement.remove()" title="<%= t('admin.remove') %>"><i class="bi bi-x"></i></button>';
+  container.appendChild(row);
+  container.dataset.nextIdx = parseInt(idx) + 1;
+}
+
+// Pre-fill platform data for each edit modal, only once
+<% @kols.each do |kol| %>
+  var kolPlatforms_<%= kol.id %> = <%= raw kol.platforms_list.to_json %>;
+  var kolInited_<%= kol.id %> = false;
+  document.getElementById('editModal_<%= kol.id %>').addEventListener('shown.bs.modal', function() {
+    if (kolInited_<%= kol.id %>) return;
+    kolInited_<%= kol.id %> = true;
+    var container = document.getElementById('platformFields_<%= kol.id %>');
+    kolPlatforms_<%= kol.id %>.forEach(function(p) {
+      addPlatformField('platformFields_<%= kol.id %>', '');
+      var fields = container.querySelectorAll(':scope > div:last-child input');
+      if (fields.length >= 2) {
+        fields[0].value = p.name || '';
+        fields[1].value = p.url || '';
+      }
+    });
+  });
+<% end %>
+
+// KOL Invitation - Tab
+function toggleAllKols(btn) {
+  var checkboxes = document.querySelectorAll('.kol-checkbox');
+  var allChecked = Array.from(checkboxes).every(function(cb) { return cb.checked; });
+  checkboxes.forEach(function(cb) { cb.checked = !allChecked; });
+  updateSelectedCount();
+}
+
+function updateSelectedCount() {
+  var checked = document.querySelectorAll('.kol-checkbox:checked');
+  document.getElementById('selectedCount').textContent = checked.length;
+}
+
+function setInviteTab(tab) {
+  var textarea = document.getElementById('inviteBody');
+  var preview = document.getElementById('invitePreview');
+  var btnEdit = document.getElementById('btnEdit');
+  var btnPreview = document.getElementById('btnPreview');
+  if (tab === 'edit') {
+    textarea.classList.remove('d-none');
+    preview.classList.add('d-none');
+    btnEdit.className = 'btn btn-sm btn-primary rounded-pill';
+    btnPreview.className = 'btn btn-sm btn-outline-primary rounded-pill';
+  } else {
+    textarea.classList.add('d-none');
+    preview.classList.remove('d-none');
+    preview.innerHTML = textarea.value || '<span class="text-muted"><%= t('admin.no_content') %></span>';
+    btnEdit.className = 'btn btn-sm btn-outline-primary rounded-pill';
+    btnPreview.className = 'btn btn-sm btn-primary rounded-pill';
+  }
+}
+
+document.getElementById('inviteForm').addEventListener('submit', function(e) {
+  var checked = document.querySelectorAll('.kol-checkbox:checked');
+  if (checked.length === 0) {
+    e.preventDefault();
+    alert('<%= t('admin.ui.m829') %>');
+    return;
+  }
+  var ids = Array.from(checked).map(function(cb) { return cb.value; });
+  var input = document.createElement('input');
+  input.type = 'hidden';
+  input.name = 'kol_ids';
+  input.value = ids.join(',');
+  this.appendChild(input);
+});
+</script>

@@ -1,0 +1,355 @@
+<% content_for :title, t('admin.ui.m046') %>
+
+<h4 class="text-dark fw-bold mb-4">
+  <a href="<%= admin_topic_operations_path %>" class="text-decoration-none text-muted"><i class="bi bi-arrow-left me-2"></i></a>
+  <i class="bi bi-file-earmark-text me-2 text-warning"></i><%= t('admin.ui.m045') %>
+</h4>
+
+<div class="card card-admin" style="max-width:800px">
+  <div class="card-body p-4">
+    <div class="alert alert-warning rounded-3 py-2 mb-4">
+      <i class="bi bi-file-earmark-text me-1"></i><%= t('admin.ui.m044') %>
+    </div>
+
+    <%= form_with model: [:admin, @draft], url: admin_topic_draft_path(@draft), method: :patch, local: true do |f| %>
+      <% if alert %>
+        <div class="alert alert-danger rounded-3 py-2">
+          <i class="bi bi-exclamation-circle me-1"></i><%= alert %>
+        </div>
+      <% end %>
+
+      <div class="mb-3">
+        <%= f.label :node_id, t('admin.ui.m043'), class: "form-label fw-semibold small text-muted" %>
+        <%= f.select :node_id, @nodes.map { |n| ["#{n.icon} #{n.name}", n.id] }, { prompt: t('admin.ui.m042') }, class: "form-select form-select-lg rounded-3" %>
+      </div>
+
+      <div class="mb-3">
+        <%= f.label :title, t('admin.ui.m041'), class: "form-label fw-semibold small text-muted" %>
+        <%= f.text_field :title, class: "form-control form-control-lg rounded-3", placeholder: t('admin.ui.m040'), maxlength: 120, id: "topic-title" %>
+        <div class="form-text"><span id="title-count"><%= @draft.title.length %></span>/120 <%= t('admin.ui.m006') %></div>
+      </div>
+
+      <!-- Markdown toolbar -->
+      <div class="mb-0">
+        <div class="d-flex align-items-center gap-1 p-2 bg-light rounded-top border border-bottom-0 flex-wrap">
+          <button type="button" class="btn btn-sm btn-outline-secondary" title="<%= t('admin.bold') %>" onclick="insertMd('**','**')"><i class="bi bi-type-bold"></i></button>
+          <button type="button" class="btn btn-sm btn-outline-secondary" title="<%= t('admin.italic') %>" onclick="insertMd('*','*')"><i class="bi bi-type-italic"></i></button>
+          <button type="button" class="btn btn-sm btn-outline-secondary" title="<%= t('admin.strikethrough') %>" onclick="insertMd('~~','~~')"><i class="bi bi-type-strikethrough"></i></button>
+          <div class="vr mx-1"></div>
+          <button type="button" class="btn btn-sm btn-outline-secondary" title="<%= t('admin.inline_code') %>" onclick="insertMd('`','`')"><i class="bi bi-code-slash"></i></button>
+          <button type="button" class="btn btn-sm btn-outline-secondary" title="<%= t('admin.code_block') %>" onclick="insertMd('\n```\n','\n```\n')"><i class="bi bi-file-code"></i></button>
+          <div class="vr mx-1"></div>
+          <button type="button" class="btn btn-sm btn-outline-secondary" title="<%= t('admin.url') %>" onclick="insertMd('[','](url)')"><i class="bi bi-link-45deg"></i></button>
+          <button type="button" class="btn btn-sm btn-outline-secondary" title="<%= t('admin.image') %>" onclick="document.getElementById('md-image-input').click()"><i class="bi bi-image"></i></button>
+          <input type="file" id="md-image-input" accept="image/*" class="d-none" onchange="uploadImage(this.files[0])">
+          <div class="vr mx-1"></div>
+          <button type="button" class="btn btn-sm btn-outline-secondary" title="<%= t('admin.quote') %>" onclick="insertMd('> ','')"><i class="bi bi-quote"></i></button>
+          <button type="button" class="btn btn-sm btn-outline-secondary" title="<%= t('admin.unordered_list') %>" onclick="insertMd('\n- ','')"><i class="bi bi-list-ul"></i></button>
+          <button type="button" class="btn btn-sm btn-outline-secondary" title="<%= t('admin.ordered_list') %>" onclick="insertMd('\n1. ','')"><i class="bi bi-list-ol"></i></button>
+          <button type="button" class="btn btn-sm btn-outline-secondary" title="<%= t('admin.divider') %>" onclick="insertMd('\n\n---\n\n','')"><i class="bi bi-dash-lg"></i></button>
+          <button type="button" class="btn btn-sm btn-outline-secondary" title="<%= t('admin.table') %>" onclick="insertMd('\n| <%= t('admin.ui.m026') %>\n| --- | --- | --- |\n| ',' |  |  |\n')"><i class="bi bi-table"></i></button>
+          <div class="vr mx-1"></div>
+          <button type="button" id="preview-toggle-btn" class="btn btn-sm btn-outline-primary" onclick="togglePreview()"><i class="bi bi-eye me-1"></i><%= t('admin.preview') %></button>
+          <span class="ms-auto text-muted small"><i class="bi bi-markdown me-1"></i>Markdown</span>
+        </div>
+
+        <!-- Editor / Preview -->
+        <div class="border border-top-0 rounded-bottom overflow-hidden" style="min-height:420px; position:relative">
+          <div id="editor-panel" style="min-height:420px">
+            <%= f.text_area :content, id: "markdown-input", class: "form-control border-0 rounded-0 h-100", style: "min-height:420px; resize:none; font-family:'JetBrains Mono','Fira Code','Consolas',monospace; font-size:0.88rem; line-height:1.7", placeholder: t('admin.ui.m518'), rows: 20 %>
+          </div>
+          <div id="preview-panel" class="markdown-body p-3 overflow-auto" style="display:none; min-height:420px"></div>
+        </div>
+      </div>
+      <div class="form-text mb-3"><span id="content-count"><%= @draft.content.length %></span> <%= t('admin.ui.m006') %></div>
+
+      <div class="mb-3">
+        <div class="form-check">
+          <%= f.check_box :is_repost, id: "draft-is-repost" %>
+          <%= f.label :is_repost, t('admin.ui.m038'), for: "draft-is-repost" %>
+        </div>
+      </div>
+
+      <div class="mb-4" id="source-url-field" <%= 'style="display:block"' if @draft.is_repost %>>
+        <%= f.label :source_url, t('admin.ui.m037'), class: "form-label fw-semibold small text-muted" %>
+        <%= f.url_field :source_url, class: "form-control form-control-lg rounded-3", placeholder: "https://example.com/article" %>
+        <div class="form-text"><%= t('admin.ui.m036') %></div>
+      </div>
+
+      <div class="d-flex gap-2">
+        <%= button_to t('admin.ui.m034'), publish_admin_topic_draft_path(@draft), method: :post, class: "btn btn-primary rounded-pill px-4", data: { confirm: t('admin.ui.m519') } %>
+        <%= f.submit t("admin.save_changes"), class: "btn btn-outline-warning rounded-pill px-4" %>
+        <%= link_to t("admin.cancel"), admin_topic_operations_path, class: "btn btn-outline-secondary rounded-pill px-4" %>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const repostCheckbox = document.getElementById('draft-is-repost');
+  const sourceUrlField = document.getElementById('source-url-field');
+  const titleInput = document.getElementById('topic-title');
+  const contentInput = document.getElementById('markdown-input');
+  const titleCount = document.getElementById('title-count');
+  const contentCount = document.getElementById('content-count');
+
+  if (repostCheckbox) {
+    repostCheckbox.addEventListener('change', function() {
+      sourceUrlField.style.display = this.checked ? 'block' : 'none';
+    });
+  }
+
+  if (titleInput) {
+    titleCount.textContent = titleInput.value.length;
+    titleInput.addEventListener('input', function() {
+      titleCount.textContent = this.value.length;
+    });
+  }
+
+  if (contentInput) {
+    contentCount.textContent = contentInput.value.length;
+    contentInput.addEventListener('input', function() {
+      contentCount.textContent = this.value.length;
+    });
+  }
+});
+</script>
+
+<script>
+function uploadImage(file) {
+  if (!file || !file.type.startsWith('image/')) return;
+  if (file.size > 5 * 1024 * 1024) { alert("<%= t('admin.image_max_5mb') %>"); return; }
+
+  var ta = document.getElementById('markdown-input');
+  var s = ta.selectionStart;
+  var placeholder = '![](<%= t('admin.ui.m027') %>';
+  ta.setRangeText(placeholder, s, s, 'end');
+  ta.dispatchEvent(new Event('input'));
+
+  var formData = new FormData();
+  formData.append('file', file);
+
+  var token = document.querySelector('meta[name="csrf-token"]');
+  fetch('/upload_image', {
+    method: 'POST',
+    headers: {
+      'X-CSRF-Token': token ? token.content : '',
+      'Accept': 'application/json'
+    },
+    body: formData
+  })
+  .then(function(r) {
+    if (!r.ok) {
+      return r.text().then(function(text) {
+        var msg = '<%= t('admin.ui.m033') %>';
+        try { var json = JSON.parse(text); msg = "<%= t('admin.upload_failed_cn') %>" + (json.error || ''); } catch(e) {}
+        throw new Error(msg + ' (HTTP ' + r.status + ')');
+      });
+    }
+    return r.json();
+  })
+  .then(function(data) {
+    if (data.url) {
+      ta.value = ta.value.replace(placeholder, '![](' + data.url + ')');
+    } else {
+      ta.value = ta.value.replace(placeholder, '');
+      alert("<%= t('admin.upload_failed_cn') %>" + (data.error || "<%= t('admin.unknown_error') %>"));
+    }
+    ta.dispatchEvent(new Event('input'));
+  })
+  .catch(function(err) {
+    ta.value = ta.value.replace(placeholder, '');
+    ta.dispatchEvent(new Event('input'));
+    alert(err.message || "<%= t('admin.upload_failed_retry') %>");
+  });
+}
+
+(function() {
+  var input = document.getElementById('markdown-input');
+  if (!input) return;
+
+  input.addEventListener('paste', function(e) {
+    var file = null;
+    if (e.clipboardData && e.clipboardData.items) {
+      for (var i = 0; i < e.clipboardData.items.length; i++) {
+        if (e.clipboardData.items[i].type.indexOf('image') !== -1) {
+          e.preventDefault();
+          file = e.clipboardData.items[i].getAsFile();
+          break;
+        }
+      }
+    }
+    if (!file && e.clipboardData && e.clipboardData.files) {
+      for (var j = 0; j < e.clipboardData.files.length; j++) {
+        if (e.clipboardData.files[j].type.startsWith('image/')) {
+          e.preventDefault();
+          file = e.clipboardData.files[j];
+          break;
+        }
+      }
+    }
+    if (file) uploadImage(file);
+  });
+
+  input.addEventListener('dragover', function(e) { e.preventDefault(); input.classList.add('border-primary'); });
+  input.addEventListener('dragleave', function(e) { e.preventDefault(); input.classList.remove('border-primary'); });
+  input.addEventListener('drop', function(e) {
+    e.preventDefault();
+    input.classList.remove('border-primary');
+    var file = e.dataTransfer.files[0];
+    if (file && file.type.startsWith('image/')) uploadImage(file);
+  });
+})();
+</script>
+
+<script>
+function togglePreview() {
+  var editor = document.getElementById('editor-panel');
+  var preview = document.getElementById('preview-panel');
+  var btn = document.getElementById('preview-toggle-btn');
+  if (!editor || !preview) return;
+
+  if (preview.style.display === 'none') {
+    if (typeof marked === 'undefined') {
+      alert('Markdown <%= t('admin.ui.m079') %>');
+      return;
+    }
+    var input = document.getElementById('markdown-input');
+    var val = input ? input.value : '';
+    preview.innerHTML = marked.parse(val);
+    editor.style.display = 'none';
+    preview.style.display = 'block';
+    btn.innerHTML = '<i class="bi bi-pencil me-1"></i><%= t('admin.ui.m008') %>';
+    btn.classList.remove('btn-outline-primary');
+    btn.classList.add('btn-success');
+  } else {
+    editor.style.display = 'block';
+    preview.style.display = 'none';
+    btn.innerHTML = '<i class="bi bi-eye me-1"></i><%= t('admin.ui.m007') %>';
+    btn.classList.remove('btn-success');
+    btn.classList.add('btn-outline-primary');
+    document.getElementById('markdown-input').focus();
+  }
+}
+</script>
+
+<script>
+function insertMd(before, after) {
+  const ta = document.getElementById('markdown-input');
+  const s = ta.selectionStart, e = ta.selectionEnd;
+  const sel = ta.value.substring(s, e) || '';
+  const placeholder = before.match(/\n/) ? '' : "<%= t('admin.text') %>";
+  const replacement = before + (sel || placeholder) + after;
+  ta.setRangeText(replacement, s, e, 'end');
+  if (!sel) ta.selectionEnd = s + before.length + placeholder.length;
+  ta.dispatchEvent(new Event('input'));
+  ta.focus();
+}
+
+// @ Mentions
+(function() {
+  var input = document.getElementById('markdown-input');
+  if (input) initMention(input);
+})();
+
+function initMention(textarea) {
+  let mentionMenu = null;
+  let currentQuery = '';
+  let matchedUsers = [];
+  let selectedIndex = 0;
+  let mentionStartPos = 0;
+
+  function createMentionMenu() {
+    if (mentionMenu) return;
+    mentionMenu = document.createElement('div');
+    mentionMenu.className = 'mention-menu';
+    mentionMenu.style.cssText = 'position:absolute;z-index:1000;background:#fff;border:1px solid #dee2e6;border-radius:4px;box-shadow:0 2px 8px rgba(0,0,0,0.15);max-height:200px;overflow-y:auto;display:none';
+    document.body.appendChild(mentionMenu);
+  }
+
+  function showMentionMenu(x, y) {
+    createMentionMenu();
+    mentionMenu.style.display = 'block';
+    mentionMenu.style.left = x + 'px';
+    mentionMenu.style.top = (y + 24) + 'px';
+  }
+
+  function hideMentionMenu() {
+    if (mentionMenu) mentionMenu.style.display = 'none';
+    currentQuery = '';
+    matchedUsers = [];
+  }
+
+  function renderMenu() {
+    if (!mentionMenu || matchedUsers.length === 0) { hideMentionMenu(); return; }
+    mentionMenu.innerHTML = matchedUsers.map((u, i) =>
+      '<div class="mention-item ' + (i === selectedIndex ? 'selected' : '') + '" data-index="' + i + '" data-username="' + u.username + '">' +
+      '<div style="display:flex;align-items:center;padding:8px 12px;cursor:pointer;' + (i === selectedIndex ? 'background:#f8f9fa;' : '') + '">' +
+      (u.avatar ? '<img src="' + u.avatar + '" style="width:24px;height:24px;border-radius:6px;margin-right:8px;">' : '<div style="width:24px;height:24px;border-radius:6px;background:#6366f1;margin-right:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;">' + u.username[0].toUpperCase() + '</div>') +
+      '<span style="font-size:14px;color:#333;">' + u.username + '</span></div></div>'
+    ).join('');
+
+    mentionMenu.querySelectorAll('.mention-item').forEach((item, index) => {
+      item.addEventListener('click', () => insertUser(matchedUsers[index].username));
+      item.addEventListener('mouseenter', () => { selectedIndex = index; renderMenu(); });
+    });
+  }
+
+  async function searchUsers(query) {
+    const token = document.querySelector('meta[name="csrf-token"]');
+    try {
+      const res = await fetch('/users/search?q=' + encodeURIComponent(query), {
+        headers: { 'X-CSRF-Token': token ? token.content : '' }
+      });
+      matchedUsers = await res.json();
+      selectedIndex = 0;
+      renderMenu();
+    } catch (e) { matchedUsers = []; hideMentionMenu(); }
+  }
+
+  function insertUser(username) {
+    const textBefore = textarea.value.substring(0, mentionStartPos);
+    const textAfter = textarea.value.substring(textarea.selectionEnd);
+    textarea.value = textBefore + '@' + username + ' ' + textAfter;
+    textarea.selectionStart = textarea.selectionEnd = mentionStartPos + username.length + 2;
+    textarea.dispatchEvent(new Event('input'));
+    textarea.focus();
+    hideMentionMenu();
+  }
+
+  textarea.addEventListener('keydown', (e) => {
+    if (mentionMenu && mentionMenu.style.display !== 'none') {
+      if (e.key === 'ArrowDown') { e.preventDefault(); selectedIndex = (selectedIndex + 1) % matchedUsers.length; renderMenu(); }
+      else if (e.key === 'ArrowUp') { e.preventDefault(); selectedIndex = (selectedIndex - 1 + matchedUsers.length) % matchedUsers.length; renderMenu(); }
+      else if (e.key === 'Enter' || e.key === 'Tab') { e.preventDefault(); if (matchedUsers[selectedIndex]) insertUser(matchedUsers[selectedIndex].username); }
+      else if (e.key === 'Escape') { hideMentionMenu(); }
+    }
+  });
+
+  textarea.addEventListener('input', (e) => {
+    const cursorPos = textarea.selectionStart;
+    const textBefore = textarea.value.substring(0, cursorPos);
+    const lastAtIndex = textBefore.lastIndexOf('@');
+    if (lastAtIndex === -1) { hideMentionMenu(); return; }
+    const textAfterAt = textBefore.substring(lastAtIndex + 1);
+    const spaceAfterAt = textAfterAt.indexOf(' ');
+    if (spaceAfterAt !== -1 || textAfterAt.length === 0) { hideMentionMenu(); return; }
+    if (textAfterAt.length >= 1) {
+      mentionStartPos = lastAtIndex;
+      const textareaRect = textarea.getBoundingClientRect();
+      const line = textarea.value.substring(0, cursorPos).split('\n').length - 1;
+      const lineHeight = parseInt(window.getComputedStyle(textarea).lineHeight) || 20;
+      const scrollTop = textarea.scrollTop;
+      const x = textareaRect.left + 10;
+      const y = textareaRect.top + (line + 1) * lineHeight - scrollTop;
+      showMentionMenu(x, y);
+      if (currentQuery !== textAfterAt) { currentQuery = textAfterAt; searchUsers(textAfterAt); }
+    }
+  });
+
+  document.addEventListener('click', (e) => {
+    if (mentionMenu && !mentionMenu.contains(e.target) && e.target !== textarea) { hideMentionMenu(); }
+  });
+}
+</script>

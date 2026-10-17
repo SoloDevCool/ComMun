@@ -1,0 +1,4 @@
+{
+  "nav_item": ["lib/nav_item.rb"],
+  "admin_nav_item": ["lib/admin_nav.rb"]
+}

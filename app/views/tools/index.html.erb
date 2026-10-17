@@ -1,0 +1,131 @@
+<% content_for :title, "工具集 - #{site_name}" %>
+<% content_for :head do %>
+  <%= seo_meta_tags(title: "工具集 - #{site_name}", description: "精选优质工具合集，涵盖设计、开发、运营、效率等各类优质工具，助力提升工作效率与产品品质。") %>
+<% end %>
+
+<div class="container-lg py-4">
+  <!-- 页头 -->
+  <div class="d-flex align-items-center justify-content-between mb-2">
+    <h4 class="fw-bold mb-0" style="font-size:1.15rem">
+      <i class="bi bi-tools me-1" style="color:#f59e0b"></i>工具集
+    </h4>
+    <span class="text-muted" style="font-size:0.82rem">精选优质工具，助力高效开发</span>
+  </div>
+  <p class="text-muted mb-4" style="font-size:0.85rem">
+    精心筛选优质工具和资源，涵盖 AI 辅助、开发、设计、运营、部署等多个领域，帮助提升效率、加速产品落地。
+  </p>
+
+  <!-- 分类筛选 -->
+  <div class="tools-category-nav mb-4">
+    <div class="d-flex flex-wrap gap-2">
+      <a href="#all" class="tools-category-btn active" data-category="all">
+        <i class="bi bi-grid-3x3-gap me-1"></i>全部
+      </a>
+      <% @categories.each_with_index do |cat, i| %>
+        <a href="#category-<%= i %>" class="tools-category-btn" data-category="<%= i %>">
+          <i class="bi <%= cat[:icon] %> me-1"></i><%= cat[:name] %>
+          <span class="tools-category-count"><%= cat[:tools].length %></span>
+        </a>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- 工具分类列表 -->
+  <% @categories.each_with_index do |category, cat_index| %>
+    <div class="tools-category-section mb-4" id="category-<%= cat_index %>" data-category-index="<%= cat_index %>">
+      <div class="d-flex align-items-center gap-2 mb-3">
+        <span class="tools-section-icon" style="background-color: <%= category[:color] %>15; color: <%= category[:color] %>">
+          <i class="bi <%= category[:icon] %>"></i>
+        </span>
+        <div>
+          <h5 class="fw-bold mb-0" style="font-size:1rem"><%= category[:name] %></h5>
+          <span class="text-muted" style="font-size:0.78rem"><%= category[:description] %></span>
+        </div>
+      </div>
+
+      <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-3">
+        <% category[:tools].each do |tool| %>
+          <div class="col">
+            <a href="<%= tool[:url] %>" target="_blank" rel="noopener noreferrer" class="text-decoration-none">
+              <div class="tool-card h-100 d-flex flex-column">
+                <div class="tool-card-body flex-grow-1">
+                  <div class="d-flex align-items-start gap-3">
+                    <% if tool[:icon_url].present? %>
+                      <span class="tool-icon tool-icon-image" style="background-color: #f8f9fa">
+                        <img src="<%= tool[:icon_url] %>" alt="<%= tool[:name] %>" style="width:100%;height:100%;object-fit:contain;border-radius:10px;padding:6px">
+                      </span>
+                    <% else %>
+                      <span class="tool-icon" style="background-color: <%= tool[:color] %>15; color: <%= tool[:color] %>">
+                        <i class="bi <%= tool[:icon] %>"></i>
+                      </span>
+                    <% end %>
+                    <div class="flex-grow-1 min-w-0">
+                      <div class="d-flex align-items-center gap-2 mb-1">
+                        <h6 class="tool-name mb-0"><%= tool[:name] %></h6>
+                        <i class="bi bi-box-arrow-up-right tool-external-link"></i>
+                      </div>
+                      <p class="tool-desc mb-2"><%= tool[:description] %></p>
+                      <div class="d-flex flex-wrap align-items-center gap-2">
+                        <span class="tool-pricing">
+                          <i class="bi bi-tag me-1"></i><%= tool[:pricing] %>
+                        </span>
+                        <% tool[:tags].each do |tag| %>
+                          <span class="tool-tag tool-tag-<%= tag == '免费' ? 'free' : tag == '付费' ? 'paid' : 'opensource' %>">
+                            <%= tag %>
+                          </span>
+                        <% end %>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </a>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
+  <!-- 底部提示 -->
+  <div class="tools-footer-note text-center mt-5 mb-2">
+    <i class="bi bi-info-circle me-1"></i>
+    以上工具均为编辑推荐，价格信息仅供参考，以官方实际价格为准。
+  </div>
+</div>
+
+<script>
+(function() {
+  const categoryBtns = document.querySelectorAll('.tools-category-btn');
+  const categorySections = document.querySelectorAll('.tools-category-section');
+
+  categoryBtns.forEach(btn => {
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();
+      const category = this.dataset.category;
+
+      // 更新按钮状态
+      categoryBtns.forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+
+      // 显示/隐藏分类
+      if (category === 'all') {
+        categorySections.forEach(s => {
+          s.style.display = '';
+        });
+      } else {
+        categorySections.forEach(s => {
+          s.style.display = s.dataset.categoryIndex === category ? '' : 'none';
+        });
+      }
+
+      // 滚动到顶部
+      if (category !== 'all') {
+        const target = document.getElementById('category-' + category);
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }
+    });
+  });
+})();
+</script>

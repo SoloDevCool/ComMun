@@ -33,7 +33,7 @@ class ShopItem < ApplicationRecord
   def deliver_license(user, purchase, domain: nil)
     plan = metadata["plan"] || "free"
 
-    # aibbs 采用完全离线授权：授权方使用离线签发工具（license-server/bin/generate_license）
+    # commun 采用完全离线授权：授权方使用离线签发工具（license-server/bin/generate_license）
     # 绑定用户设备指纹签发许可证文件，用户在后台「系统设置」中粘贴许可证文件完成本地激活。
     purchase.update!(
       completed_at: Time.current,

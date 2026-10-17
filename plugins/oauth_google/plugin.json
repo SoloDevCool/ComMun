@@ -3,6 +3,6 @@
   "name": "Google OAuth 登录",
   "version": "1.0.0",
   "description": "为站点提供 Google 第三方登录。启用后在后台「系统设置 → Google OAuth」中配置 Client ID / Client Secret，登录页自动显示 Google 登录按钮。",
-  "author": "AiBBS",
-  "homepage": "https://github.com/aibbs"
+  "author": "Commun",
+  "homepage": "https://github.com/commun"
 }

@@ -71,11 +71,11 @@ ruby -rsecurerandom -e 'puts SecureRandom.hex(64)'
 
 ## License 授权（完全离线）
 
-aibbs 采用完全离线授权，不依赖任何在线授权云服务。授权方使用离线签发工具（`license-server/bin/generate_license`）绑定用户设备指纹签发许可证文件，管理员在后台「系统设置 → License 授权」粘贴许可证文件即可完成本地激活（验签、有效期与设备指纹校验全部在本地完成，无任何网络请求）。
+commun 采用完全离线授权，不依赖任何在线授权云服务。授权方使用离线签发工具（`license-server/bin/generate_license`）绑定用户设备指纹签发许可证文件，管理员在后台「系统设置 → License 授权」粘贴许可证文件即可完成本地激活（验签、有效期与设备指纹校验全部在本地完成，无任何网络请求）。
 
 | 变量名 | 必填 | 默认值 | 说明 |
 |--------|------|--------|------|
-| `LICENSE_PRODUCT_CODE` | 否 | `aibbs` | 产品编码，需与签发的许可证中的产品编码一致 |
+| `LICENSE_PRODUCT_CODE` | 否 | `commun` | 产品编码，需与签发的许可证中的产品编码一致 |
 | `LICENSE_SOFTWARE_VERSION` | 否 | `1.0.0` | 客户端软件版本（展示用） |
 
 > **说明**：验签公钥内置在 `config/license/public_key.pem`，签发私钥由授权方离线保管于 `license-server/keys/`（严禁入库/分发）。许可证通过后台「系统设置」页面粘贴激活，存储在数据库 `SiteSetting` 中（`license_key` / `license_file` / `license_snapshot`）。未配置许可证时不进行验证拦截；后台其余设置需激活成功后才能修改，前台页面不受影响。

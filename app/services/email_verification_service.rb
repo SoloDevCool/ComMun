@@ -47,7 +47,7 @@ class EmailVerificationService
       此验证码在 #{CODE_EXPIRY.in_seconds / 60} 分钟内有效。如果这不是您本人的操作，请忽略此邮件。
 
       ---
-      #{ActionMailer::Base.default_url_options[:host] || SiteSetting.get("site_name", default: "AiBBS")}
+      #{ActionMailer::Base.default_url_options[:host] || SiteSetting.get("site_name", default: "Commun")}
     BODY
 
     result = EmailService.send_email(to: email, subject: subject, body: body)

@@ -1,6 +1,6 @@
 # Example Hello World Plugin
 
-这是一个示例插件，用于演示 AiBBS 插件系统的功能。
+这是一个示例插件，用于演示 Commun 插件系统的功能。
 
 ## 功能
 
@@ -11,7 +11,7 @@
 
 ## 配置项
 
-- `greeting_message` - 问候语内容（默认：Hello from AiBBS!）
+- `greeting_message` - 问候语内容（默认：Hello from Commun!）
 - `show_greeting` - 是否显示问候横幅（默认：true）
 
 ## 文件说明

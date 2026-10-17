@@ -3,8 +3,8 @@
   "name": "能量商城",
   "version": "1.0.0",
   "description": "能量商城功能插件，支持商品管理、酷能量兑换购买、License 授权码发放等功能。",
-  "author": "AiBBS",
-  "homepage": "https://github.com/aibbs",
+  "author": "Commun",
+  "homepage": "https://github.com/commun",
   "permissions": [
     { "key": "manage", "name": "商城管理" }
   ]

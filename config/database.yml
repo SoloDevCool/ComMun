@@ -9,12 +9,12 @@ default: &default
 
 development:
   <<: *default
-  database: <%= ENV.fetch('DB_DATABASE', 'aibbs_development') %>
+  database: <%= ENV.fetch('DB_DATABASE', 'commun_development') %>
 
 test:
   <<: *default
-  database: <%= ENV.fetch('DB_DATABASE', 'aibbs_test') %>
+  database: <%= ENV.fetch('DB_DATABASE', 'commun_test') %>
 
 production:
   <<: *default
-  database: <%= ENV.fetch('DB_DATABASE', 'aibbs_production') %>
+  database: <%= ENV.fetch('DB_DATABASE', 'commun_production') %>

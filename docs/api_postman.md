@@ -1,4 +1,4 @@
-# AiBBS API — Postman Collection
+# Commun API — Postman Collection
 
 > Base URL: `https://your-domain.com` | 本地开发: `http://localhost:3000`
 
@@ -1597,7 +1597,7 @@ Authorization: Bearer {{token}}
             "QQ群": [
                 {
                     "id": 2,
-                    "name": "AiBBS QQ 群",
+                    "name": "Commun QQ 群",
                     "description": "技术交流",
                     "members_count": 200
                 }
@@ -1625,8 +1625,8 @@ Authorization: Bearer {{token}}
 {
     "code": 0,
     "data": {
-        "site_name": "AiBBS",
-        "site_title": "AiBBS",
+        "site_name": "Commun",
+        "site_title": "Commun",
         "site_description": "开放的技术交流社区",
         "logo_url": null,
         "favicon_url": null,
@@ -1691,7 +1691,7 @@ Authorization: Bearer {{token}}
 
 ## 方式一：手动创建 Collection
 
-1. 打开 Postman → 新建 Collection → 命名为 `AiBBS API`
+1. 打开 Postman → 新建 Collection → 命名为 `Commun API`
 2. 设置 Collection 级 Variables: `base_url` = `http://localhost:3000`
 3. 按上方 12 个模块创建 Folder，逐个添加 Request
 4. 在需要认证的 Request 上添加 Header: `Authorization: Bearer {{token}}`

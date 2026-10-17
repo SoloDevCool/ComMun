@@ -13,7 +13,7 @@ require "socket"
 module LicenseVerification
   extend ActiveSupport::Concern
 
-  PRODUCT_CODE = ENV.fetch("LICENSE_PRODUCT_CODE", "aibbs")
+  PRODUCT_CODE = ENV.fetch("LICENSE_PRODUCT_CODE", "commun")
   SOFTWARE_VERSION = ENV.fetch("LICENSE_SOFTWARE_VERSION", "1.0.0")
 
   # 内置签发方公钥（离线验签使用，与 license-server/keys 中的私钥配对）

@@ -220,7 +220,7 @@ en:
       m215: Current member count
       m216: e.g. 500
       m217: Member count
-      m218: e.g. AiBBS Tech Chat
+      m218: e.g. Commun Tech Chat
       m219: Group name
       m220: Name shown to users
       m221: Identifier
@@ -847,7 +847,7 @@ en:
       m833: One-line description (optional)
       m834: Add friend link
       m835: Customize the footer text; the default is shown if left empty.
-      m836: e.g. AiBBS Community
+      m836: e.g. Commun Community
       m837: 'HTML supported, e.g. '
       m838: Tags
       m839: Show friend links section
@@ -1039,7 +1039,7 @@ en:
       d003: e.g. https://example.com/og-image.png or /images/og.png
       d004: is a free behavior analytics tool with heatmaps and session replay to
         help you understand how users interact with your site.
-      d005: e.g. AiBBS is an open tech community sharing insights,
+      d005: e.g. Commun is an open tech community sharing insights,
         tech and startup experience...
       d006: 'The frontend works normally, but admin settings require a valid License
         Key. Please go to '
@@ -1061,7 +1061,7 @@ en:
       d017: The homepage title shown in browser tabs and search results
       d018: meta verification code (content attribute value)
       d019: e.g. a1b2c3d4e5f6
-      d020: e.g. AiBBS - AI Community
+      d020: e.g. Commun - AI Community
       d021: 'enabled, Project ID: '
       d022: e.g. xxxxxxxxxxxx
       d023: e.g. wnnb78aean
@@ -1069,7 +1069,7 @@ en:
       d025: About IndexNow
       d026: Enable IndexNow
       d027: About Clarity
-      d028: e.g. AiBBS
+      d028: e.g. Commun
       d029: Footer custom code
       d030: Search engine verification
       d031: 'File generated: '

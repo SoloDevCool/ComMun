@@ -57,7 +57,7 @@ en:
       s050: " to obtain it. Keep it secret."
       s051: Custom CDN domain for accessing uploaded images. Leave blank to use the
         default COS domain
-      s052: e.g. img.aibbs.cool
+      s052: e.g. img.commun.cool
       s053: Custom domain (origin domain)
       s054: Bucket region, e.g. ap-guangzhou, ap-shanghai, ap-beijing
       s055: e.g. ap-guangzhou
@@ -244,7 +244,7 @@ en:
       s216: not verified. The frontend works normally, but the system settings below
         are unavailable. Please paste the license file issued by the licensor to
         complete offline activation.
-      s217: License key, e.g. AIBBS-XXXX-XXXX (already embedded in the license file)
+      s217: License key, e.g. COMMUN-XXXX-XXXX (already embedded in the license file)
       s218: License Key
       s219: "This system uses fully offline licensing: the licensor signs a license file
         (bound to this machine's hardware fingerprint and validity period) offline

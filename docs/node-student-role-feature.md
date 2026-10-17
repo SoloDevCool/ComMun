@@ -2,7 +2,7 @@
 
 ## 功能概述
 
-本功能为 aibbs-server 项目新增了"版块学员"角色，学员只能在被授权的版块内进行发帖和交流，实现细粒度的权限控制。
+本功能为 commun-server 项目新增了"版块学员"角色，学员只能在被授权的版块内进行发帖和交流，实现细粒度的权限控制。
 
 ## 功能特性
 
@@ -113,7 +113,7 @@ has_many :student_users, -> { active }, through: :user_node_memberships, source:
 ### 1. 运行数据库迁移
 
 ```bash
-cd aibbs-server
+cd commun-server
 rails db:migrate
 ```
 

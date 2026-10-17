@@ -13,7 +13,7 @@
 首先运行数据库迁移：
 
 ```bash
-cd aibbs-server
+cd commun-server
 rails db:migrate
 ```
 
@@ -60,7 +60,7 @@ rails db:migrate
 
 本地视频存储在：
 ```
-aibbs-server/storage/
+commun-server/storage/
 ```
 
 ## 注意事项

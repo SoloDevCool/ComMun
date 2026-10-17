@@ -2,7 +2,7 @@
   "greeting_message": {
     "label": "问候语",
     "type": "string",
-    "default": "Hello from AiBBS!",
+    "default": "Hello from Commun!",
     "description": "前台注入的问候消息"
   },
   "show_greeting": {

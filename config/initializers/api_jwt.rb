@@ -1,5 +1,5 @@
 module ApiJwt
-  SECRET_KEY = Rails.application.credentials.dig(:api_jwt, :secret_key) || ENV.fetch("API_JWT_SECRET_KEY", "aibbs_api_jwt_secret_key_change_in_production")
+  SECRET_KEY = Rails.application.credentials.dig(:api_jwt, :secret_key) || ENV.fetch("API_JWT_SECRET_KEY", "commun_api_jwt_secret_key_change_in_production")
 
   TOKEN_EXPIRY = 24.hours
   REFRESH_EXPIRY = 30.days

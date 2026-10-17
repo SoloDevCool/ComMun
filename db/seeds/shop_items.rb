@@ -1,8 +1,8 @@
 # Seed data for Shop Items
 # Run: rails db:seed:replant or rails runner db/seeds/shop_items.rb
 
-ShopItem.find_or_create_by!(name: "AiBBS 开源版 License") do |item|
-  item.description = "获得 AiBBS 开源版授权许可，解锁系统完整功能。License 将自动配置到系统设置中。"
+ShopItem.find_or_create_by!(name: "Commun 开源版 License") do |item|
+  item.description = "获得 Commun 开源版授权许可，解锁系统完整功能。License 将自动配置到系统设置中。"
   item.item_type = "license"
   item.price = 100
   item.icon = "bi-shield-lock"

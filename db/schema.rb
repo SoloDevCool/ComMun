@@ -154,89 +154,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_15_000000) do
     t.index ["user_id"], name: "index_cools_on_user_id"
   end
 
-  create_table "course_chapters", force: :cascade do |t|
-    t.bigint "course_id", null: false
-    t.datetime "created_at", null: false
-    t.integer "sort_order", default: 0, null: false
-    t.string "title", null: false
-    t.datetime "updated_at", null: false
-    t.index ["course_id"], name: "index_course_chapters_on_course_id"
-  end
-
-  create_table "course_directions", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.boolean "is_active", default: true, null: false
-    t.string "name", null: false
-    t.integer "sort_order", default: 0, null: false
-    t.datetime "updated_at", null: false
-    t.index ["name"], name: "index_course_directions_on_name", unique: true
-    t.index ["sort_order"], name: "index_course_directions_on_sort_order"
-  end
-
-  create_table "course_lessons", force: :cascade do |t|
-    t.text "content"
-    t.bigint "course_chapter_id", null: false
-    t.datetime "created_at", null: false
-    t.string "duration"
-    t.boolean "is_free", default: false, null: false
-    t.string "lesson_type", default: "video", null: false
-    t.integer "sort_order", default: 0, null: false
-    t.string "title", null: false
-    t.datetime "updated_at", null: false
-    t.string "video_filename"
-    t.string "video_storage", default: "vod"
-    t.string "video_url"
-    t.index ["course_chapter_id"], name: "index_course_lessons_on_course_chapter_id"
-    t.index ["lesson_type"], name: "index_course_lessons_on_lesson_type"
-  end
-
-  create_table "course_permissions", force: :cascade do |t|
-    t.bigint "course_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.bigint "user_id", null: false
-    t.index ["course_id"], name: "index_course_permissions_on_course_id"
-    t.index ["user_id", "course_id"], name: "index_course_permissions_on_user_id_and_course_id", unique: true
-    t.index ["user_id"], name: "index_course_permissions_on_user_id"
-  end
-
-  create_table "course_reviews", force: :cascade do |t|
-    t.text "content", null: false
-    t.bigint "course_id", null: false
-    t.datetime "created_at", null: false
-    t.boolean "is_active", default: true, null: false
-    t.integer "rating", default: 5, null: false
-    t.integer "sort_order", default: 0, null: false
-    t.datetime "updated_at", null: false
-    t.string "user_name", null: false
-    t.index ["course_id"], name: "index_course_reviews_on_course_id"
-    t.index ["sort_order", "id"], name: "index_course_reviews_on_sort_order_and_id"
-  end
-
-  create_table "courses", force: :cascade do |t|
-    t.string "author"
-    t.string "color", default: "#6366f1"
-    t.string "cover_url"
-    t.datetime "created_at", null: false
-    t.text "description"
-    t.string "difficulty", default: "入门", null: false
-    t.string "direction", default: "前端开发", null: false
-    t.string "duration"
-    t.string "icon", default: "bi-book"
-    t.bigint "instructor_id"
-    t.boolean "is_active", default: true, null: false
-    t.integer "lessons_count", default: 0, null: false
-    t.integer "sort_order", default: 0, null: false
-    t.integer "students_count", default: 0, null: false
-    t.string "title", null: false
-    t.datetime "updated_at", null: false
-    t.index ["difficulty"], name: "index_courses_on_difficulty"
-    t.index ["direction"], name: "index_courses_on_direction"
-    t.index ["instructor_id"], name: "index_courses_on_instructor_id"
-    t.index ["is_active"], name: "index_courses_on_is_active"
-    t.index ["sort_order"], name: "index_courses_on_sort_order"
-  end
-
   create_table "cps_ad_click_logs", force: :cascade do |t|
     t.string "browser", default: ""
     t.string "city", default: ""
@@ -322,17 +239,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_15_000000) do
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
     t.index ["user_id"], name: "index_images_on_user_id"
-  end
-
-  create_table "instructors", force: :cascade do |t|
-    t.text "avatar"
-    t.text "bio"
-    t.datetime "created_at", null: false
-    t.boolean "is_active"
-    t.string "name"
-    t.integer "sort_order"
-    t.string "title"
-    t.datetime "updated_at", null: false
   end
 
   create_table "invitation_codes", force: :cascade do |t|
@@ -470,76 +376,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_15_000000) do
     t.index ["status"], name: "index_purchases_on_status"
     t.index ["user_id", "shop_item_id"], name: "index_purchases_on_user_id_and_shop_item_id"
     t.index ["user_id"], name: "index_purchases_on_user_id"
-  end
-
-  create_table "qb_answers", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.boolean "is_correct"
-    t.bigint "qb_practice_id", null: false
-    t.bigint "qb_question_id", null: false
-    t.integer "selected_option"
-    t.datetime "updated_at", null: false
-    t.index ["qb_practice_id", "qb_question_id"], name: "index_qb_answers_on_qb_practice_id_and_qb_question_id", unique: true
-    t.index ["qb_practice_id"], name: "index_qb_answers_on_qb_practice_id"
-    t.index ["qb_question_id"], name: "index_qb_answers_on_qb_question_id"
-  end
-
-  create_table "qb_exams", force: :cascade do |t|
-    t.json "categories", default: []
-    t.string "code", null: false
-    t.string "color", default: "#6366f1"
-    t.datetime "created_at", null: false
-    t.string "description"
-    t.integer "duration", default: 150
-    t.string "level", default: "junior", null: false
-    t.string "name", null: false
-    t.integer "sort_order", default: 0
-    t.integer "total_count", default: 0
-    t.string "type_name", null: false
-    t.datetime "updated_at", null: false
-    t.index ["code"], name: "index_qb_exams_on_code", unique: true
-    t.index ["level"], name: "index_qb_exams_on_level"
-    t.index ["sort_order"], name: "index_qb_exams_on_sort_order"
-  end
-
-  create_table "qb_practices", force: :cascade do |t|
-    t.boolean "completed", default: false
-    t.integer "correct_count", default: 0
-    t.datetime "created_at", null: false
-    t.string "mode", null: false
-    t.bigint "qb_exam_id", null: false
-    t.integer "time_spent", default: 0
-    t.integer "total_count", default: 0
-    t.integer "unanswered_count", default: 0
-    t.datetime "updated_at", null: false
-    t.bigint "user_id", null: false
-    t.integer "wrong_count", default: 0
-    t.index ["mode"], name: "index_qb_practices_on_mode"
-    t.index ["qb_exam_id"], name: "index_qb_practices_on_qb_exam_id"
-    t.index ["user_id", "qb_exam_id"], name: "index_qb_practices_on_user_id_and_qb_exam_id"
-    t.index ["user_id"], name: "index_qb_practices_on_user_id"
-  end
-
-  create_table "qb_questions", force: :cascade do |t|
-    t.integer "answer", null: false
-    t.string "category"
-    t.text "content", null: false
-    t.datetime "created_at", null: false
-    t.text "explanation"
-    t.json "options", default: [], null: false
-    t.bigint "qb_exam_id", null: false
-    t.integer "question_type", default: 0, null: false
-    t.text "rejection_reason"
-    t.datetime "reviewed_at"
-    t.integer "reviewed_by"
-    t.integer "sort_order", default: 0
-    t.string "status", default: "approved", null: false
-    t.datetime "updated_at", null: false
-    t.bigint "user_id"
-    t.index ["qb_exam_id", "sort_order"], name: "index_qb_questions_on_qb_exam_id_and_sort_order"
-    t.index ["qb_exam_id"], name: "index_qb_questions_on_qb_exam_id"
-    t.index ["status"], name: "index_qb_questions_on_status"
-    t.index ["user_id"], name: "index_qb_questions_on_user_id"
   end
 
   create_table "roles", force: :cascade do |t|
@@ -928,12 +764,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_15_000000) do
   add_foreign_key "comments", "users"
   add_foreign_key "cools", "topics"
   add_foreign_key "cools", "users"
-  add_foreign_key "course_chapters", "courses"
-  add_foreign_key "course_lessons", "course_chapters"
-  add_foreign_key "course_permissions", "courses", on_delete: :cascade
-  add_foreign_key "course_permissions", "users", on_delete: :cascade
-  add_foreign_key "course_reviews", "courses", on_delete: :cascade
-  add_foreign_key "courses", "instructors"
   add_foreign_key "cps_ad_click_logs", "cps_ads"
   add_foreign_key "cps_ad_click_logs", "users"
   add_foreign_key "favorites", "topics"
@@ -952,12 +782,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_15_000000) do
   add_foreign_key "polls", "topics", on_delete: :cascade
   add_foreign_key "purchases", "shop_items"
   add_foreign_key "purchases", "users"
-  add_foreign_key "qb_answers", "qb_practices"
-  add_foreign_key "qb_answers", "qb_questions"
-  add_foreign_key "qb_practices", "qb_exams"
-  add_foreign_key "qb_practices", "users"
-  add_foreign_key "qb_questions", "qb_exams"
-  add_foreign_key "qb_questions", "users"
   add_foreign_key "solid_queue_blocked_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "solid_queue_claimed_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "solid_queue_failed_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade

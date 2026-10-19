@@ -3,6 +3,6 @@
   "name": "交流群",
   "version": "1.0.0",
   "description": "交流群功能插件，展示和管理社区交流群。支持微信群、QQ群、Telegram、Discord 等多平台群组管理，包含群Logo、人数、分类筛选、排序等功能。",
-  "author": "Commun",
+  "author": "ComMun",
   "homepage": "https://github.com/commun"
 }

@@ -105,7 +105,7 @@ en:
       s091: Top left
       s092: Watermark position
       s093: Chinese and English supported, max 20 characters recommended
-      s094: My Community
+      s094: My ComMunity
       s095: Watermark text
       s096: Enable watermark
       s097: Local images do not support COS watermark
@@ -287,11 +287,11 @@ en:
       s252: Enter a text snippet to verify connectivity; does not affect real data
       s253: Question banks
       s254: Courses
-      s255: Community
+      s255: ComMunity
       s256: AI auto topics
       s257: AI auto comments
       s258: CPS ads
-      s259: Community stats virtual increment
+      s259: ComMunity stats virtual increment
       s260: Video
       s261: not verified
       license_hint: This system uses fully offline licensing. Send this machine's

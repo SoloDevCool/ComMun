@@ -26,7 +26,7 @@ module ApplicationHelper
   end
 
   def site_name
-    @site_name ||= SiteSetting.get("site_name", default: "Commun")
+    @site_name ||= SiteSetting.get("site_name", default: "ComMun")
   end
 
   def site_appearance

@@ -1,11 +1,11 @@
 en:
   nav:
-    community: "Community"
+    community: "ComMunity"
     courses: "Courses"
     question_banks: "Question Banks"
   layouts:
     application:
-      default_title_suffix: "Community"
+      default_title_suffix: "ComMunity"
       search: "Search"
       search_placeholder: "Search topics..."
       toggle_theme: "Toggle theme"
@@ -21,7 +21,7 @@ en:
       admin_panel: "Admin panel"
       friend_links: "Friend links"
       home: "Home"
-      community: "Community"
+      community: "ComMunity"
       publish: "Create"
       messages: "Messages"
       my: "Me"
@@ -35,7 +35,7 @@ en:
       group_users: "Users & Accounts"
       group_content: "Content Operations"
       group_courses: "Courses"
-      group_community: "Community Features"
+      group_community: "ComMunity Features"
       group_question_banks: "Question Banks"
       group_settings: "Site Settings"
       group_extensions: "Extensions"

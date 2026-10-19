@@ -3,7 +3,7 @@
   "name": "话题投票",
   "version": "1.0.0",
   "description": "为话题提供投票功能：创建话题时可附加投票（2 个以上选项），登录用户参与投票，话题作者可开关/删除投票，投票后通知话题作者。",
-  "author": "Commun",
+  "author": "ComMun",
   "homepage": "https://github.com/commun",
   "permissions": [
     { "key": "manage", "name": "投票管理（可管理任意投票）" }

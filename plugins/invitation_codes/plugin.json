@@ -3,6 +3,6 @@
   "name": "邀请码注册",
   "version": "1.0.0",
   "description": "注册邀请码功能：启用后在系统设置中打开「邀请码注册」开关，新用户注册（邮箱/用户名、OAuth、API）均需输入有效邀请码；后台可批量生成、管理邀请码并查看使用情况。",
-  "author": "Commun",
+  "author": "ComMun",
   "homepage": "https://github.com/commun"
 }

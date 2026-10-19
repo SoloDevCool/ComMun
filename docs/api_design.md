@@ -1,4 +1,4 @@
-# Commun App API 设计文档
+# ComMun App API 设计文档
 
 > 版本: v1 | 更新日期: 2026-04-06
 
@@ -6,7 +6,7 @@
 
 ## 一、概述
 
-本文档为 Commun 社区论坛的 App 端 RESTful API 接口设计。所有接口统一挂载在 `/api/v1/` 路径下，默认返回 JSON 格式数据。
+本文档为 ComMun 社区论坛的 App 端 RESTful API 接口设计。所有接口统一挂载在 `/api/v1/` 路径下，默认返回 JSON 格式数据。
 
 ### 技术选型
 
@@ -1458,8 +1458,8 @@ app/
 {
   "code": 0,
   "data": {
-    "site_name": "Commun",
-    "site_title": "Commun - 技术社区",
+    "site_name": "ComMun",
+    "site_title": "ComMun - 技术社区",
     "site_description": "开放的技术交流社区",
     "logo_url": "https://...",
     "favicon_url": "https://...",

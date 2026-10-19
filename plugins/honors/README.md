@@ -22,7 +22,7 @@
 
 ## 从核心提取的功能
 
-此插件从 Commun 核心代码中剥离，包含以下组件：
+此插件从 ComMun 核心代码中剥离，包含以下组件：
 - `HonorsController` — 前台控制器
 - `Admin::HonorsController` — 后台管理控制器
 - `Honor` 模型（保留在核心，数据库表不变）

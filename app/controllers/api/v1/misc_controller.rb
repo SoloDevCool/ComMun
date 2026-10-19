@@ -36,8 +36,8 @@ class Api::V1::MiscController < Api::V1::BaseController
     fake_comments = SiteSetting.get("fake_comments_count", default: "0").to_i
 
     data = {
-      site_name: SiteSetting.get("site_name", default: "Commun"),
-      site_title: SiteSetting.get("seo_title", default: "Commun - AI社区"),
+      site_name: SiteSetting.get("site_name", default: "ComMun"),
+      site_title: SiteSetting.get("seo_title", default: "ComMun - AI社区"),
       site_description: SiteSetting.get("seo_description", default: ""),
       logo_url: nil,
       favicon_url: nil,

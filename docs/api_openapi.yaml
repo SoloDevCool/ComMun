@@ -1,8 +1,8 @@
 openapi: 3.0.3
 info:
-  title: Commun API
+  title: ComMun API
   description: |
-    Commun 社区论坛 App 端 RESTful API。
+    ComMun 社区论坛 App 端 RESTful API。
 
     ## 认证方式
     除公开接口外，所有需认证的接口需在请求头中携带 JWT Token：
@@ -34,7 +34,7 @@ info:
     | 10012 | 验证码发送过于频繁 |
   version: 1.0.0
   contact:
-    name: Commun
+    name: ComMun
 
 servers:
   - url: https://your-domain.com

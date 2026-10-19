@@ -3,7 +3,7 @@
   "name": "课程系统",
   "version": "1.0.0",
   "description": "课程插件：课程方向、讲师、课程/章节/课时管理，前台课程学习、观看权限与课程评价，支持本地视频与腾讯云 VOD 播放。",
-  "author": "Commun",
+  "author": "ComMun",
   "homepage": "https://github.com/commun",
   "permissions": [
     { "key": "manage", "name": "课程管理" }

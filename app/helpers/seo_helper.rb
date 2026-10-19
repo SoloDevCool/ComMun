@@ -1,7 +1,7 @@
 module SeoHelper
   def seo_meta_tags(title: nil, description: nil, keywords: nil, image: nil, url: nil, type: nil)
-    site_name_val = SiteSetting.get("seo_site_name", default: SiteSetting.get("site_name", default: "Commun"))
-    site_title = title || content_for(:title) || SiteSetting.get("seo_title", default: "Commun - AI社区")
+    site_name_val = SiteSetting.get("seo_site_name", default: SiteSetting.get("site_name", default: "ComMun"))
+    site_title = title || content_for(:title) || SiteSetting.get("seo_title", default: "ComMun - AI社区")
     site_description = description || SiteSetting.get("seo_description", default: "技术社区")
     site_keywords = keywords || SiteSetting.get("seo_keywords", default: "")
     site_image = image || SiteSetting.get("seo_og_image", default: "")
@@ -59,7 +59,7 @@ module SeoHelper
   end
 
   def json_ld_website
-    site_name_val = SiteSetting.get("seo_site_name", default: SiteSetting.get("site_name", default: "Commun"))
+    site_name_val = SiteSetting.get("seo_site_name", default: SiteSetting.get("site_name", default: "ComMun"))
     site_description = SiteSetting.get("seo_description", default: "")
     json = {
       "@context" => "https://schema.org",

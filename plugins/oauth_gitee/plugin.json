@@ -3,6 +3,6 @@
   "name": "Gitee OAuth 登录",
   "version": "1.0.0",
   "description": "为站点提供 Gitee（码云）第三方登录。启用后在后台「系统设置 → Gitee OAuth」中配置 Client ID / Client Secret，登录页自动显示 Gitee 登录按钮。",
-  "author": "Commun",
+  "author": "ComMun",
   "homepage": "https://github.com/commun"
 }

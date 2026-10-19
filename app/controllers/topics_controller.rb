@@ -172,7 +172,9 @@ class TopicsController < ApplicationController
       redirect_to topics_path, alert: t("flash.topics.keyword_required")
       return
     end
-    search_results = Topic.search_by_keyword(@q).includes(:user, :node, :poll).recent
+    # polls 插件禁用时无 poll 关联，避免 AssociationNotFoundError
+    search_includes = Topic.polls_available? ? [:user, :node, :poll] : [:user, :node]
+    search_results = Topic.search_by_keyword(@q).includes(*search_includes).recent
     search_results = search_results.not_blocked_by(current_user) if user_signed_in?
     search_results = search_results.where.not(moderation_status: "review")
     @pagy, @topics = pagy(:offset, search_results, limit: 25)

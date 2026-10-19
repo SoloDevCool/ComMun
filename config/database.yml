@@ -1,18 +1,11 @@
-# 数据库配置
-# 所有连接信息通过环境变量注入（DB_HOST / DB_PORT / DB_USERNAME / DB_PASSWORD / DB_DATABASE）
-# 真实连接信息不入版本库：本地开发可在 config/database.local.yml（已 gitignore）中配置覆盖
-<%
-  local_file = File.join(__dir__, "database.local.yml")
-  local = File.exist?(local_file) ? (YAML.safe_load(File.read(local_file)) || {}) : {}
-%>
 default: &default
   adapter: postgresql
   encoding: unicode
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
-  host: <%= ENV['DB_HOST'] || local['host'] || 'localhost' %>
-  port: <%= ENV['DB_PORT'] || local['port'] || 5432 %>
-  username: <%= ENV['DB_USERNAME'] || local['username'] || 'postgres' %>
-  password: <%= ENV['DB_PASSWORD'] || local['password'] %>
+  host: <%= ENV.fetch('DB_HOST') { 'localhost' } %>
+  port: <%= ENV.fetch('DB_PORT') { 5432 } %>
+  username: <%= ENV.fetch('DB_USERNAME') { 'postgres' } %>
+  password: <%= ENV.fetch('DB_PASSWORD') { '********' } %>
 
 development:
   <<: *default

@@ -87,7 +87,7 @@ commun 采用完全离线授权，不依赖任何在线授权云服务。授权�
 | `DB_HOST` | 否 | `localhost` | 数据库服务器地址 |
 | `DB_PORT` | 否 | `5432` | 数据库端口 |
 | `DB_USERNAME` | 否 | `postgres` | 数据库用户名 |
-| `DB_PASSWORD` | 否 | 无 | 数据库密码 |
+| `DB_PASSWORD` | 否 | `******** | 数据库密码 |
 | `RAILS_MAX_THREADS` | 否 | `5` | Rails 数据库连接池最大线程数 |
 
 ## 环境说明

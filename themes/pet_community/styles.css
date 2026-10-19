@@ -1,0 +1,80 @@
+:root {
+  /* === 宠物社区 亮色主题 === */
+
+  /* 背景 */
+  --bg-body: #fdf9f5;
+  --bg-card: #ffffff;
+  --bg-card-hover: #fef6f0;
+  --bg-input: #fdf3ec;
+
+  /* 边框 */
+  --border-color: #f0e4da;
+  --border-color-strong: #e3d0c2;
+  --border-color-stronger: #cbb0a0;
+
+  /* 文字 */
+  --text-primary: #2f2019;
+  --text-secondary: #4d3a2d;
+  --text-tertiary: #6b5443;
+  --text-muted: #8a7360;
+  --text-faint: #b39b88;
+  --text-link: #e8590c;
+
+  /* 导航栏 */
+  --bg-navbar: #8c4a1f;
+  --border-navbar: #753c18;
+  --text-navbar: #f5e8dc;
+  --text-brand: #ffffff;
+  --bg-search-icon: #b39b88;
+
+  /* 代码 */
+  --bg-code: #fdf3ec;
+  --text-code: #c2410c;
+
+  /* 引用 */
+  --bg-blockquote: #fdf9f5;
+  --border-blockquote: #e3d0c2;
+  --text-blockquote: #6b5443;
+
+  /* 按钮 */
+  --bg-btn-outline: #fdf9f5;
+  --border-btn-outline: #e3d0c2;
+  --text-btn-outline: #4d3a2d;
+  --bg-btn-outline-hover: #fdf3ec;
+  --border-btn-outline-hover: #cbb0a0;
+  --text-btn-outline-hover: #2f2019;
+  --bg-btn-primary: #e8590c;
+  --border-btn-primary: #e8590c;
+  --text-btn-primary: #ffffff;
+  --bg-btn-primary-hover: #d9480f;
+  --border-btn-primary-hover: #d9480f;
+  --bg-btn-active: #b53d0b;
+  --border-btn-active: #b53d0b;
+
+  /* 置顶 & 高亮 */
+  --bg-pinned: #fff4ea;
+  --border-pinned: #e8590c;
+  --bg-mark: #ffe8cc;
+  --text-mark: #9a3412;
+
+  /* 节点卡片 */
+  --border-node-card: #f0e4da;
+  --border-node-card-hover: #cbb0a0;
+  --bg-node-card-hover: #fdf9f5;
+  --bg-badge-node: #fdf3ec;
+  --text-badge-node: #e8590c;
+
+  /* 用户头部 */
+  --bg-user-header: linear-gradient(135deg, #8c4a1f 0%, #c2410c 50%, #e8590c 100%);
+  --shadow-card: rgba(143, 74, 31, 0.08);
+  --shadow-avatar: rgba(143, 74, 31, 0.16);
+
+  /* 节点激活 */
+  --bg-node-active: #e8590c;
+  --text-node-active: #ffffff;
+
+  /* 代码块 */
+  --bg-pre: #2f2019;
+  --border-pre: #4d3a2d;
+  --text-pre: #f5e8dc;
+}

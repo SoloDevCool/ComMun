@@ -25,7 +25,8 @@ Rails.application.configure do
   config.active_storage.service = :local
 
   # Assume all access to the app is happening through a SSL-terminating reverse proxy.
-  config.assume_ssl = true
+  # 可通过环境变量 ASSUME_SSL=true 开启（部署 Nginx/Caddy 等终止 SSL 的反代后）
+  config.assume_ssl = ENV.fetch("ASSUME_SSL", "false") == "true"
 
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
   # config.force_ssl = true

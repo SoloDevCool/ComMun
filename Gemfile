@@ -35,7 +35,7 @@ gem "faker"
 gem "caxlsx"
 gem "roo"
 
-gem "lograge", "~> 0.14.0"
+gem "lograge", "~> 0.15.1"
 gem "lograge-sql", "~> 2.5"
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
